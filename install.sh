@@ -1,6 +1,11 @@
 #!/bin/bash
 
-# TODO: service
+clone_repo(){
+  git clone https://github.com/koszalix/rewrite-helper
+  cd rewrite-helper
+}
+
+
 
 install_python_dependency(){
   pip3 install loggin
