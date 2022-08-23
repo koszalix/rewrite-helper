@@ -33,8 +33,7 @@ create_links(){
 
 create_service(){
   cp src/rewrite-helper.service /etc/systemd/system/rewrite-helper.service
-  systemctl daemon-reload
-  systemctl start rewrite-helper
+  echo "Service created, use systemctl enable rewrite-helper.service"
 }
 
 clone_repo
