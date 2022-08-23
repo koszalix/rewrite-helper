@@ -37,6 +37,7 @@ create_service(){
   systemctl start rewrite-helper
 }
 
+clone_repo
 install_python_dependency
 prepare_directories
 move_scripts
