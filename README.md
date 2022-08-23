@@ -27,6 +27,7 @@ Edit section named api:
 ```yaml
   api:
     host: adguard.example.com
+    port: 80
     proto: http
     username: admin
     passwd: admin
@@ -35,6 +36,7 @@ host - ip of adguardhome
 proto - communication protocol http or https  
 username - admin username  
 passwd - admin password  
+port - connection port
 
 ## Configuring jobs
 Job is set of hosts IP addresses within one domain. When host to which IP address domain is pointing is down, then dns

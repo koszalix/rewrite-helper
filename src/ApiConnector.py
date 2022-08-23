@@ -17,12 +17,14 @@ class ApiConnector:
                        Syntax:
                         {
                             'host': # adguard ip
+                            'port': # connection port
                             'proto': # api protocol http or https
                             'username': # admin user name
                             'passwd': # admin password
+
                         }
         """
-        self.host = check_protocol_slashed(config['proto']) + config['host']
+        self.host = check_protocol_slashed(config['proto']) + config['host'] + ":" + str(config['port'])
         self.auth = HTTPBasicAuth(config['username'], config['passwd'])
         self.test_connection()
 

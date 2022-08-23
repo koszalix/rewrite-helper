@@ -117,6 +117,7 @@ class ConfigParser:
             self.api_config['proto'] = self.file_content['api']['proto']
             self.api_config['username'] = self.file_content['api']['username']
             self.api_config['passwd'] = self.file_content['api']['passwd']
+            self.api_config['port'] = self.file_content['api']['port']
         except KeyError:
             logging.error("Config file error / api / KeyError")
             exit(-2)
