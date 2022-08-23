@@ -6,7 +6,6 @@ clone_repo(){
 }
 
 
-
 install_python_dependency(){
   pip3 install loggin
   pip3 install request
@@ -33,13 +32,21 @@ create_links(){
 
 create_service(){
   cp src/rewrite-helper.service /etc/systemd/system/rewrite-helper.service
-  echo "Service created, use systemctl enable rewrite-helper.service"
+  systemctl enable rewrite-helper.service
 }
 
-clone_repo
-install_python_dependency
-prepare_directories
-move_scripts
-create_links
-
-create_service
+if [ "$1" = "docker-build" ]
+then
+	clone_repo
+	install_python_dependency
+	prepare_directories
+	move_scripts
+	create_links
+else	
+	clone_repo
+	install_python_dependency
+	prepare_directories
+	move_scripts
+	create_links
+	create_service
+fi
