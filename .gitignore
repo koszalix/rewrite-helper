@@ -278,3 +278,11 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm,python
 
+#-------------------------------------------------------------------------------------------
+# Custom rules
+#-------------------------------------------------------------------------------------------
+
+
+# config file used for tests, may contain confidential data
+secret_config.yml
+
