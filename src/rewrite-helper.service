@@ -1,0 +1,11 @@
+[Unit]
+Description=DNS Rewrite manager for AdGuardHome
+
+[Service]
+User=root
+WorkingDirectory=/usr/share/rewrite-helper
+ExecStart=/usr/share/rewrite-helper/main.py /etc/rewrite-helper/config.yml
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
