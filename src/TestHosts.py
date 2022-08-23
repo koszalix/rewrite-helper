@@ -60,6 +60,7 @@ class TestHosts:
 
         self.asyncio_loop = None
         self.api_connector = api_connector
+        self.task = []
 
     def prepare_http_tasks(self):
         """
@@ -69,7 +70,7 @@ class TestHosts:
         http_tasks = []
         for i in range(0, len(self.http_configs)):
             try:
-                http_tasks.append(self.asyncio_loop.create_task(http.Test(
+                self.task.append(self.asyncio_loop.create_task(http.Test(
                     correct_status_code=self.http_configs[i]['status_code'],
                     interval=self.http_configs[i]['interval'],
                     asyncio_loop=self.asyncio_loop,
@@ -85,17 +86,6 @@ class TestHosts:
                 return False
         return http_tasks
 
-    async def await_http_tasks(self):
-        """
-        Await http task from self.prepare_http_tasks()
-        :return: nothing
-        """
-        tasks = self.prepare_http_tasks()
-        if type(tasks) == list:
-            for task in tasks:
-                await task
-        else:
-            logging.error(msg="Can't load http configs")
 
     def prepare_ping_tasks(self):
         """
@@ -105,7 +95,7 @@ class TestHosts:
         ping_tasks = []
         for i in range(0, len(self.ping_configs)):
             try:
-                ping_tasks.append(self.asyncio_loop.create_task(
+                self.task.append(self.asyncio_loop.create_task(
                     ping.Test(timeout=self.ping_configs[i]['timeout'],
                               count=self.ping_configs[i]['count'],
                               interval=self.ping_configs[i]['interval'],
@@ -119,26 +109,13 @@ class TestHosts:
                 return False
         return ping_tasks
 
-    async def await_ping_tasks(self):
-        """
-        Await ping task from self.prepare_ping_tasks()
-        :return: nothing
-        """
-        tasks = self.prepare_ping_tasks()
-        if type(tasks) == list:
-            for task in tasks:
-                await task
-
-        else:
-            logging.error(msg="Can't load http configs")
 
     async def await_tasks(self):
-        tasks = self.prepare_ping_tasks()
-        for task in tasks:
-            print(task)
-            await task
-        tasks = self.prepare_http_tasks()
-        for task in tasks:
+        """
+        await all configured tasks
+        :return:
+        """
+        for task in self.task:
             await task
 
     async def start(self, loop=None):
@@ -149,14 +126,6 @@ class TestHosts:
         """
         self.asyncio_loop = loop
 
-        #if self.http_configs is not None:
-         #   self.await_http_tasks()
-          #  http_task = loop.create_task(self.await_http_tasks())
-         #   await http_task
-       # if self.ping_configs is not None:
-        #  self.await_ping_tasks()
-          #  ping_task = loop.create_task(self.await_ping_tasks())
-          #  await ping_task
+        self.prepare_ping_tasks()
+        self.prepare_http_tasks()
         await self.await_tasks()
-
-logging.basicConfig(level=logging.INFO)
