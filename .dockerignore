@@ -20,3 +20,6 @@ coverage.xml
 .hypothesis
 venv
 venv/
+.secret_config.yml
+secret
+secret/
