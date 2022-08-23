@@ -7,7 +7,7 @@ behind this software is to add failover functionality to dns rewrite.
 
 # Getting started
 ## Requirements:
- - python > 3.8
+ - python >= 3.10
  - pip
  - curl
 ## Automated install
@@ -45,15 +45,15 @@ section to config file to set up ping job.
 ```yaml
 ping_jobs:
   - job:
-    domain: 
-    interval: 
-    count: 
-    timeout: 
-    answers:
-      primary: 
-      failover:
-        - <failover ip>
-        - <failover ip>
+      domain: 
+      interval: 
+      count: 
+      timeout: 
+      answers:
+        primary: 
+        failover:
+          - <failover ip>
+          - <failover ip>
 ```
 domain - dns rewrite domain, for ex.: server.lan  
 interval - seconds between tests.  

@@ -1,39 +1,70 @@
 import yaml
 from yaml.loader import SafeLoader
 import logging
-
+import glob
 
 class ConfigParser:
     """
     Read and parse config file. Run .parse() to run all parses.
     """
 
-    def __init__(self, path):
+    def __init__(self, file):
         """
-        :param path: path to config file
+        :param file: path to config file
         """
-        self.config_path = path
+        self.config_file = file
         self.file_content = {}
         self.http_configs = {}
         self.ping_configs = {}
         self.api_config = {}
+
+    def find_any_yml(self):
+        s = self.config_file
+        directory = s[:len(s) - s[::-1].find("/")]
+
+        potentially_configs_files = glob.glob(directory+"*")
+        print(potentially_configs_files)
+        if len(potentially_configs_files) >= 1:
+            return potentially_configs_files[0]
+        else:
+            return False
+
+    def read_config_file(self, filename):
+        try:
+            f = open(file=filename, mode="r")
+            self.file_content = yaml.load(stream=f, Loader=SafeLoader)
+            f.close()
+            return 0
+        except FileNotFoundError:
+            return 1
+        except PermissionError:
+            return 2
+        except IsADirectoryError:
+            return 3
 
     def get_configs(self):
         """
         Try to read config file, if any error occurs program will exit
         :return:
         """
-        try:
-            f = open(file=self.config_path, mode="r")
-            self.file_content = yaml.load(stream=f, Loader=SafeLoader)
-            f.close()
-        except FileNotFoundError:
-            logging.error(msg="Can't read config file, file not found")
-            exit(-1)
-
-        except PermissionError:
-            logging.error(msg="Can't read config file, file not found")
-            exit(-1)
+        file_status = self.read_config_file(filename=self.config_file)
+        if file_status == 0:
+            logging.info("Config loaded")
+            return
+        elif file_status == 1:
+            potentially_file = self.find_any_yml()
+            file_status = self.read_config_file(filename=potentially_file)
+            if file_status == 0:
+                logging.info("Config loaded (" + potentially_file + ")")
+                return
+        else:
+            match file_status:
+                case [1]:
+                    logging.error("Can't load config file, file not found error")
+                case [2]:
+                    logging.error("Can't load config file, permission error")
+                case [3]:
+                    logging.error("Can't load config file, is a directory error")
 
     def parse_http(self):
         """
@@ -81,10 +112,14 @@ class ConfigParser:
         Parse api configuration
         :return:
         """
-        self.api_config['host'] = self.file_content['api']['host']
-        self.api_config['proto'] = self.file_content['api']['proto']
-        self.api_config['username'] = self.file_content['api']['username']
-        self.api_config['passwd'] = self.file_content['api']['passwd']
+        try:
+            self.api_config['host'] = self.file_content['api']['host']
+            self.api_config['proto'] = self.file_content['api']['proto']
+            self.api_config['username'] = self.file_content['api']['username']
+            self.api_config['passwd'] = self.file_content['api']['passwd']
+        except KeyError:
+            logging.error("Config file error / api / KeyError")
+            exit(-2)
 
     def parse(self):
         """
