@@ -32,9 +32,9 @@ create_service(){
   systemctl start rewrite-helper
 }
 
-#install_python_dependency
-#prepare_directories
-#move_scripts
-##create_links
+install_python_dependency
+prepare_directories
+move_scripts
+create_links
 
 create_service
