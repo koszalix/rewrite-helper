@@ -132,6 +132,15 @@ class TestHosts:
         else:
             logging.error(msg="Can't load http configs")
 
+    async def await_tasks(self):
+        tasks = self.prepare_ping_tasks()
+        for task in tasks:
+            print(task)
+            await task
+        tasks = self.prepare_http_tasks()
+        for task in tasks:
+            await task
+
     async def start(self, loop=None):
         """
         Start test loops for all the tests provided in configs,
@@ -140,9 +149,14 @@ class TestHosts:
         """
         self.asyncio_loop = loop
 
-        if self.http_configs is not None:
-            http_task = loop.create_task(self.await_http_tasks())
-            await http_task
-        if self.ping_configs is not None:
-            ping_task = loop.create_task(self.await_ping_tasks())
-            await ping_task
+        #if self.http_configs is not None:
+         #   self.await_http_tasks()
+          #  http_task = loop.create_task(self.await_http_tasks())
+         #   await http_task
+       # if self.ping_configs is not None:
+        #  self.await_ping_tasks()
+          #  ping_task = loop.create_task(self.await_ping_tasks())
+          #  await ping_task
+        await self.await_tasks()
+
+logging.basicConfig(level=logging.INFO)
