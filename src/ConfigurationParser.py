@@ -61,6 +61,7 @@ class ConfigParser:
         :return:
         """
         job_index = 0
+
         for jobs in self.file_content['ping_jobs']:
             try:
                 job = jobs['job']

@@ -43,7 +43,7 @@ class Test(Common):
         """
         try:
             logging.info("Test (start) of: " + host)
-            response = ping(address=host, count=self.count, timeout=self.timeout, privileged=False)
+            response = ping(address=host, count=self.count, timeout=self.timeout)
             if response.is_alive:
                 logging.info("Test (status) of: " + host + " ok")
             else:
