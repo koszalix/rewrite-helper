@@ -5,7 +5,6 @@ Perform test on hosts
 import logging
 
 from jobs import http, ping
-from asyncio import get_event_loop
 
 
 class TestHosts:
@@ -133,7 +132,7 @@ class TestHosts:
         else:
             logging.error(msg="Can't load http configs")
 
-    async def start(self, loop=get_event_loop()):
+    async def start(self, loop=None):
         """
         Start test loops for all the tests provided in configs,
         loops are started only if configuration is provided and valid

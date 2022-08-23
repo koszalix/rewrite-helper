@@ -26,7 +26,7 @@ if __name__ == '__main__':
                           http_configs=ConfigParser.http_configs,
                           ping_configs=ConfigParser.ping_configs)
 
-    event_loop = asyncio.get_event_loop()
+    event_loop = asyncio.new_event_loop()
     event_loop.create_task(TestHosts.start(event_loop))
 
     event_loop.run_forever()
