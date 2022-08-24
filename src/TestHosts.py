@@ -9,7 +9,7 @@ from jobs import http, ping
 
 class TestHosts:
 
-    def __init__(self, http_configs=None, ping_configs=None, api_connector=None):
+    def __init__(self, http_configs=None, ping_configs=None, api_connector=None, privileged=False):
         """
         Configure and run jobs, interact with adguardhome
         Job is a single test to perform on host for ex: get status code of a webpage or ping.
@@ -54,12 +54,16 @@ class TestHosts:
                             },
                             }
         :param api_connector: object of ApiConnector class
+        :param privileged: run test in privileged mode (some test need to be run by root user to open sockets)
         """
         self.http_configs = http_configs
         self.ping_configs = ping_configs
 
         self.asyncio_loop = None
         self.api_connector = api_connector
+
+        self.privileged = privileged
+
         self.task = []
 
     def prepare_http_tasks(self):
@@ -103,7 +107,8 @@ class TestHosts:
                               dns_answer=self.ping_configs[i]['dns_answer'],
                               dns_answer_failover=self.ping_configs[i]['dns_answer_failover'],
                               asyncio_loop=self.asyncio_loop,
-                              api_connect=self.api_connector).job_loop()))
+                              api_connect=self.api_connector,
+                              privileged=self.privileged).job_loop()))
             except KeyError:
                 logging.error("Internal error, provide ping config missing key")
                 return False

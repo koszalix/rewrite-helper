@@ -14,7 +14,7 @@ class Test(Common):
     """
 
     def __init__(self, count=2, timeout=4, interval=60, asyncio_loop=None, dns_domain="", dns_answer="",
-                 dns_answer_failover=None, api_connect=ApiConnector):
+                 dns_answer_failover=None, api_connect=ApiConnector, privileged=False):
         """
         Create configuration variables
         :param count: int: number of pakages will be sent to host
@@ -25,6 +25,7 @@ class Test(Common):
         :param dns_answer_failover: list(str): dns answers in case when host on primary
         :param asyncio_loop: asyncio event loop
         :param api_connect: configured ApiConnector class
+        :param privileged: run ping in privileged mode, see icmplib for documentation
          """
 
         super().__init__(dns_domain=dns_domain, dns_answer=dns_answer, dns_answer_failover=dns_answer_failover,
@@ -33,6 +34,7 @@ class Test(Common):
         self.timeout = timeout
         self.count = count
         self.interval = interval
+        self.privileged = privileged
 
         self.asyncio_loop = asyncio_loop
 
@@ -43,7 +45,7 @@ class Test(Common):
         """
         try:
             logging.info("Test (start) of: " + host)
-            response = ping(address=host, count=self.count, timeout=self.timeout)
+            response = ping(address=host, count=self.count, timeout=self.timeout, privileged=self.privileged)
             if response.is_alive:
                 logging.info("Test (status) of: " + host + " ok")
             else:

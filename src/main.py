@@ -3,28 +3,27 @@
 from ApiConnector import ApiConnector
 from TestHosts import TestHosts
 from ConfigurationParser import ConfigParser
+from CliParser import CliParser
 
 import asyncio
 import sys
 
 
-def check_args(args):
-    if len(args) != 2:
-        print("DNS Rewrite helper")
-        print("Usage:", args[0], "<config file>")
-        exit(0)
+
 
 
 if __name__ == '__main__':
-    check_args(sys.argv)
+    CliParser = CliParser(sys.argv)
+    CliParser.find_args()
 
-    ConfigParser = ConfigParser(sys.argv[1])
+    ConfigParser = ConfigParser(file=CliParser.config_file)
     ConfigParser.parse()
 
     ApiConnector = ApiConnector(config=ConfigParser.api_config)
     TestHosts = TestHosts(api_connector=ApiConnector,
                           http_configs=ConfigParser.http_configs,
-                          ping_configs=ConfigParser.ping_configs)
+                          ping_configs=ConfigParser.ping_configs,
+                          privileged=CliParser.run_privileged)
 
     event_loop = asyncio.new_event_loop()
     event_loop.create_task(TestHosts.start(event_loop))
