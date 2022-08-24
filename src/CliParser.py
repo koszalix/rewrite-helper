@@ -73,5 +73,3 @@ class CliParser:
                     self.log_level = level
             else:
                 self.config_file = arg
-                print(self.config_file)
-
