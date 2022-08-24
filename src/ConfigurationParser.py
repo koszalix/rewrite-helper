@@ -21,9 +21,7 @@ class ConfigParser:
     def find_any_yml(self):
         s = self.config_file
         directory = s[:len(s) - s[::-1].find("/")]
-
         potentially_configs_files = glob.glob(directory+"*")
-        print(potentially_configs_files)
         if len(potentially_configs_files) >= 1:
             return potentially_configs_files[0]
         else:
@@ -53,17 +51,18 @@ class ConfigParser:
             return
         elif file_status == 1:
             potentially_file = self.find_any_yml()
+            print(potentially_file)
             file_status = self.read_config_file(filename=potentially_file)
             if file_status == 0:
-                logging.info("Config loaded (" + potentially_file + ")")
+                logging.info("Config loaded (" + str(potentially_file) + ")")
                 return
         else:
             if file_status == 1:
-                    logging.error("Can't load config file, file not found error")
+                logging.error("Can't load config file, file not found error")
             elif file_status == 2:
-                    logging.error("Can't load config file, permission error")
+                logging.error("Can't load config file, permission error")
             elif file_status == 3:
-                    logging.error("Can't load config file, is a directory error")
+                logging.error("Can't load config file, is a directory error")
 
     def parse_http(self):
         """

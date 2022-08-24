@@ -12,7 +12,7 @@ class CliParser:
         self.run_privileged = False
         self.config_file = ""
         self.log_file = ""
-        self.log_level = ""
+        self.log_level = INFO
 
     def print_help(self):
         """
@@ -53,6 +53,7 @@ class CliParser:
         Search specific arguments in sys.arg
         :return:
         """
+
         if len(self.argv) <= 1 or len(self.argv) > 5:
             self.print_help()
 
@@ -70,7 +71,7 @@ class CliParser:
                 level = self.parse_logging_level(arg[len('--log-level')+1:])
                 if level is not False:
                     self.log_level = level
-                else:
-                    self.log_level = INFO
             else:
                 self.config_file = arg
+                print(self.config_file)
+

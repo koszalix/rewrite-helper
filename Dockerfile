@@ -9,4 +9,4 @@ RUN pip3 install -r requirements.txt
 
 COPY src /app
 
-CMD ["python3", "/app/main.py", "/app/conf/config.yml"]
+CMD ["python3", "/app/main.py", "/app/config/config.yml", "--privileged"]
