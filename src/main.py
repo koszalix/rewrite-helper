@@ -9,14 +9,14 @@ import asyncio
 import sys
 import logging
 
-
-
-
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-
     CliParser = CliParser(sys.argv)
     CliParser.find_args()
+
+    if CliParser.log_file == "":
+        logging.basicConfig(level=CliParser.log_level)
+    else:
+        logging.basicConfig(level=CliParser.log_level, filename=CliParser.log_file)
 
     ConfigParser = ConfigParser(file=CliParser.config_file)
     ConfigParser.parse()
