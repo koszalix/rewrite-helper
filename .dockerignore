@@ -25,3 +25,7 @@ secret
 *.service
 *.sh
 */*.sh
+log.txt
+*log.txt
+*log*.txt
+log*.txt

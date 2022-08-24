@@ -285,4 +285,10 @@ cython_debug/
 
 # config file used for tests, may contain confidential data
 secret_config.yml
+secret
+secret/
 
+log.txt
+*log.txt
+*log*.txt
+log*.txt
