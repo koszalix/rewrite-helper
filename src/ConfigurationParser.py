@@ -58,12 +58,11 @@ class ConfigParser:
                 logging.info("Config loaded (" + potentially_file + ")")
                 return
         else:
-            match file_status:
-                case [1]:
+            if file_status == 1:
                     logging.error("Can't load config file, file not found error")
-                case [2]:
+            elif file_status == 2:
                     logging.error("Can't load config file, permission error")
-                case [3]:
+            elif file_status == 3:
                     logging.error("Can't load config file, is a directory error")
 
     def parse_http(self):
@@ -139,6 +138,3 @@ class ConfigParser:
 
         self.parse_api()
         logging.info("Config loaded")
-
-
-logging.basicConfig(level=logging.INFO)

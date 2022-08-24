@@ -72,5 +72,3 @@ class Test(Common):
             self.asyncio_loop.call_soon(callback=self.callback)
             await asyncio.sleep(self.interval)
 
-
-logging.basicConfig(level=logging.INFO)
