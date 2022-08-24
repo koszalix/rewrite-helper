@@ -1,6 +1,6 @@
 api:
   host:
-  port: 80
+  port:
   proto:
   username:
   passwd:

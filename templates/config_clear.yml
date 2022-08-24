@@ -1,0 +1,28 @@
+api:
+  host:
+  proto:
+  username:
+  passwd:
+
+ping_jobs:
+  - job:
+      domain:
+      interval:
+      count:
+      timeout:
+      answers:
+        primary:
+        failover:
+          -
+          -
+http_jobs:
+  - job:
+      domain:
+      interval:
+      status:
+      proto:
+      answers:
+        primary:
+        failover:
+          -
+          -
