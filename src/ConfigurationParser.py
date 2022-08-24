@@ -51,11 +51,14 @@ class ConfigParser:
             return
         elif file_status == 1:
             potentially_file = self.find_any_yml()
-            print(potentially_file)
-            file_status = self.read_config_file(filename=potentially_file)
-            if file_status == 0:
-                logging.info("Config loaded (" + str(potentially_file) + ")")
-                return
+            if potentially_file is not False:
+                file_status = self.read_config_file(filename=potentially_file)
+                if file_status == 0:
+                    logging.info("Config loaded (" + str(potentially_file) + ")")
+                    return
+            else:
+                logging.error("No config file found")
+                exit(-1)
         else:
             if file_status == 1:
                 logging.error("Can't load config file, file not found error")
