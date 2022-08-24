@@ -1,15 +1,35 @@
 # Disclaimer
 This software is still in development
+
+
 # Rewrite helper
 This is a program for managing DNS rewrites in [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome). Main idea 
 behind this software is to add failover functionality to dns rewrite.
 
+## What is a dns rewrite failover
+Basically [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome) allows you to set custom dns answer for specific 
+domain which is great, but sometimes we may want a little more redundancy. The easiest way to achieve that is to use  
+for example server with two networks adapters or setup two exactly the same containers. Instead of having one dns 
+rewrite entry, we set up two of them for example nas-1.lan, nas-2.lan. It seems to work ok, but in case of failure user 
+need to manually change configuration. Sometimes it may be nearly impossible to change configuration manually on every
+device, for example someone who have a ton of iot devices need to manually change configuration of every device which 
+may be very time-consuming.  
+To solve these problems dns rewrite failover come in. Basically this is a program which monitors hosts or service and if 
+one of it is down dns answer will be changed to pointing on active host (or service). It highly recommended to have at 
+least two AdGuardHome instances with two separate rewrite-helpers.
+
+## How it works
+Rewrite-helper monitors host (by pinging them or checking http status code) and interact with AdGuardHome api to ensure 
+possibly the highest accessibility.
+
 
 # Getting started
+
 ## Requirements:
  - python >= 3.10
  - pip
  - curl
+
 ## Automated install
 Run the following command  in your terminal:
 ```commandline
@@ -20,8 +40,10 @@ Run the following command  in your terminal:
 ```
 Configuration is needed to run this software see [Configuration](#Configuration) section for more.
 
+
 # Configuration
 Edit file /etc/rewrite-helper/config.yml.
+
 ## Setting up credentials to [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome).
 Edit section named api:
 ```yaml
@@ -87,6 +109,7 @@ status - if response code received from host is the same as this setting host wi
 proto - communication protocol (http or https)  
 primary - primary dns answer, this answer has the highest priority, 
 failover - list of IP addresses to switch dns answer when primary host is down  
+
 ## Example config file
 ```yaml
 api:
