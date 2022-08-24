@@ -21,7 +21,7 @@ class ConfigParser:
     def find_any_yml(self):
         s = self.config_file
         directory = s[:len(s) - s[::-1].find("/")]
-        potentially_configs_files = glob.glob(directory+"*")
+        potentially_configs_files = glob.glob(directory+"*.yml")
         if len(potentially_configs_files) >= 1:
             return potentially_configs_files[0]
         else:
