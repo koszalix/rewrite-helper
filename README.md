@@ -40,6 +40,8 @@ Run the following command  in your terminal:
 ```
 Configuration is needed to run this software see [Configuration](#Configuration) section for more.
 
+## Docker install
+See [docker hub](https://hub.docker.com/repository/docker/koszalix/rewrite-helper#Quickstart) page for docker install quick start guide.
 
 # Configuration
 Edit file /etc/rewrite-helper/config.yml.
@@ -64,7 +66,7 @@ port - connection port
 Job is set of hosts IP addresses within one domain. When host to which IP address domain is pointing is down, then dns
 answer will be changed to IP address of host with is up. 
 ### Configuring ping jobs
-Ping job send ICMP ping to host, when host response is quicker than timeout host will be treated as live. Add following 
+Ping job send ICMP pings to host, when host response is quicker than timeout host will be treated as live. Add following 
 section to config file to set up ping job.
 ```yaml
 ping_jobs:
@@ -110,48 +112,7 @@ proto - communication protocol (http or https)
 primary - primary dns answer, this answer has the highest priority, 
 failover - list of IP addresses to switch dns answer when primary host is down  
 
-## Example config file
-```yaml
-api:
-  host: adguard.example.com
-  proto: http
-  username: admin
-  passwd: admin
-
-ping_jobs:
-  - job:
-      domain: server.lan
-      interval: 60
-      count: 4
-      timeout: 2 
-      answers:
-        primary: 10.0.0.1 
-        failover:
-          - 10.0.0.2
-          - 10.0.0.3
-  - job:
-      domain: server2.lan
-      interval: 60
-      count: 4
-      timeout: 2 
-      answers:
-        primary: 10.0.1.1 
-        failover:
-          - 10.0.1.2
-          - 10.0.1.3
-  
-http_jobs:
-  - job:
-      domain: example.lan
-      interval: 10
-      status: 200
-      proto: http
-      answers:
-        primary: 10.0.2.1
-        failover:
-          - 10.0.2.2
-
-```
+## [See example config file](https://github.com/koszalix/rewrite-helper/blob/main/templates/example_config.yml)
 
 
 
