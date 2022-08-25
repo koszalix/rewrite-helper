@@ -74,6 +74,141 @@ class TestApi(unittest.TestCase):
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto http")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 80")
 
+class TestHttpJobs(unittest.TestCase):
+    def setUp(self):
+        """
+        Setup directory for fixtures, some changes may be needed depends on your setup
+        :return:
+        """
+        self.working_directory = os.getcwd() + "/tests/unit/fixtures/"
+    # print("Working directory" + self.working_directory)
+
+    def test_http_job_all_provided(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/http_job.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+
+    def test_http_job_all_default(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/http_job_default_all.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 60")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 200")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto http")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 80")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+
+    def test_http_job_multiple_instances(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/http_job_multiple_instances.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-domain test-x.com")
+        self.assertEqual(captured_logs.records[8].getMessage(), "http-interval 32")
+        self.assertEqual(captured_logs.records[9].getMessage(), "http-status 202")
+        self.assertEqual(captured_logs.records[10].getMessage(), "http-proto https")
+        self.assertEqual(captured_logs.records[11].getMessage(), "http-port 8082")
+        self.assertEqual(captured_logs.records[12].getMessage(), "http-primary 1.1.2.1")
+        self.assertEqual(captured_logs.records[13].getMessage(), "http-failover 2.23.2.2")
+
+    def test_http_job_no_failover(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/http_job_no_failover.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover ")
+
+    def test_http_job_no_failover_2(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/http_job_no_failover-2.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover ")
+
+
+    def test_http_job_no_interval(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/http_job_no_interval.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 60")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+
+    def test_http_job_no_port(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/http_job_no_port.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 80")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+
+    def test_http_job_no_proto(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/http_job_no_proto.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto http")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+
+    def test_http_job_no_status(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/http_job_no_status.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 200")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     unittest.main()

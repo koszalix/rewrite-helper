@@ -1,0 +1,24 @@
+# This config file is for test use only.
+http_jobs:
+  - job:
+      domain: test.com
+      interval: 30
+      status: 201
+      proto: https
+      port: 8080
+      answers:
+        primary: 1.1.1.1
+        failover:
+          - 2.2.2.2
+          - 3.3.3.3
+
+  - job:
+      domain: test-x.com
+      interval: 32
+      status: 202
+      proto: https
+      port: 8082
+      answers:
+        primary: 1.1.2.1
+        failover:
+          - 2.23.2.2
