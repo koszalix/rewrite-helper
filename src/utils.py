@@ -26,9 +26,8 @@ def safe_parse_value(content, key, default_value):
         :param default_value: default value in key wasn't found
         :return: value assigned to key, or default value
         """
-        print(type(content))
-        if key in content:
 
+        if key in content:
             return content[key]
         else:
             return default_value

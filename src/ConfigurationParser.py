@@ -1,3 +1,5 @@
+
+
 import yaml
 from yaml.loader import SafeLoader
 import logging
@@ -92,7 +94,11 @@ class ConfigParser:
                 self.http_configs[job_index] = {}
                 self.http_configs[job_index]['dns_domain'] = job['domain']
                 self.http_configs[job_index]['dns_answer'] = job['answers']['primary']
-                self.http_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
+
+                if job['answers']['failover'] is None:
+                    self.http_configs[job_index]['dns_answer_failover'] = []
+                else:
+                    self.http_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
 
                 self.http_configs[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
                 self.http_configs[job_index]['status_code'] = safe_parse_value(content=job, key='status', default_value=200)
@@ -115,7 +121,11 @@ class ConfigParser:
                 self.ping_configs[job_index] = {}
                 self.ping_configs[job_index]['dns_domain'] = job['domain']
                 self.ping_configs[job_index]['dns_answer'] = job['answers']['primary']
-                self.ping_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
+
+                if job['answers']['failover'] is None:
+                    self.ping_configs[job_index]['dns_answer_failover'] = []
+                else:
+                    self.ping_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
 
                 self.ping_configs[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
                 self.ping_configs[job_index]['timeout'] = safe_parse_value(content=job, key='timeout', default_value=2)
