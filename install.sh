@@ -2,7 +2,7 @@
 
 clone_repo(){
   git clone https://github.com/koszalix/rewrite-helper
-  cd rewrite-helper
+  cd rewrite-helper || exit
 }
 
 

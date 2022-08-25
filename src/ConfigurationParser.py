@@ -3,6 +3,7 @@ from yaml.loader import SafeLoader
 import logging
 import glob
 
+
 class ConfigParser:
     """
     Read and parse config file. Run .parse() to run all parses.

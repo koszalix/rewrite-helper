@@ -1,5 +1,26 @@
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 
+
+def parse_logging_level(logging_str):
+    """
+    Convert loging level as string to logging object
+    :param logging_str: str: logging level
+    :return: logging level object (if possible) or False if can't match level
+    """
+    if logging_str == "DEBUG":
+        return DEBUG
+    elif logging_str == "INFO":
+        return INFO
+    elif logging_str == "WARNING":
+        return WARNING
+    elif logging_str == "ERROR":
+        return ERROR
+    elif logging_str == "CRITICAL":
+        return CRITICAL
+    else:
+        return False
+
+
 class CliParser:
     """
     Parse command line arguments
@@ -29,25 +50,6 @@ class CliParser:
         print("\t\tavailable levels: DEBUG, INFO, WARNING, ERROR, CRITICAL")
         exit(0)
 
-    def parse_logging_level(self, logging_str):
-        """
-        Convert from loging level in string to logging object
-        :param logging_str: str: logging level
-        :return: logging level object or False if can't match level
-        """
-        if logging_str == "DEBUG":
-            return DEBUG
-        elif logging_str == "INFO":
-            return INFO
-        elif logging_str == "WARNING":
-            return WARNING
-        elif logging_str == "ERROR":
-            return ERROR
-        elif logging_str == "CRITICAL":
-            return CRITICAL
-        else:
-            return False
-
     def find_args(self):
         """
         Search specific arguments in sys.arg
@@ -68,7 +70,7 @@ class CliParser:
                 self.log_file = arg[len('--log-file')+1:]
 
             elif arg[0:len('--log-level')] == '--log-level':
-                level = self.parse_logging_level(arg[len('--log-level')+1:])
+                level = parse_logging_level(arg[len('--log-level')+1:])
                 if level is not False:
                     self.log_level = level
             else:

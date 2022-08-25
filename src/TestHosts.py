@@ -90,7 +90,6 @@ class TestHosts:
                 return False
         return http_tasks
 
-
     def prepare_ping_tasks(self):
         """
         Generate list of task based on provide config (self.ping_configs)
@@ -113,7 +112,6 @@ class TestHosts:
                 logging.error("Internal error, provide ping config missing key")
                 return False
         return ping_tasks
-
 
     async def await_tasks(self):
         """

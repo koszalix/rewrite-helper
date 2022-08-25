@@ -103,7 +103,6 @@ http_jobs:
         failover:
           - <failover ip>
           - <failover ip>
-
 ```
 domain - dns rewrite domain, for ex.: server.lan  
 interval - seconds between tests.  

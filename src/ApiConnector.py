@@ -3,6 +3,7 @@ import logging
 import requests
 from requests.auth import HTTPBasicAuth
 
+
 from utils import check_protocol_slashed
 
 
@@ -11,7 +12,7 @@ class ApiConnector:
     Realize connection between script and adguardhome, add, remove, change dns rewrite entries
     """
 
-    def __init__(self, config={}):
+    def __init__(self, config):
         """
         :param config: dictionary contains all configuration needed to communicate with adguard api.
                        Syntax:
@@ -48,6 +49,7 @@ class ApiConnector:
                 logging.info("Api test successful")
         except requests.ConnectionError as e:
             logging.error(e)
+            logging.error("Can't establish connection to API")
             exit(-1)
 
     def entry_exist(self, answer, domain):
