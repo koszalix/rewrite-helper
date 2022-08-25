@@ -92,15 +92,26 @@ class ConfigParser:
                 self.http_configs[job_index]['dns_domain'] = job['domain']
                 self.http_configs[job_index]['dns_answer'] = job['answers']['primary']
 
-                if job['answers']['failover'] is None:
-                    self.http_configs[job_index]['dns_answer_failover'] = []
+                if 'failover' in job['answers']:
+                    if job['answers']['failover'] is None:
+                        self.http_configs[job_index]['dns_answer_failover'] = []
+                    else:
+                        self.http_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
                 else:
-                    self.http_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
+                    self.http_configs[job_index]['dns_answer_failover'] = []
 
                 self.http_configs[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
                 self.http_configs[job_index]['status_code'] = safe_parse_value(content=job, key='status', default_value=200)
                 self.http_configs[job_index]['proto'] = safe_parse_value(content=job, key='proto', default_value='http')
                 self.http_configs[job_index]['port'] = safe_parse_value(content=job, key='port', default_value=80)
+
+                logging.debug(msg="http-domain " + self.http_configs[job_index]['dns_domain'])
+                logging.debug(msg="http-interval " + str(self.http_configs[job_index]['interval']))
+                logging.debug(msg="http-status " + str(self.http_configs[job_index]['status_code']))
+                logging.debug(msg="http-proto " + self.http_configs[job_index]['proto'])
+                logging.debug(msg="http-port " + str(self.http_configs[job_index]['port']))
+                logging.debug(msg="http-primary " + self.http_configs[job_index]['dns_answer'])
+                logging.debug(msg="http-failover " + ' '.join(self.http_configs[job_index]['dns_answer_failover']))
 
                 job_index = job_index + 1
             except KeyError:
@@ -129,7 +140,6 @@ class ConfigParser:
                 self.ping_configs[job_index]['timeout'] = safe_parse_value(content=job, key='timeout', default_value=2)
                 self.ping_configs[job_index]['count'] = safe_parse_value(content=job, key='count', default_value=2)
                 job_index = job_index + 1
-
             except KeyError:
                 logging.error("Error in config file, ping_jobs KeyError")
 
