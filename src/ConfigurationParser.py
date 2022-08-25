@@ -90,12 +90,13 @@ class ConfigParser:
             try:
                 job = jobs['job']
                 self.http_configs[job_index] = {}
-                self.http_configs[job_index]['interval'] = job['interval']
-                self.http_configs[job_index]['status_code'] = job['status']
-                self.http_configs[job_index]['proto'] = job['proto']
                 self.http_configs[job_index]['dns_domain'] = job['domain']
                 self.http_configs[job_index]['dns_answer'] = job['answers']['primary']
                 self.http_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
+
+                self.api_config[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
+                self.api_config[job_index]['status_code'] = safe_parse_value(content=job, key='status', default_value=200)
+                self.api_config[job_index]['proto'] = safe_parse_value(content=job, key='proto', default_value='http')
                 job_index = job_index + 1
             except KeyError:
                 logging.error("Error in config file, http_jobs KeyError")
@@ -111,12 +112,13 @@ class ConfigParser:
             try:
                 job = jobs['job']
                 self.ping_configs[job_index] = {}
-                self.ping_configs[job_index]['interval'] = job['interval']
-                self.ping_configs[job_index]['count'] = job['count']
-                self.ping_configs[job_index]['timeout'] = job['timeout']
                 self.ping_configs[job_index]['dns_domain'] = job['domain']
                 self.ping_configs[job_index]['dns_answer'] = job['answers']['primary']
                 self.ping_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
+
+                self.api_config[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
+                self.api_config[job_index]['timeout'] = safe_parse_value(content=job, key='timeout', default_value=2)
+                self.api_config[job_index]['count'] = safe_parse_value(content=job, key='count', default_value=2)
                 job_index = job_index + 1
             except KeyError:
                 logging.error("Error in config file, ping_jobs KeyError")
@@ -128,10 +130,10 @@ class ConfigParser:
         """
         try:
             self.api_config['host'] = self.file_content['api']['host']
-            self.api_config['proto'] = self.file_content['api']['proto']
             self.api_config['username'] = self.file_content['api']['username']
             self.api_config['passwd'] = self.file_content['api']['passwd']
 
+            self.api_config['proto'] = safe_parse_value(content=self.file_content['api'], key='proto', default_value='http')
             self.api_config['port'] = safe_parse_value(content=self.file_content['api'], key='port', default_value=80)
         except KeyError:
             logging.error("Config file error / api / KeyError")

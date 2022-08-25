@@ -49,12 +49,12 @@ Edit file /etc/rewrite-helper/config.yml.
 ## Setting up credentials to [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome).
 Edit section named api:
 ```yaml
-  api:
-    host: adguard.example.com
-    port: 80
-    proto: http
-    username: admin
-    passwd: admin
+api:
+  host: adguard.example.com
+  port: 80
+  proto: http
+  username: admin
+  passwd: admin
 ```
 host - ip of adguardhome  
 proto - communication protocol http or https  
@@ -110,6 +110,22 @@ status - if response code received from host is the same as this setting host wi
 proto - communication protocol (http or https)  
 primary - primary dns answer, this answer has the highest priority, 
 failover - list of IP addresses to switch dns answer when primary host is down  
+
+## Default values
+To make configuration easier some config option have assigned default values. To use default values of specific option
+do not put this option to config file.
+
+| Section   | Option | Value |
+|-----------|-----|-------|
+| api       | proto | http  |
+| api       | port | 80    |
+| http_jobs | interval | 60    |
+| http_jobs | status | 200   |
+| http_jobs | proto | http  |
+| ping_jobs | interval | 60    |
+| ping_jobs | timeout | 2     |
+| ping_jobs | count | 2     |
+
 
 ## [See example config file](https://github.com/koszalix/rewrite-helper/blob/main/templates/example_config.yml)
 
