@@ -94,9 +94,10 @@ class ConfigParser:
                 self.http_configs[job_index]['dns_answer'] = job['answers']['primary']
                 self.http_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
 
-                self.api_config[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
-                self.api_config[job_index]['status_code'] = safe_parse_value(content=job, key='status', default_value=200)
-                self.api_config[job_index]['proto'] = safe_parse_value(content=job, key='proto', default_value='http')
+                self.http_configs[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
+                self.http_configs[job_index]['status_code'] = safe_parse_value(content=job, key='status', default_value=200)
+                self.http_configs[job_index]['proto'] = safe_parse_value(content=job, key='proto', default_value='http')
+
                 job_index = job_index + 1
             except KeyError:
                 logging.error("Error in config file, http_jobs KeyError")
@@ -116,10 +117,11 @@ class ConfigParser:
                 self.ping_configs[job_index]['dns_answer'] = job['answers']['primary']
                 self.ping_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
 
-                self.api_config[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
-                self.api_config[job_index]['timeout'] = safe_parse_value(content=job, key='timeout', default_value=2)
-                self.api_config[job_index]['count'] = safe_parse_value(content=job, key='count', default_value=2)
+                self.ping_configs[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
+                self.ping_configs[job_index]['timeout'] = safe_parse_value(content=job, key='timeout', default_value=2)
+                self.ping_configs[job_index]['count'] = safe_parse_value(content=job, key='count', default_value=2)
                 job_index = job_index + 1
+
             except KeyError:
                 logging.error("Error in config file, ping_jobs KeyError")
 
