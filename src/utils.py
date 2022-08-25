@@ -14,6 +14,10 @@ def check_protocol_slashed(proto=""):
     """
     if proto[-3:] == "://":
         return proto
+    elif proto[-2:] == ":/":
+        return proto + "/"
+    elif proto[-1:] == ":":
+        return proto + "//"
     else:
         return proto + "://"
 
