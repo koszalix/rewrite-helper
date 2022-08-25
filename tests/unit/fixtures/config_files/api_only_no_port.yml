@@ -1,5 +1,0 @@
-api:
-  host: adguard.example.com
-  proto: https
-  username: admin
-  passwd: admin
