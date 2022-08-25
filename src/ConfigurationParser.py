@@ -3,6 +3,7 @@ from yaml.loader import SafeLoader
 import logging
 import glob
 
+from utils import safe_parse_value
 
 class ConfigParser:
     """
@@ -20,6 +21,10 @@ class ConfigParser:
         self.api_config = {}
 
     def find_any_yml(self):
+        """
+        Find file with .yml extension
+        :return:
+        """
         s = self.config_file
         directory = s[:len(s) - s[::-1].find("/")]
         potentially_configs_files = glob.glob(directory+"*.yml")
@@ -28,7 +33,14 @@ class ConfigParser:
         else:
             return False
 
+
+
     def read_config_file(self, filename):
+        """
+        Read data from config file
+        :param filename:
+        :return:
+        """
         try:
             f = open(file=filename, mode="r")
             self.file_content = yaml.load(stream=f, Loader=SafeLoader)
@@ -43,7 +55,7 @@ class ConfigParser:
 
     def get_configs(self):
         """
-        Try to read config file, if any error occurs program will exit
+        Try to read config file, if config.yml wasn't found try to find any *.yml file
         :return:
         """
         file_status = self.read_config_file(filename=self.config_file)
@@ -119,10 +131,8 @@ class ConfigParser:
             self.api_config['proto'] = self.file_content['api']['proto']
             self.api_config['username'] = self.file_content['api']['username']
             self.api_config['passwd'] = self.file_content['api']['passwd']
-            if 'port' in self.file_content['api']:
-                self.api_config['port'] = self.file_content['api']['port']
-            else:
-                self.api_config['port'] = 80
+
+            self.api_config['port'] = safe_parse_value(content=self.file_content['api'], key='port', default_value=80)
         except KeyError:
             logging.error("Config file error / api / KeyError")
             exit(-2)
