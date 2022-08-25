@@ -36,6 +36,7 @@ http_jobs:
       domain: example.lan
       interval: 10
       status: 200
+      port: 80
       proto: http
       answers:
         primary: 10.0.2.1

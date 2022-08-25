@@ -13,8 +13,8 @@ class Test(Common):
     Send ICMP package to all host mentioned in dns answers
     """
 
-    def __init__(self, count=2, timeout=4, interval=60, asyncio_loop=None, dns_domain="", dns_answer="",
-                 dns_answer_failover=None, api_connect=ApiConnector, privileged=False):
+    def __init__(self, count, timeout, interval, dns_domain, dns_answer, dns_answer_failover, asyncio_loop=None,
+                api_connect=ApiConnector, privileged=False):
         """
         Create configuration variables
         :param count: int: number of pakages will be sent to host

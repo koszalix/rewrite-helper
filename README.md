@@ -98,6 +98,7 @@ http_jobs:
       interval: 
       status: 
       proto: 
+      port:
       answers:
         primary: 
         failover:
@@ -108,6 +109,7 @@ domain - dns rewrite domain, for ex.: server.lan
 interval - seconds between tests.  
 status - if response code received from host is the same as this setting host will be treated as live.  
 proto - communication protocol (http or https)  
+port - connection port
 primary - primary dns answer, this answer has the highest priority, 
 failover - list of IP addresses to switch dns answer when primary host is down  
 
@@ -122,6 +124,7 @@ do not put this option to config file.
 | http_jobs | interval | 60    |
 | http_jobs | status | 200   |
 | http_jobs | proto | http  |
+ | http_jobs | port | 80 |
 | ping_jobs | interval | 60    |
 | ping_jobs | timeout | 2     |
 | ping_jobs | count | 2     |

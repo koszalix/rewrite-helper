@@ -13,12 +13,13 @@ class Test(Common):
     Get http(s) status code of webpage
     """
 
-    def __init__(self, correct_status_code=200, interval=60, asyncio_loop=None, proto="http://", dns_domain="",
-                 dns_answer="", dns_answer_failover=None, api_connect=ApiConnector):
+    def __init__(self, correct_status_code, interval, port, proto, dns_domain, dns_answer, asyncio_loop=None,
+                  dns_answer_failover=None, api_connect=ApiConnector):
         """
         Create configuration variables
         :param correct_status_code: status code recognised as "host ok"
         :param interval: time between next requests in seconds
+        :param port: connection port
         :param asyncio_loop: asyncio event loop
         :param proto: connection protocol (http or https)
         :param dns_domain: str: domain which is used in dns rewrite
@@ -32,6 +33,7 @@ class Test(Common):
 
         self.correct_status_code = correct_status_code
         self.interval = interval
+        self.port = port
         self.proto = check_protocol_slashed(proto)
 
         self.asyncio_loop = asyncio_loop
@@ -44,7 +46,7 @@ class Test(Common):
         """
         try:
             logging.info("Test (start) of: " + host)
-            response = requests.get(self.proto + host)
+            response = requests.get(self.proto + host + ":"+ str(self.port))
             if response.status_code == self.correct_status_code:
                 logging.info("Test (status) of: " + host + " ok")
                 return True

@@ -1,5 +1,3 @@
-
-
 import yaml
 from yaml.loader import SafeLoader
 import logging
@@ -103,6 +101,7 @@ class ConfigParser:
                 self.http_configs[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
                 self.http_configs[job_index]['status_code'] = safe_parse_value(content=job, key='status', default_value=200)
                 self.http_configs[job_index]['proto'] = safe_parse_value(content=job, key='proto', default_value='http')
+                self.http_configs[job_index]['port'] = safe_parse_value(content=job, key='port', default_value=80)
 
                 job_index = job_index + 1
             except KeyError:

@@ -77,6 +77,7 @@ class TestHosts:
                 self.task.append(self.asyncio_loop.create_task(http.Test(
                     correct_status_code=self.http_configs[i]['status_code'],
                     interval=self.http_configs[i]['interval'],
+                    port=self.http_configs[i]['port'],
                     asyncio_loop=self.asyncio_loop,
                     proto=self.http_configs[i]['proto'],
                     dns_answer=self.http_configs[i]['dns_answer'],
