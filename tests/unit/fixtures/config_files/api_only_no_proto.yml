@@ -1,0 +1,5 @@
+api:
+  host: adguard.example.com
+  port: 93
+  username: admin
+  passwd: admin
