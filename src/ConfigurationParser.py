@@ -3,7 +3,8 @@ from yaml.loader import SafeLoader
 import logging
 import glob
 
-from utils import safe_parse_value
+from .utils import safe_parse_value
+
 
 class ConfigParser:
     """
@@ -32,8 +33,6 @@ class ConfigParser:
             return potentially_configs_files[0]
         else:
             return False
-
-
 
     def read_config_file(self, filename):
         """
@@ -146,6 +145,13 @@ class ConfigParser:
 
             self.api_config['proto'] = safe_parse_value(content=self.file_content['api'], key='proto', default_value='http')
             self.api_config['port'] = safe_parse_value(content=self.file_content['api'], key='port', default_value=80)
+
+            logging.debug(msg="api-host " + self.api_config['host'])
+            logging.debug(msg="api-username " + self.api_config['username'])
+            logging.debug(msg='api-passwd ' + self.api_config['passwd'])
+            logging.debug(msg='api-proto ' + self.api_config['proto'])
+            logging.debug(msg='api-port ' + str(self.api_config['port']))
+
         except KeyError:
             logging.error("Config file error / api / KeyError")
             exit(-2)

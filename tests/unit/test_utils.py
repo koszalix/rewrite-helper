@@ -32,7 +32,7 @@ class CheckProtocolSlashed(unittest.TestCase):
 class SafeParseValue(unittest.TestCase):
     def test_key_in_content_value_assigned(self):
         content = {'key-a': 32, 'key-B': 33, 'key-c': 'key-B'}
-        self.assertEqual(safe_parse_value(content=content, key='key-b', default_value=80), 33)
+        self.assertEqual(safe_parse_value(content=content, key='key-B', default_value=80), 33)
 
     def test_key_in_content_value_assigned_strings(self):
         content = {'key-a': '32', 'key-B': '33', 'key-c': 'key-B'}

@@ -1,0 +1,6 @@
+api:
+  host: adguard.example.com
+  port: 93
+  proto: https
+  username: admin
+  passwd: admin
