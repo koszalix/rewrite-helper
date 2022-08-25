@@ -1,5 +1,6 @@
 api:
   host: adguard.example.com
+  port: 80
   proto: http
   username: admin
   passwd: admin
