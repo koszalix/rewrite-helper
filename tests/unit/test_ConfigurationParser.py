@@ -252,8 +252,23 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
 
-    def xtest_ping_job_multiple_instances(self):
-        pass
+    def test_ping_job_multiple_instances(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/ping_job_multiple_instances.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
+        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
+        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
+        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
+        self.assertEqual(captured_logs.records[6].getMessage(), "ping-domain test-x.com")
+        self.assertEqual(captured_logs.records[7].getMessage(), "ping-interval 34")
+        self.assertEqual(captured_logs.records[8].getMessage(), "ping-count 3")
+        self.assertEqual(captured_logs.records[9].getMessage(), "ping-timeout 7")
+        self.assertEqual(captured_logs.records[10].getMessage(), "ping-primary 1.2.1.1")
+        self.assertEqual(captured_logs.records[11].getMessage(), "ping-failover 2.5.2.2 3.5.3.3")
 
     def test_ping_job_no_failover(self):
         parser = ConfigParser(file=self.working_directory + 'config_files/ping_job_no_failover.yml')
