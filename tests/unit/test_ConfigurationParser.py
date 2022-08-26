@@ -380,6 +380,44 @@ class TestAnyYaml(unittest.TestCase):
         self.assertEqual(parser.find_any_yml(), False)
 
 
+class TestReadConfigFile(unittest.TestCase):
+    def setUp(self):
+        self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/read_config_file/"
+
+    def test_no_permissions(self):
+        parser = ConfigParser(file=self.working_directory + "no_permissions/config.yml")
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.get_configs()
+        self.assertEqual(captured_logs.records[0].getMessage(), "Can't open config file " + self.working_directory + "no_permissions/config.yml" + " permission error")
+        self.assertEqual(parser.get_configs(), False)
+
+    def test_file_no_found(self):
+        parser = ConfigParser(file=self.working_directory + "this_file_does_not_exist.yml")
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.get_configs()
+        self.assertEqual(captured_logs.records[0].getMessage(), "Can't open config file " + self.working_directory + "this_file_does_not_exist.yml" + " file not found")
+        self.assertEqual(parser.get_configs(), False)
+
+    def test_file_is_a_directory(self):
+        parser = ConfigParser(file=self.working_directory + "a_directory")
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.get_configs()
+        self.assertEqual(captured_logs.records[0].getMessage(), "Can't open config file" + self.working_directory + "a_directory" + " file is a directory")
+        self.assertEqual(parser.get_configs(), False)
+
+    def xtest_correct_file(self):
+        pass
+
+    def xtest_invalid_file_syntax(self):
+        pass
+
+
+
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     unittest.main()
