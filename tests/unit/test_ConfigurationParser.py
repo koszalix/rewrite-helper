@@ -33,7 +33,8 @@ class TestReadConfigFile(unittest.TestCase):
             parser.read_config_file(filename=self.working_directory + "this_file_does_not_exist.yml")
         self.assertEqual(captured_logs.records[0].getMessage(),
                          "Can't open config file " + self.working_directory + "this_file_does_not_exist.yml" + " file not found")
-        self.assertEqual(parser.read_config_file(filename=self.working_directory + "this_file_does_not_exist.yml"), False)
+        self.assertEqual(parser.read_config_file(filename=self.working_directory + "this_file_does_not_exist.yml"),
+                         False)
 
     def test_file_is_a_directory(self):
         parser = ConfigParser(file=self.working_directory + "a_directory")
@@ -77,7 +78,8 @@ class TestApi(unittest.TestCase):
             parser.parse_api()
         self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
         self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(), "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
+        self.assertEqual(captured_logs.records[2].getMessage(),
+                         "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto https")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 93")
 
@@ -92,7 +94,8 @@ class TestApi(unittest.TestCase):
             parser.parse_api()
         self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
         self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(), "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
+        self.assertEqual(captured_logs.records[2].getMessage(),
+                         "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto https")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 80")
 
@@ -107,7 +110,8 @@ class TestApi(unittest.TestCase):
             parser.parse_api()
         self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
         self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(), "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
+        self.assertEqual(captured_logs.records[2].getMessage(),
+                         "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto http")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 93")
 
@@ -122,7 +126,8 @@ class TestApi(unittest.TestCase):
             parser.parse_api()
         self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
         self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(), "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
+        self.assertEqual(captured_logs.records[2].getMessage(),
+                         "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto http")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 80")
 
@@ -421,8 +426,6 @@ class TestAnyYaml(unittest.TestCase):
     def test_no_permission(self):
         parser = ConfigParser(file=self.working_directory + "no_permissions/config.yml")
         self.assertEqual(parser.find_any_yml(), False)
-
-
 
 
 if __name__ == "__main__":
