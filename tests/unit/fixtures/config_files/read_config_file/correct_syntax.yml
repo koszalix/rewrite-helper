@@ -1,0 +1,55 @@
+# AdGuardHome api configuration
+api:
+  host: adguard.example.com
+  port: 80
+  proto: http
+  username: admin
+  passwd: admin
+
+# Configuration of ping jobs
+ping_jobs:
+  # full configuration
+  - job:
+      domain: server.lan
+      interval: 60
+      count: 4
+      timeout: 2
+      answers:
+        primary: 10.0.0.1
+        # failover ip put as many as you wish
+        failover:
+          - 10.0.0.2
+          - 10.0.0.3
+
+  # configuration using default options
+  - job:
+      domain: server2.lan
+      answers:
+        primary: 10.0.1.1
+        failover:
+          - 10.0.1.2
+          - 10.0.1.3
+          -
+# configuration of http jobs
+http_jobs:
+  - job:
+      domain: example.lan
+      interval: 10
+      status: 200
+      port: 80
+      proto: http
+      answers:
+        primary: 10.0.2.1
+        failover:
+          - 10.0.2.2
+
+  # configuration without failover
+  - job:
+        domain: another-example.lan
+        interval: 10
+        status: 200
+        port: 80
+        proto: http
+        answers:
+          primary: 10.0.2.1
+          # alternatively enter only 'failover:'
