@@ -42,3 +42,14 @@ http_jobs:
         primary: 10.0.2.1
         failover:
           - 10.0.2.2
+
+  # configuration without failover
+  - job:
+        domain: another-example.lan
+        interval: 10
+        status: 200
+        port: 80
+        proto: http
+        answers:
+          primary: 10.0.2.1
+          # alternatively enter only 'failover:'
