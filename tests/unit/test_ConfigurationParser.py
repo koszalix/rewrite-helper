@@ -7,6 +7,10 @@ from src.ConfigurationParser import ConfigParser
 
 class TestInitVariable(unittest.TestCase):
     def test_init(self):
+        """
+        check if variables are successfully passed from arguments to class
+        :return:
+        """
         parser = ConfigParser("file_example")
         self.assertEqual(parser.config_file, "file_example")
         self.assertEqual(parser.file_content, {})
@@ -17,9 +21,17 @@ class TestInitVariable(unittest.TestCase):
 
 class TestReadConfigFile(unittest.TestCase):
     def setUp(self):
+        """
+        Create absolute path to config file directory
+        :return:
+        """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/read_config_file/"
 
     def test_no_permissions(self):
+        """
+        Test behavior of .read_config_file() when config file have invalid permissions
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + "no_permissions/config.yml")
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "no_permissions/config.yml")
@@ -28,6 +40,10 @@ class TestReadConfigFile(unittest.TestCase):
         self.assertEqual(parser.read_config_file(filename=self.working_directory + "no_permissions/config.yml"), False)
 
     def test_file_no_found(self):
+        """
+        Test behavior of .read_config_file() when config file can not be found
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + "this_file_does_not_exist.yml")
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "this_file_does_not_exist.yml")
@@ -37,6 +53,10 @@ class TestReadConfigFile(unittest.TestCase):
                          False)
 
     def test_file_is_a_directory(self):
+        """
+        Test behavior of .read_config_file() when config file is a directory
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + "a_directory")
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "a_directory")
@@ -45,6 +65,10 @@ class TestReadConfigFile(unittest.TestCase):
         self.assertEqual(parser.read_config_file(filename=self.working_directory + "a_directory"), False)
 
     def test_correct_file(self):
+        """
+        Test behavior of .read_config_file() when file exist, have correct permissions and syntax
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + "correct_syntax.yml")
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "correct_syntax.yml")
@@ -52,6 +76,10 @@ class TestReadConfigFile(unittest.TestCase):
         self.assertEqual(parser.read_config_file(filename=self.working_directory + "correct_syntax.yml"), True)
 
     def test_invalid_file_syntax(self):
+        """
+        Test behavior of .read_config_file() when file exist, have correct permissions but syntax is incorrect
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + "incorrect_syntax.yml")
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "incorrect_syntax.yml")
@@ -62,7 +90,7 @@ class TestReadConfigFile(unittest.TestCase):
 class TestApi(unittest.TestCase):
     def setUp(self):
         """
-        Setup directory for fixtures, some changes may be needed depends on your setup
+        Create absolute path to config file directory
         :return:
         """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/api_only/"
@@ -136,12 +164,16 @@ class TestHttpJobs(unittest.TestCase):
 
     def setUp(self):
         """
-        Setup directory for fixtures, some changes may be needed depends on your setup
+        Create absolute path to config file directory
         :return:
         """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/http_job/"
 
     def test_http_job_all_provided(self):
+        """
+        Test behavior of http job parser when all configuration all provided
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'http_job.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -155,6 +187,10 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
 
     def test_http_job_all_default(self):
+        """
+        Test behavior of http job parser when only necessary configuration options are provided
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'http_job_default_all.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -168,6 +204,10 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
 
     def test_http_job_multiple_instances(self):
+        """
+        Test behavior of http job parser in case of multiple job configured
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'http_job_multiple_instances.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -188,6 +228,10 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[13].getMessage(), "http-failover 2.23.2.2")
 
     def test_http_job_no_failover(self):
+        """
+        Test behavior of http job parser when failover key don't exist in config file
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'http_job_no_failover.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -201,6 +245,10 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover ")
 
     def test_http_job_no_failover_2(self):
+        """
+        Test behavior of http job parser when failover key is empty in config file
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'http_job_no_failover-2.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -214,6 +262,10 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover ")
 
     def test_http_job_no_failover_single(self):
+        """
+        Test behavior of http job parser when failover key contains only single value
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'http_job_failover-single.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -227,6 +279,10 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 3.3.3.3")
 
     def test_http_job_no_interval(self):
+        """
+        Test behavior of http job parser when there is no interval specified
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'http_job_no_interval.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -240,6 +296,10 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
 
     def test_http_job_no_port(self):
+        """
+        Test behavior of http job parser when there is no port specified
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'http_job_no_port.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -253,6 +313,10 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
 
     def test_http_job_no_proto(self):
+        """
+        Test behavior of http job parser when there is no protocol specified
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'http_job_no_proto.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -266,6 +330,10 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
 
     def test_http_job_no_status(self):
+        """
+        Test behavior of http job parser when there is no status code specified
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'http_job_no_status.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -282,12 +350,16 @@ class TestHttpJobs(unittest.TestCase):
 class TestPingJobs(unittest.TestCase):
     def setUp(self):
         """
-        Setup directory for fixtures, some changes may be needed depends on your setup
+        Create absolute path to config file directory
         :return:
         """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/ping_job/"
 
     def test_ping_job_all_provided(self):
+        """
+        Test behavior of ping job parser when all configuration all provided
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'ping_job.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -300,6 +372,10 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
 
     def test_ping_job_all_default(self):
+        """
+        Test behavior of ping job parser when only necessary configuration options are provided
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'ping_job_default.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -312,6 +388,10 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
 
     def test_ping_job_multiple_instances(self):
+        """
+        Test behavior of ping job parser in case of multiple job configured
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'ping_job_multiple_instances.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -330,6 +410,10 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[11].getMessage(), "ping-failover 2.5.2.2 3.5.3.3")
 
     def test_ping_job_no_failover(self):
+        """
+        Test behavior of ping job parser when failover key don't exist in config file
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'ping_job_no_failover.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -342,6 +426,10 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover ")
 
     def test_ping_job_no_failover_2(self):
+        """
+        Test behavior of http job parser when failover key is empty in config file
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'ping_job_no_failover-2.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -354,6 +442,10 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover ")
 
     def test_ping_job_failover_single(self):
+        """
+        Test behavior of ping job parser when failover key contains only single value
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'ping_job_failover-single.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -366,6 +458,10 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.3.2.2")
 
     def test_ping_job_no_interval(self):
+        """
+        Test behavior of ping job parser when there is no interval specified
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'ping_job_no_interval.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -378,6 +474,10 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
 
     def test_ping_job_no_timeout(self):
+        """
+        Test behavior of ping job parser when there is no timeout specified
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'ping_job_no_timeout.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -390,6 +490,10 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
 
     def test_ping_job_no_count(self):
+        """
+        Test behavior of ping job parser when there is no count specified
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + 'ping_job_no_count.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -405,25 +509,49 @@ class TestPingJobs(unittest.TestCase):
 class TestAnyYaml(unittest.TestCase):
 
     def setUp(self):
+        """
+        Create absolute path to config file directory
+        :return:
+        """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/any_yaml/"
 
     def test_cnf(self):
+        """
+        Test program behavior when specified config file doesn't exist but other .yml file exist
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + "cnf/config.yml")
         self.assertEqual(parser.find_any_yml(), self.working_directory + "cnf/cnf.yml")
 
     def test_no_file(self):
+        """
+        Test program behavior when specified config file doesn't exist
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + "no_file/config.yml")
         self.assertEqual(parser.find_any_yml(), False)
 
     def test_capitalised(self):
+        """
+        Test program behavior when specified config file doesn't exist, but the same file exist with capitalized name
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + "capitalised/config.yml")
         self.assertEqual(parser.find_any_yml(), self.working_directory + "capitalised/Config.yml")
 
     def test_all_correct(self):
+        """
+        Test program behavior when config file exist and have valid syntax
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + "all_correct/config.yml")
         self.assertEqual(parser.find_any_yml(), self.working_directory + "all_correct/config.yml")
 
     def test_no_permission(self):
+        """
+        Test program behavior when config file exist, but don't have valid syntax
+        :return:
+        """
         parser = ConfigParser(file=self.working_directory + "no_permissions/config.yml")
         self.assertEqual(parser.find_any_yml(), False)
 
