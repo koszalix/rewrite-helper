@@ -131,17 +131,28 @@ class ConfigParser:
                 self.ping_configs[job_index]['dns_domain'] = job['domain']
                 self.ping_configs[job_index]['dns_answer'] = job['answers']['primary']
 
-                if job['answers']['failover'] is None:
-                    self.ping_configs[job_index]['dns_answer_failover'] = []
+                if 'failover' in job['answers']:
+                    if job['answers']['failover'] is None:
+                        self.ping_configs[job_index]['dns_answer_failover'] = []
+                    else:
+                        self.ping_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
                 else:
-                    self.ping_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
+                    self.ping_configs[job_index]['dns_answer_failover'] = []
 
                 self.ping_configs[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
                 self.ping_configs[job_index]['timeout'] = safe_parse_value(content=job, key='timeout', default_value=2)
                 self.ping_configs[job_index]['count'] = safe_parse_value(content=job, key='count', default_value=2)
+
+                logging.debug(msg="ping-domain " + self.ping_configs[job_index]['dns_domain'])
+                logging.debug(msg="ping-interval " + str(self.ping_configs[job_index]['interval']))
+                logging.debug(msg="ping-count " + str(self.ping_configs[job_index]['count']))
+                logging.debug(msg="ping-timeout " + str(self.ping_configs[job_index]['timeout']))
+                logging.debug(msg="ping-primary " + self.ping_configs[job_index]['dns_answer'])
+                logging.debug(msg="ping-failover " + ' '.join(self.ping_configs[job_index]['dns_answer_failover']))
+
                 job_index = job_index + 1
             except KeyError:
-                logging.error("Error in config file, ping_jobs KeyError")
+                logging.error("Error in config file, ping_jobs KeyError" )
 
     def parse_api(self):
         """
