@@ -155,6 +155,18 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover ")
 
+    def test_http_job_no_failover_single(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/http_job_failover-single.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 3.3.3.3")
 
     def test_http_job_no_interval(self):
         parser = ConfigParser(file=self.working_directory + 'config_files/http_job_no_interval.yml')
@@ -207,6 +219,113 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+
+
+class TestPingJobs(unittest.TestCase):
+    def setUp(self):
+        """
+        Setup directory for fixtures, some changes may be needed depends on your setup
+        :return:
+        """
+        self.working_directory = os.getcwd() + "/tests/unit/fixtures/"
+    def test_ping_job_all_provided(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/ping_job.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
+        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
+        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
+        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
+
+    def test_ping_job_all_default(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/ping_job_default.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 60")
+        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 2")
+        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 2")
+        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
+
+    def xtest_ping_job_multiple_instances(self):
+        pass
+
+    def test_ping_job_no_failover(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/ping_job_no_failover.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
+        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
+        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
+        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover ")
+
+    def test_ping_job_no_failover_2(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/ping_job_no_failover-2.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
+        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
+        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
+        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover ")
+
+    def test_ping_job_failover_single(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/ping_job_failover-single.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
+        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
+        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
+        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.13.1.1")
+        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.3.2.2")
+
+    def test_ping_job_no_interval(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/ping_job_no_interval.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 60")
+        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
+        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
+        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
+
+    def test_ping_job_no_timeout(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/ping_job_no_timeout.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
+        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
+        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 2")
+        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
+
+    def test_ping_job_no_count(self):
+        parser = ConfigParser(file=self.working_directory + 'config_files/ping_job_no_count.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
+        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 2")
+        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
+        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
 
 
 if __name__ == "__main__":
