@@ -3,6 +3,7 @@ from yaml.loader import SafeLoader
 import logging
 import glob
 import os
+import hashlib
 
 from .utils import safe_parse_value
 from .utils import check_linux_permissions
@@ -48,8 +49,13 @@ class ConfigParser:
         """
         try:
             f = open(file=filename, mode="r")
-            self.file_content = yaml.load(stream=f, Loader=SafeLoader)
+            # using additional variables prevents from,  unclosed file when errors occurs while parsing yaml
+            content_of_file = f.read()
+
             f.close()
+            self.file_content = yaml.load(stream=content_of_file, Loader=SafeLoader)
+            # no need to log this in production, it's handled by self.get_configs()
+            logging.debug("Config file read successful")
             return True
         except FileNotFoundError:
             logging.info("Can't open config file " + filename + " file not found")
@@ -59,6 +65,9 @@ class ConfigParser:
             return False
         except IsADirectoryError:
             logging.info("Can't open config file" + filename + " file is a directory")
+            return False
+        except yaml.parser.ParserError:
+            logging.info("Error in config file, invalid syntax")
             return False
 
     def get_configs(self):
@@ -171,7 +180,7 @@ class ConfigParser:
 
             logging.debug(msg="api-host " + self.api_config['host'])
             logging.debug(msg="api-username " + self.api_config['username'])
-            logging.debug(msg='api-passwd ' + self.api_config['passwd'])
+            logging.debug(msg='api-passwd ' + hashlib.sha256(self.api_config['passwd'].encode()).hexdigest())
             logging.debug(msg='api-proto ' + self.api_config['proto'])
             logging.debug(msg='api-port ' + str(self.api_config['port']))
 

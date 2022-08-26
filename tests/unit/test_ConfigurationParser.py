@@ -15,6 +15,49 @@ class TestInitVariable(unittest.TestCase):
         self.assertEqual(parser.api_config, {})
 
 
+class TestReadConfigFile(unittest.TestCase):
+    def setUp(self):
+        self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/read_config_file/"
+
+    def test_no_permissions(self):
+        parser = ConfigParser(file=self.working_directory + "no_permissions/config.yml")
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.read_config_file(filename=self.working_directory + "no_permissions/config.yml")
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Can't open config file " + self.working_directory + "no_permissions/config.yml" + " permission error")
+        self.assertEqual(parser.read_config_file(filename=self.working_directory + "no_permissions/config.yml"), False)
+
+    def test_file_no_found(self):
+        parser = ConfigParser(file=self.working_directory + "this_file_does_not_exist.yml")
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.read_config_file(filename=self.working_directory + "this_file_does_not_exist.yml")
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Can't open config file " + self.working_directory + "this_file_does_not_exist.yml" + " file not found")
+        self.assertEqual(parser.read_config_file(filename=self.working_directory + "this_file_does_not_exist.yml"), False)
+
+    def test_file_is_a_directory(self):
+        parser = ConfigParser(file=self.working_directory + "a_directory")
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.read_config_file(filename=self.working_directory + "a_directory")
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Can't open config file" + self.working_directory + "a_directory" + " file is a directory")
+        self.assertEqual(parser.read_config_file(filename=self.working_directory + "a_directory"), False)
+
+    def test_correct_file(self):
+        parser = ConfigParser(file=self.working_directory + "correct_syntax.yml")
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.read_config_file(filename=self.working_directory + "correct_syntax.yml")
+        self.assertEqual(captured_logs.records[0].getMessage(), "Config file read successful")
+        self.assertEqual(parser.read_config_file(filename=self.working_directory + "correct_syntax.yml"), True)
+
+    def test_invalid_file_syntax(self):
+        parser = ConfigParser(file=self.working_directory + "incorrect_syntax.yml")
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.read_config_file(filename=self.working_directory + "incorrect_syntax.yml")
+        self.assertEqual(captured_logs.records[0].getMessage(), "Error in config file, invalid syntax")
+        self.assertEqual(parser.read_config_file(filename=self.working_directory + "incorrect_syntax.yml"), False)
+
+
 class TestApi(unittest.TestCase):
     def setUp(self):
         """
@@ -34,7 +77,7 @@ class TestApi(unittest.TestCase):
             parser.parse_api()
         self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
         self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(), "api-passwd admin")
+        self.assertEqual(captured_logs.records[2].getMessage(), "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto https")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 93")
 
@@ -49,7 +92,7 @@ class TestApi(unittest.TestCase):
             parser.parse_api()
         self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
         self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(), "api-passwd admin")
+        self.assertEqual(captured_logs.records[2].getMessage(), "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto https")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 80")
 
@@ -64,7 +107,7 @@ class TestApi(unittest.TestCase):
             parser.parse_api()
         self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
         self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(), "api-passwd admin")
+        self.assertEqual(captured_logs.records[2].getMessage(), "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto http")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 93")
 
@@ -79,7 +122,7 @@ class TestApi(unittest.TestCase):
             parser.parse_api()
         self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
         self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(), "api-passwd admin")
+        self.assertEqual(captured_logs.records[2].getMessage(), "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto http")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 80")
 
@@ -360,15 +403,15 @@ class TestAnyYaml(unittest.TestCase):
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/any_yaml/"
 
     def test_cnf(self):
-        parser = ConfigParser(file=self.working_directory+"cnf/config.yml")
+        parser = ConfigParser(file=self.working_directory + "cnf/config.yml")
         self.assertEqual(parser.find_any_yml(), self.working_directory + "cnf/cnf.yml")
 
     def test_no_file(self):
-        parser = ConfigParser(file=self.working_directory+"no_file/config.yml")
+        parser = ConfigParser(file=self.working_directory + "no_file/config.yml")
         self.assertEqual(parser.find_any_yml(), False)
 
     def test_capitalised(self):
-        parser = ConfigParser(file=self.working_directory+"capitalised/config.yml")
+        parser = ConfigParser(file=self.working_directory + "capitalised/config.yml")
         self.assertEqual(parser.find_any_yml(), self.working_directory + "capitalised/Config.yml")
 
     def test_all_correct(self):
@@ -378,42 +421,6 @@ class TestAnyYaml(unittest.TestCase):
     def test_no_permission(self):
         parser = ConfigParser(file=self.working_directory + "no_permissions/config.yml")
         self.assertEqual(parser.find_any_yml(), False)
-
-
-class TestReadConfigFile(unittest.TestCase):
-    def setUp(self):
-        self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/read_config_file/"
-
-    def test_no_permissions(self):
-        parser = ConfigParser(file=self.working_directory + "no_permissions/config.yml")
-        parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.get_configs()
-        self.assertEqual(captured_logs.records[0].getMessage(), "Can't open config file " + self.working_directory + "no_permissions/config.yml" + " permission error")
-        self.assertEqual(parser.get_configs(), False)
-
-    def test_file_no_found(self):
-        parser = ConfigParser(file=self.working_directory + "this_file_does_not_exist.yml")
-        parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.get_configs()
-        self.assertEqual(captured_logs.records[0].getMessage(), "Can't open config file " + self.working_directory + "this_file_does_not_exist.yml" + " file not found")
-        self.assertEqual(parser.get_configs(), False)
-
-    def test_file_is_a_directory(self):
-        parser = ConfigParser(file=self.working_directory + "a_directory")
-        parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.get_configs()
-        self.assertEqual(captured_logs.records[0].getMessage(), "Can't open config file" + self.working_directory + "a_directory" + " file is a directory")
-        self.assertEqual(parser.get_configs(), False)
-
-    def xtest_correct_file(self):
-        pass
-
-    def xtest_invalid_file_syntax(self):
-        pass
-
 
 
 
