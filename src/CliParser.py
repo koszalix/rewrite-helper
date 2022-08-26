@@ -56,6 +56,8 @@ class CliParser:
         :return:
         """
 
+        config_file_set = False
+
         if len(self.argv) <= 1 or len(self.argv) > 5:
             self.print_help()
 
@@ -74,4 +76,8 @@ class CliParser:
                 if level is not False:
                     self.log_level = level
             else:
-                self.config_file = arg
+                if config_file_set is False:
+                    self.config_file = arg
+                    config_file_set = True
+                else:
+                    self.print_help()

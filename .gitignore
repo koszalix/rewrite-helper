@@ -11,7 +11,7 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
-
+src/.idea/**
 # AWS User-specific
 .idea/**/aws.xml
 
@@ -292,3 +292,8 @@ log.txt
 *log.txt
 *log*.txt
 log*.txt
+
+## this is a test fixture whith 000 permision, whithout gitignoring it, git cant add files
+## using *
+tests/unit/fixtures/config_files/any_yaml/no_permissions
+tests/unit/fixtures/config_files/any_yaml/no_permissions/*
