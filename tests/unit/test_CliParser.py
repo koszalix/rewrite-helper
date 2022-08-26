@@ -2,7 +2,6 @@ import unittest
 
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 
-
 from src.CliParser import CliParser
 from src.CliParser import parse_logging_level
 
@@ -54,7 +53,7 @@ class TestCliParser(unittest.TestCase):
 
         # Args sets for testing help
         self.args_set_9 = ['main.py', '--help', '-p', 'config file']
-        self.args_set_10 = ['main.py',  '-p', 'config file', '--help']
+        self.args_set_10 = ['main.py', '-p', 'config file', '--help']
 
         self.parser_0 = CliParser(self.args_set_0)
         self.parser_1 = CliParser(self.args_set_1)
@@ -90,7 +89,6 @@ class TestCliParser(unittest.TestCase):
         self.assertEqual(self.parser_4.run_privileged, True)
         self.assertEqual(self.parser_5.run_privileged, True)
         self.assertEqual(self.parser_6.run_privileged, True)
-
 
     def test_log_file(self):
         """
@@ -150,6 +148,7 @@ class TestCliParser(unittest.TestCase):
             self.parser_9.find_args()
         with self.assertRaises(SystemExit):
             self.parser_10.find_args()
+
 
 if __name__ == "__main__":
     unittest.main()
