@@ -17,6 +17,7 @@ prepare_directories(){
   mkdir /usr/share/rewrite-helper
   mkdir /usr/share/rewrite-helper/jobs
   mkdir /etc/rewrite-helper
+  mkdir /var/log/rewrite-helper/
 }
 
 move_scripts(){
