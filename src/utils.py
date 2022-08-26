@@ -35,3 +35,16 @@ def safe_parse_value(content, key, default_value):
             return content[key]
         else:
             return default_value
+
+
+def check_linux_permissions(permissions, target):
+    """
+    check linux permission are higher or equal to larger
+    :param permissions: str: actual file or directory permissions
+    :param target: str: targeted permissions
+    :return: True if permission >= target, False in other cases
+    """
+    for char_permissions, char_target in zip(permissions, target):
+        if char_permissions < char_target:
+            return False
+    return True

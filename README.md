@@ -44,7 +44,9 @@ Configuration is needed to run this software see [Configuration](#Configuration)
 See [docker hub](https://hub.docker.com/repository/docker/koszalix/rewrite-helper#Quickstart) page for docker install quick start guide.
 
 # Configuration
-Edit file /etc/rewrite-helper/config.yml.
+All configuration settings are stored in file: /etc/rewrite-helper/config.yml.    
+If file 'config.yml' not exist or is not readable program will try to find
+another '.yml' file, but it's highly recommended to keep settings in config.yml  
 
 ## Setting up credentials to [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome).
 Edit section named api:
@@ -129,6 +131,8 @@ do not put this option to config file.
 | ping_jobs | timeout | 2     |
 | ping_jobs | count | 2     |
 
+## Work without failover
+In case when failover is no needed or there is no failover host now, leave failover empty or delete failover parameter.
 
 ## [See example config file](https://github.com/koszalix/rewrite-helper/blob/main/templates/example_config.yml)
 

@@ -2,9 +2,10 @@ import yaml
 from yaml.loader import SafeLoader
 import logging
 import glob
+import os
 
 from .utils import safe_parse_value
-
+from .utils import check_linux_permissions
 
 class ConfigParser:
     """
@@ -30,27 +31,35 @@ class ConfigParser:
         directory = s[:len(s) - s[::-1].find("/")]
         potentially_configs_files = glob.glob(directory+"*.yml")
         if len(potentially_configs_files) >= 1:
-            return potentially_configs_files[0]
+            for file in potentially_configs_files:
+                stat_info = os.stat(file)
+                if check_linux_permissions(permissions=oct(stat_info.st_mode)[-3:], target="444"):
+                    return file
+
+            return False
         else:
             return False
 
     def read_config_file(self, filename):
         """
         Read data from config file
-        :param filename:
-        :return:
+        :param filename: file to read from
+        :return: True if file read was successful, False in other cases
         """
         try:
             f = open(file=filename, mode="r")
             self.file_content = yaml.load(stream=f, Loader=SafeLoader)
             f.close()
-            return 0
+            return True
         except FileNotFoundError:
-            return 1
+            logging.info("Can't open config file " + filename + " file not found")
+            return False
         except PermissionError:
-            return 2
+            logging.info("Can't open config file " + filename + " permission error")
+            return False
         except IsADirectoryError:
-            return 3
+            logging.info("Can't open config file" + filename + " file is a directory")
+            return False
 
     def get_configs(self):
         """
@@ -58,26 +67,19 @@ class ConfigParser:
         :return:
         """
         file_status = self.read_config_file(filename=self.config_file)
-        if file_status == 0:
+        if file_status is True:
             logging.info("Config loaded")
-            return
-        elif file_status == 1:
+            return True
+        else:
             potentially_file = self.find_any_yml()
             if potentially_file is not False:
                 file_status = self.read_config_file(filename=potentially_file)
-                if file_status == 0:
+
+                if file_status is True:
                     logging.info("Config loaded (" + str(potentially_file) + ")")
-                    return
-            else:
-                logging.error("No config file found")
-                exit(-1)
-        else:
-            if file_status == 1:
-                logging.error("Can't load config file, file not found error")
-            elif file_status == 2:
-                logging.error("Can't load config file, permission error")
-            elif file_status == 3:
-                logging.error("Can't load config file, is a directory error")
+                    return True
+
+        return False
 
     def parse_http(self):
         """
@@ -183,7 +185,12 @@ class ConfigParser:
         :return:
         """
         logging.info("Loading config")
-        self.get_configs()
+        read_status = self.get_configs()
+
+        if read_status is False:
+            logging.error("Can't load config file")
+            exit(-1)
+
         if "http_jobs" in self.file_content:
             logging.info(msg="http jobs found")
             self.parse_http()
