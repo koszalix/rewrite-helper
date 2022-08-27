@@ -78,6 +78,7 @@ class TestHosts:
                     interval=self.http_configs[i]['interval'],
                     port=self.http_configs[i]['port'],
                     proto=self.http_configs[i]['proto'],
+                    timeout=self.http_configs[i]['timeout'],
                     dns_answer=self.http_configs[i]['dns_answer'],
                     dns_domain=self.http_configs[i]['dns_domain'],
                     dns_answer_failover=self.http_configs[i]['dns_answer_failover'],

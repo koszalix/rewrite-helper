@@ -5,6 +5,7 @@ http_jobs:
       interval: 30
       status: 201
       proto: https
+      timeout: 12
       answers:
         primary: 1.1.1.1
         failover:

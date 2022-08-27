@@ -4,6 +4,7 @@ http_jobs:
       domain: test.com
       interval: 30
       proto: https
+      timeout: 12
       port: 8080
       answers:
         primary: 1.1.1.1

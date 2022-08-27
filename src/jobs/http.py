@@ -16,7 +16,7 @@ class Test(Common, threading.Thread):
     Get http(s) status code of webpage
     """
 
-    def __init__(self, correct_status_code, interval, port, proto, dns_domain, dns_answer,
+    def __init__(self, correct_status_code, interval, port, proto, dns_domain, dns_answer, timeout,
                   dns_answer_failover=None, api_connect=ApiConnector):
         """
         Create configuration variables
@@ -24,6 +24,7 @@ class Test(Common, threading.Thread):
         :param interval: time between next requests in seconds
         :param port: connection port
         :param proto: connection protocol (http or https)
+        :param timeout: connection timeout, if timeout is exceeded host will be treated as dead
         :param dns_domain: str: domain which is used in dns rewrite
         :param dns_answer: str: default (primary) dns answers
         :param dns_answer_failover: list(str): dns answers in case when host on primary
@@ -38,6 +39,8 @@ class Test(Common, threading.Thread):
         self.port = port
         self.proto = check_protocol_slashed(proto)
 
+        self.timeout= timeout
+
     def job_request(self, host):
 
         """
@@ -46,7 +49,7 @@ class Test(Common, threading.Thread):
         """
         try:
             logging.info("Test (start) of: " + host)
-            response = requests.get(self.proto + host + ":"+ str(self.port))
+            response = requests.get(url=self.proto + host + ":"+ str(self.port), timeout=self.timeout)
             if response.status_code == self.correct_status_code:
                 logging.info("Test (status) of: " + host + " ok")
                 return True

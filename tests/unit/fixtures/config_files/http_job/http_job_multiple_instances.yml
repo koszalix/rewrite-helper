@@ -6,6 +6,7 @@ http_jobs:
       status: 201
       proto: https
       port: 8080
+      timeout: 13
       answers:
         primary: 1.1.1.1
         failover:
@@ -18,6 +19,7 @@ http_jobs:
       status: 202
       proto: https
       port: 8082
+      timeout: 14
       answers:
         primary: 1.1.2.1
         failover:

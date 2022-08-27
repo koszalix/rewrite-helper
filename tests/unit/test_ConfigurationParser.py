@@ -137,7 +137,6 @@ class TestApi(unittest.TestCase):
         self.assertEqual(captured_logs.records[8].getMessage(), "api-startup-exit_on_fail True")
         self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 7")
 
-
     def test_api_proto_default(self):
         """
         Test api configuration parser without port provided, proto should be default http
@@ -232,7 +231,6 @@ class TestApi(unittest.TestCase):
         self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 10")
 
 
-
 class TestHttpJobs(unittest.TestCase):
 
     def setUp(self):
@@ -258,6 +256,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
 
     def test_http_job_all_default(self):
         """
@@ -275,6 +274,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "http-port 80")
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 10")
 
     def test_http_job_multiple_instances(self):
         """
@@ -292,13 +292,15 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-domain test-x.com")
-        self.assertEqual(captured_logs.records[8].getMessage(), "http-interval 32")
-        self.assertEqual(captured_logs.records[9].getMessage(), "http-status 202")
-        self.assertEqual(captured_logs.records[10].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[11].getMessage(), "http-port 8082")
-        self.assertEqual(captured_logs.records[12].getMessage(), "http-primary 1.1.2.1")
-        self.assertEqual(captured_logs.records[13].getMessage(), "http-failover 2.23.2.2")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 13")
+        self.assertEqual(captured_logs.records[8].getMessage(), "http-domain test-x.com")
+        self.assertEqual(captured_logs.records[9].getMessage(), "http-interval 32")
+        self.assertEqual(captured_logs.records[10].getMessage(), "http-status 202")
+        self.assertEqual(captured_logs.records[11].getMessage(), "http-proto https")
+        self.assertEqual(captured_logs.records[12].getMessage(), "http-port 8082")
+        self.assertEqual(captured_logs.records[13].getMessage(), "http-primary 1.1.2.1")
+        self.assertEqual(captured_logs.records[14].getMessage(), "http-failover 2.23.2.2")
+        self.assertEqual(captured_logs.records[15].getMessage(), "http-timeout 14")
 
     def test_http_job_no_failover(self):
         """
@@ -316,6 +318,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover ")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
 
     def test_http_job_no_failover_2(self):
         """
@@ -333,7 +336,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover ")
-
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
     def test_http_job_no_failover_single(self):
         """
         Test behavior of http job parser when failover key contains only single value
@@ -350,6 +353,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 3.3.3.3")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
 
     def test_http_job_no_interval(self):
         """
@@ -367,6 +371,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
 
     def test_http_job_no_port(self):
         """
@@ -384,6 +389,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "http-port 80")
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
 
     def test_http_job_no_proto(self):
         """
@@ -401,6 +407,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
 
     def test_http_job_no_status(self):
         """
@@ -418,7 +425,21 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
 
+    def test_http_job_no_timeout(self):
+        parser = ConfigParser(file=self.working_directory + 'http_job_no_timeout.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 10")
 
 class TestPingJobs(unittest.TestCase):
     def setUp(self):
