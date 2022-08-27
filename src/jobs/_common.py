@@ -77,3 +77,6 @@ class Common:
                                                                      domain=self.dns_domain)
             if change_status:
                 self.actual_dns_answer = self.dns_answer_primary
+
+        # in case when entry not exist due to server unreachable or person who delete entry from AdGuardHome web ui
+        self._any_entry_exist()
