@@ -1,20 +1,21 @@
-import asyncio
 import logging
+import threading
+import time
 
 from icmplib import NameLookupError as ICMPLookupError
 from icmplib import ping
 
-from ApiConnector import ApiConnector
-from jobs._common import Common
+from src.api.ApiConnector import ApiConnector
+from ._common import Common
 
 
-class Test(Common):
+class Test(Common, threading.Thread):
     """
     Send ICMP package to all host mentioned in dns answers
     """
 
-    def __init__(self, count, timeout, interval, dns_domain, dns_answer, dns_answer_failover, asyncio_loop=None,
-                api_connect=ApiConnector, privileged=False):
+    def __init__(self, count, timeout, interval, dns_domain, dns_answer, dns_answer_failover, api_connect=ApiConnector,
+                 privileged=False):
         """
         Create configuration variables
         :param count: int: number of pakages will be sent to host
@@ -23,11 +24,10 @@ class Test(Common):
         :param dns_domain: str: domain which is used in dns rewrite
         :param dns_answer: str: default (primary) dns answers
         :param dns_answer_failover: list(str): dns answers in case when host on primary
-        :param asyncio_loop: asyncio event loop
         :param api_connect: configured ApiConnector class
         :param privileged: run ping in privileged mode, see icmplib for documentation
          """
-
+        threading.Thread.__init__(self)
         super().__init__(dns_domain=dns_domain, dns_answer=dns_answer, dns_answer_failover=dns_answer_failover,
                          api_connect=api_connect)
 
@@ -35,8 +35,6 @@ class Test(Common):
         self.count = count
         self.interval = interval
         self.privileged = privileged
-
-        self.asyncio_loop = asyncio_loop
 
     def job_request(self, host):
         """
@@ -55,12 +53,13 @@ class Test(Common):
             logging.info("Test (status) of: " + host + " failed ( NameLookupError )")
             return False
 
-    async def job_loop(self):
-        while True:
+    def run(self):
 
+        while True:
+            logging.info("Test start for domain:" + self.dns_domain)
             self.primary_answer_status = self.job_request(self.dns_answer_primary)
             for host_id in range(0, len(self.dns_answer_failover)):
                 self.failover_answer_statuses[host_id] = self.job_request(self.dns_answer_failover[host_id])
-            self.asyncio_loop.call_soon(callback=self.callback)
-            await asyncio.sleep(self.interval)
-
+            logging.info("Test stop for domain:" + self.dns_domain)
+            self.api_callback()
+            time.sleep(self.interval)

@@ -1,4 +1,4 @@
-from ApiConnector import ApiConnector
+from src.api.ApiConnector import ApiConnector
 
 import logging
 
@@ -28,9 +28,9 @@ class Common:
 
         self.actual_dns_answer = False
 
-        self.any_entry_exist()
+        self._any_entry_exist()
 
-    def any_entry_exist(self):
+    def _any_entry_exist(self):
         """
         Check if any of provided entries exist, if entry does not exist create it,
         by default entry with primary dns answer will be created
@@ -47,7 +47,7 @@ class Common:
             self.api_connector.rewrite_add(domain=self.dns_domain, answer=self.dns_answer_primary)
             self.actual_dns_answer = self.dns_answer_primary
 
-    def callback(self):
+    def api_callback(self):
         """
         Decide if IP address in dns rewrite needs to be changed,
         change dns rewrite answer if needed

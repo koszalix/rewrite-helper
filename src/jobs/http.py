@@ -1,33 +1,35 @@
-import asyncio
 import logging
+import threading
+
+import time
+
 
 import requests
 
-from ApiConnector import ApiConnector
-from jobs._common import Common
-from utils import check_protocol_slashed
+from src.api.ApiConnector import ApiConnector
+from ._common import Common
+from src.utils import check_protocol_slashed
 
 
-class Test(Common):
+class Test(Common, threading.Thread):
     """
     Get http(s) status code of webpage
     """
 
-    def __init__(self, correct_status_code, interval, port, proto, dns_domain, dns_answer, asyncio_loop=None,
+    def __init__(self, correct_status_code, interval, port, proto, dns_domain, dns_answer,
                   dns_answer_failover=None, api_connect=ApiConnector):
         """
         Create configuration variables
         :param correct_status_code: status code recognised as "host ok"
         :param interval: time between next requests in seconds
         :param port: connection port
-        :param asyncio_loop: asyncio event loop
         :param proto: connection protocol (http or https)
         :param dns_domain: str: domain which is used in dns rewrite
         :param dns_answer: str: default (primary) dns answers
         :param dns_answer_failover: list(str): dns answers in case when host on primary
         :param api_connect: configured ApiConnector class
         """
-
+        threading.Thread.__init__(self)
         super().__init__(dns_domain=dns_domain, dns_answer=dns_answer, dns_answer_failover=dns_answer_failover,
                          api_connect=api_connect)
 
@@ -35,8 +37,6 @@ class Test(Common):
         self.interval = interval
         self.port = port
         self.proto = check_protocol_slashed(proto)
-
-        self.asyncio_loop = asyncio_loop
 
     def job_request(self, host):
 
@@ -62,15 +62,17 @@ class Test(Common):
             logging.info("Test (status) of: " + host + " failed ( Connection error )")
             return False
 
-    async def job_loop(self):
+    def run(self):
         """
         Async loop for testing webpage
         :return: nothing
         """
         while True:
+            logging.info("Test start for domain:" + self.dns_domain)
             self.primary_answer_status = self.job_request(self.dns_answer_primary)
             for host_id in range(0, len(self.dns_answer_failover)):
                 self.failover_answer_statuses[host_id] = self.job_request(self.dns_answer_failover[host_id])
-            self.asyncio_loop.call_soon(callback=self.callback)
-            await asyncio.sleep(self.interval)
+            logging.info("Test stop for domain:" + self.dns_domain)
+            self.api_callback()
+            time.sleep(self.interval)
 

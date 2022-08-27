@@ -4,8 +4,7 @@ Perform test on hosts
 
 import logging
 
-from jobs import http, ping
-
+from src.jobs import http, ping
 
 class TestHosts:
 
@@ -59,77 +58,66 @@ class TestHosts:
         self.http_configs = http_configs
         self.ping_configs = ping_configs
 
-        self.asyncio_loop = None
         self.api_connector = api_connector
 
         self.privileged = privileged
 
-        self.task = []
+        self.ping_tasks = []
+        self.http_tasks = []
 
     def prepare_http_tasks(self):
         """
         Generate list of task based on provide config (self.http_configs)
         :return: List of tasks if provide configs are correct, False if configs contains an error
         """
-        http_tasks = []
         for i in range(0, len(self.http_configs)):
             try:
-                self.task.append(self.asyncio_loop.create_task(http.Test(
+                self.http_tasks.append(http.Test(
                     correct_status_code=self.http_configs[i]['status_code'],
                     interval=self.http_configs[i]['interval'],
                     port=self.http_configs[i]['port'],
-                    asyncio_loop=self.asyncio_loop,
                     proto=self.http_configs[i]['proto'],
                     dns_answer=self.http_configs[i]['dns_answer'],
                     dns_domain=self.http_configs[i]['dns_domain'],
-                    dns_answer_failover=self.http_configs[i][
-                        'dns_answer_failover'],
-                    api_connect=self.api_connector).job_loop()))
+                    dns_answer_failover=self.http_configs[i]['dns_answer_failover'],
+                    api_connect=self.api_connector))
 
             except KeyError:
                 logging.error("Internal error, provide http config missing key")
                 return False
-        return http_tasks
+        return True
 
     def prepare_ping_tasks(self):
         """
         Generate list of task based on provide config (self.ping_configs)
-        :return: List of tasks if provide configs are correct, False if configs contains an error
+        :return: False if configs contains an error, True if all tasks added successfully
         """
-        ping_tasks = []
+
         for i in range(0, len(self.ping_configs)):
             try:
-                self.task.append(self.asyncio_loop.create_task(
-                    ping.Test(timeout=self.ping_configs[i]['timeout'],
-                              count=self.ping_configs[i]['count'],
-                              interval=self.ping_configs[i]['interval'],
-                              dns_domain=self.ping_configs[i]['dns_domain'],
-                              dns_answer=self.ping_configs[i]['dns_answer'],
-                              dns_answer_failover=self.ping_configs[i]['dns_answer_failover'],
-                              asyncio_loop=self.asyncio_loop,
-                              api_connect=self.api_connector,
-                              privileged=self.privileged).job_loop()))
+                self.ping_tasks.append(ping.Test(
+                                timeout=self.ping_configs[i]['timeout'],
+                                count=self.ping_configs[i]['count'],
+                                interval=self.ping_configs[i]['interval'],
+                                dns_domain=self.ping_configs[i]['dns_domain'],
+                                dns_answer=self.ping_configs[i]['dns_answer'],
+                                dns_answer_failover=self.ping_configs[i]['dns_answer_failover'],
+                                api_connect=self.api_connector,
+                                privileged=self.privileged))
             except KeyError:
                 logging.error("Internal error, provide ping config missing key")
                 return False
-        return ping_tasks
+        return True
 
-    async def await_tasks(self):
-        """
-        await all configured tasks
-        :return:
-        """
-        for task in self.task:
-            await task
-
-    async def start(self, loop=None):
+    def start(self):
         """
         Start test loops for all the tests provided in configs,
         loops are started only if configuration is provided and valid
         :return:
         """
-        self.asyncio_loop = loop
-
-        self.prepare_ping_tasks()
         self.prepare_http_tasks()
-        await self.await_tasks()
+        self.prepare_ping_tasks()
+        for task in self.ping_tasks:
+            task.start()
+        for task in self.http_tasks:
+            task.start()
