@@ -4,7 +4,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 
-from utils import check_protocol_slashed
+from .utils import check_protocol_slashed
 
 
 class ApiConnector:
@@ -12,7 +12,7 @@ class ApiConnector:
     Realize connection between script and adguardhome, add, remove, change dns rewrite entries
     """
 
-    def __init__(self, config):
+    def __init__(self, config, test_connection=True):
         """
         :param config: dictionary contains all configuration needed to communicate with adguard api.
                        Syntax:
@@ -24,33 +24,33 @@ class ApiConnector:
                             'passwd': # admin password
 
                         }
+        :param: test_connection: check connection to api on class init
         """
         self.host = check_protocol_slashed(config['proto']) + config['host'] + ":" + str(config['port'])
         self.auth = HTTPBasicAuth(config['username'], config['passwd'])
-        self.test_connection()
+
+        if test_connection:
+            self.test_connection()
 
     def test_connection(self):
         """
         Check if script can connect to AdGuardHome api, if not program must exit
-        :return: nothing
+        :return: True if connection successful, False if connection failure
         """
         url = self.host + "/control/status"
         try:
             response = requests.get(url=url, auth=self.auth)
 
             if response.status_code != 200:
-                if response.status_code == 401:
-                    logging.error("Api test fails -> Credentials failure")
-                else:
-                    logging.error("Api test fails -> status code: " + str(response.status_code))
-
-                exit(-1)
+                logging.error("Api test fails -> status code: " ) #+ str(response.status_code))
+                return False
             else:
                 logging.info("Api test successful")
-        except requests.ConnectionError as e:
-            logging.error(e)
+                return True
+
+        except requests.ConnectionError:
             logging.error("Can't establish connection to API")
-            exit(-1)
+            return False
 
     def entry_exist(self, answer, domain):
         """
@@ -75,7 +75,7 @@ class ApiConnector:
                 return False
 
             else:
-                logging.error("Server responded with status code:", str(response.status_code))
+                logging.error("Server responded with status code:" + str(response.status_code))
                 return None
 
         except requests.exceptions.ConnectionError as e:
@@ -120,8 +120,8 @@ class ApiConnector:
         Add rewrite entry
         :param answer: dns answer
         :param domain: dns domain
-        :return: True if entry was added successful, False if entry wasn't exist (for ex. entry exist)
-                 None if other error occurs
+        :return: True if entry was added successful, False if entry wasn't added (for ex. entry exist)
+                 None if other error (such as connection error) occurs
         """
         logging.info(("Processing entry (add) " + domain + " " + answer))
         exist = self.entry_exist(answer=answer, domain=domain)
@@ -155,9 +155,13 @@ class ApiConnector:
         :param old_answer: actual dns answer
         :param domain: dns domain
         :return: True if change was successful , False if change wasn't successful
-                 None if other error occurs
+                 None if other error (such ad invalid passwd or network connection error) occurs
         """
         logging.info(("Processing entry (change) " + domain + " from " + str(old_answer) + " to " + str(new_answer)))
+
+        status = self.entry_exist(answer=old_answer, domain=domain)
+        if status is not True:
+            return status
 
         status = self.rewrite_delete(answer=old_answer, domain=domain)
         if status:
