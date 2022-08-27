@@ -113,6 +113,7 @@ http_jobs:
       status: 
       proto: 
       port:
+      timeout:
       answers:
         primary: 
         failover:
@@ -124,6 +125,7 @@ http_jobs:
 `status` - if response code received from host is the same as this setting host will be treated as live.  
 `proto` - communication protocol (http or https)  
 `port` - connection port
+`timeout` - test timeout, if host is not responding after that time it will be treated as dead.  
 `primary` - primary dns answer, this answer has the highest priority, 
 `failover` - list of IP addresses to switch dns answer when primary host is down  
 
@@ -139,7 +141,7 @@ do not put this option to config file.
 | api/startup | timeout      | 10    | http_jobs | port     | 80    |
 | api/startup | exit_on_fail | False | ping_jobs | interval | 60    |
 | api/startup | retry_after  | 10    | ping_jobs | timeout  | 2     |
-|             |              |       | ping_jobs | count    | 2     |
+| http_jobs   | timeout      | 10    | ping_jobs | count    | 2     |
  
 
 ## Work without failover
