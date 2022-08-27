@@ -30,7 +30,8 @@ def safe_parse_value(content, key, default_value):
         :param default_value: default value in key wasn't found
         :return: value assigned to key, or default value
         """
-
+        if content is None:
+            return default_value
         if key in content:
             return content[key]
         else:
