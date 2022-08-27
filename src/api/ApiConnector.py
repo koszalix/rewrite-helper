@@ -12,7 +12,7 @@ class ApiConnector:
     Realize connection between script and adguardhome, add, remove, change dns rewrite entries
     """
 
-    def __init__(self, config, test_connection):
+    def __init__(self, config):
         """
         :param config: dictionary contains all configuration needed to communicate with adguard api.
                        Syntax:

@@ -42,8 +42,8 @@ class TestApi(unittest.TestCase):
                 'retry_after': 10
             }
         }
-        self.api_correct = ApiConnector(config=api_configs_correct, test_connection=False)
-        self.api_wrong_auth = ApiConnector(config=api_configs_wrong_auth, test_connection=False)
+        self.api_correct = ApiConnector(config=api_configs_correct)
+        self.api_wrong_auth = ApiConnector(config=api_configs_wrong_auth)
 
     def test_test_api_connection_correct_auth(self):
         """
