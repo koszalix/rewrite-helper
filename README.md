@@ -56,13 +56,26 @@ api:
   proto: http
   username: admin
   passwd: admin
+  timeout: 10
+  startup:
+    test: True
+    timeout: 10
+    exit_on_fail: True
+    retry_after: 10
+
 ```
 `host` - ip of adguardhome  
 `proto` - communication protocol http or https  
 `username` - admin username  
 `passwd` - admin password  
 `port` - connection port
-
+`timeout` - maximum time to response, if api request exceeded this time request wil be treated as fail
+`startup` - specify behavior on app start
+`startup/test` - test connection to api 
+`startup/timeout` - timeout for api connection test
+`startup/exit_on_fail` - exit when test connection fails, when set to False program will try to connect to api until 
+success
+`startup/retry_after` - time between next test connection to api if previous connection fails
 ## Configuring jobs
 Job is set of hosts IP addresses within one domain. When host to which IP address domain is pointing is down, then dns
 answer will be changed to IP address of host with is up. 
@@ -118,17 +131,16 @@ http_jobs:
 To make configuration easier some config option have assigned default values. To use default values of specific option
 do not put this option to config file.
 
-| Section   | Option | Value |
-|-----------|-----|-------|
-| api       | proto | http  |
-| api       | port | 80    |
-| http_jobs | interval | 60    |
-| http_jobs | status | 200   |
-| http_jobs | proto | http  |
- | http_jobs | port | 80 |
-| ping_jobs | interval | 60    |
-| ping_jobs | timeout | 2     |
-| ping_jobs | count | 2     |
+| Section     | Option       | Value | Section   | Option   | Value |
+|-------------|--------------|-------|-----------|----------|-------|
+| api         | proto        | http  | http_jobs | interval | 60    |
+| api         | port         | 80    | http_jobs | status   | 200   |
+| api/startup | test         | True  | http_jobs | proto    | http  |
+| api/startup | timeout      | 10    | http_jobs | port     | 80    |
+| api/startup | exit_on_fail | False | ping_jobs | interval | 60    |
+| api/startup | retry_after  | 10    | ping_jobs | timeout  | 2     |
+|             |              |       | ping_jobs | count    | 2     |
+ 
 
 ## Work without failover
 In case when failover is no needed or there is no failover host now, leave failover empty or delete failover parameter.
