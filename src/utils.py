@@ -33,7 +33,10 @@ def safe_parse_value(content, key, default_value):
         if content is None:
             return default_value
         if key in content:
-            return content[key]
+            if content[key] is not None:
+                return content[key]
+            else:
+                return default_value
         else:
             return default_value
 
