@@ -1,6 +1,6 @@
 import unittest
 
-from src.ApiConnector import ApiConnector
+from src.api.ApiConnector import ApiConnector
 
 
 class TestApi(unittest.TestCase):

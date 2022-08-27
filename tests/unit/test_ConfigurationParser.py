@@ -2,7 +2,7 @@ import logging
 import unittest
 import os
 
-from src.ConfigurationParser import ConfigParser
+from src.parsers.ConfigurationParser import ConfigParser
 
 
 class TestInitVariable(unittest.TestCase):

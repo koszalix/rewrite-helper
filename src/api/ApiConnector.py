@@ -42,7 +42,7 @@ class ApiConnector:
             response = requests.get(url=url, auth=self.auth)
 
             if response.status_code != 200:
-                logging.error("Api test fails -> status code: " ) #+ str(response.status_code))
+                logging.error("Api test fails -> status code: " + str(response.status_code))
                 return False
             else:
                 logging.info("Api test successful")

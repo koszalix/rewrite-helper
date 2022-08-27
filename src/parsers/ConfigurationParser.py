@@ -180,7 +180,7 @@ class ConfigParser:
 
             logging.debug(msg="api-host " + self.api_config['host'])
             logging.debug(msg="api-username " + self.api_config['username'])
-            logging.debug(msg='api-passwd ' + hashlib.sha256(self.api_config['passwd'].encode()).hexdigest())
+            logging.debug(msg='api-passwd ' + hashlib.sha256(str(self.api_config['passwd']).encode()).hexdigest())
             logging.debug(msg='api-proto ' + self.api_config['proto'])
             logging.debug(msg='api-port ' + str(self.api_config['port']))
 
