@@ -293,7 +293,11 @@ log.txt
 *log*.txt
 log*.txt
 
-## this is a test fixture whith 000 permision, whithout gitignoring it, git cant add files
-## using *
+# test fixture file with 000 permisions see tests/README.md for more informations
 tests/unit/fixtures/config_files/any_yaml/no_permissions
 tests/unit/fixtures/config_files/any_yaml/no_permissions/*
+tests/unit/fixtures/config_files/read_config_file/no_permissions
+tests/unit/fixtures/config_files/read_config_file/no_permissions/*
+# vms takes a lot of space
+tests/unit/fixtures/vms
+tests/vms
