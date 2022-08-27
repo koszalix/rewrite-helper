@@ -4,6 +4,11 @@ api:
   proto:
   username:
   passwd:
+  startup:
+    test:
+    timeout:
+    exit_on_fail:
+    retry_after:
 
 ping_jobs:
   - job:

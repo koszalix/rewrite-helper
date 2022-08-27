@@ -146,6 +146,7 @@ do not put this option to config file.
 In case when failover is no needed or there is no failover host now, leave failover empty or delete failover parameter.
 
 ## [See example config file](https://github.com/koszalix/rewrite-helper/blob/main/templates/example_config.yml)
+## [Empty config file](https://github.com/koszalix/rewrite-helper/blob/main/templates/config_clear.yml)
 
 
 

@@ -5,7 +5,11 @@ api:
   proto: http
   username: admin
   passwd: admin
-
+  startup:
+    test: True
+    timeout: 5
+    exit_on_fail: False
+    retry_after: 30
 # Configuration of ping jobs
 ping_jobs:
   # full configuration
