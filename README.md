@@ -32,7 +32,7 @@ possibly the highest accessibility.
 
 ## Automated install
 Run the following command  in your terminal:
-```commandline
+```sh
     curl -sSL https://raw.githubusercontent.com/koszalix/rewrite-helper/main/install.sh | sh
     systemctl daemon-reload
     systemctl enable rewrite-helper
@@ -58,11 +58,11 @@ api:
   username: admin
   passwd: admin
 ```
-host - ip of adguardhome  
-proto - communication protocol http or https  
-username - admin username  
-passwd - admin password  
-port - connection port
+`host` - ip of adguardhome  
+`proto` - communication protocol http or https  
+`username` - admin username  
+`passwd` - admin password  
+`port` - connection port
 
 ## Configuring jobs
 Job is set of hosts IP addresses within one domain. When host to which IP address domain is pointing is down, then dns
@@ -83,12 +83,12 @@ ping_jobs:
           - <failover ip>
           - <failover ip>
 ```
-domain - dns rewrite domain, for ex.: server.lan  
-interval - seconds between tests.  
-count - numer of packages send to host on each test.  
-timeout - test timeout, if host is not responding after that time it will be treated as dead.  
-primary - primary dns answer, this answer has the highest priority, 
-failover - list of IP addresses to switch dns answer when primary host is down  
+`domain` - dns rewrite domain, for ex.: server.lan  
+`interval` - seconds between tests.  
+`count` - numer of packages send to host on each test.  
+`timeout` - test timeout, if host is not responding after that time it will be treated as dead.  
+`primary` - primary dns answer, this answer has the highest priority, 
+`failover` - list of IP addresses to switch dns answer when primary host is down  
 
 ### Configuring http job
 Http job gets status code of webpage, if received code is the same as configured host will be treated as live. 
@@ -107,13 +107,13 @@ http_jobs:
           - <failover ip>
           - <failover ip>
 ```
-domain - dns rewrite domain, for ex.: server.lan  
-interval - seconds between tests.  
-status - if response code received from host is the same as this setting host will be treated as live.  
-proto - communication protocol (http or https)  
-port - connection port
-primary - primary dns answer, this answer has the highest priority, 
-failover - list of IP addresses to switch dns answer when primary host is down  
+`domain` - dns rewrite domain, for ex.: server.lan  
+`interval` - seconds between tests.  
+`status` - if response code received from host is the same as this setting host will be treated as live.  
+`proto` - communication protocol (http or https)  
+`port` - connection port
+`primary` - primary dns answer, this answer has the highest priority, 
+`failover` - list of IP addresses to switch dns answer when primary host is down  
 
 ## Default values
 To make configuration easier some config option have assigned default values. To use default values of specific option
