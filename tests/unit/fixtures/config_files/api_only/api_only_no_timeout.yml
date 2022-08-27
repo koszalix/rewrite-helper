@@ -1,0 +1,11 @@
+api:
+  host: adguard.example.com
+  port: 93
+  proto: https
+  username: admin
+  passwd: admin
+  startup:
+    test: False
+    timeout: 11
+    exit_on_fail: True
+    retry_after: 7
