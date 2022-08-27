@@ -8,6 +8,7 @@ import hashlib
 from src.utils import safe_parse_value
 from src.utils import check_linux_permissions
 
+
 class ConfigParser:
     """
     Read and parse config file. Run .parse() to run all parses.
@@ -30,7 +31,7 @@ class ConfigParser:
         """
         s = self.config_file
         directory = s[:len(s) - s[::-1].find("/")]
-        potentially_configs_files = glob.glob(directory+"*.yml")
+        potentially_configs_files = glob.glob(directory + "*.yml")
         if len(potentially_configs_files) >= 1:
             for file in potentially_configs_files:
                 stat_info = os.stat(file)
@@ -111,8 +112,10 @@ class ConfigParser:
                 else:
                     self.http_configs[job_index]['dns_answer_failover'] = []
 
-                self.http_configs[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
-                self.http_configs[job_index]['status_code'] = safe_parse_value(content=job, key='status', default_value=200)
+                self.http_configs[job_index]['interval'] = safe_parse_value(content=job, key='interval',
+                                                                            default_value=60)
+                self.http_configs[job_index]['status_code'] = safe_parse_value(content=job, key='status',
+                                                                               default_value=200)
                 self.http_configs[job_index]['proto'] = safe_parse_value(content=job, key='proto', default_value='http')
                 self.http_configs[job_index]['port'] = safe_parse_value(content=job, key='port', default_value=80)
 
@@ -150,7 +153,8 @@ class ConfigParser:
                 else:
                     self.ping_configs[job_index]['dns_answer_failover'] = []
 
-                self.ping_configs[job_index]['interval'] = safe_parse_value(content=job, key='interval', default_value=60)
+                self.ping_configs[job_index]['interval'] = safe_parse_value(content=job, key='interval',
+                                                                            default_value=60)
                 self.ping_configs[job_index]['timeout'] = safe_parse_value(content=job, key='timeout', default_value=2)
                 self.ping_configs[job_index]['count'] = safe_parse_value(content=job, key='count', default_value=2)
 
@@ -163,7 +167,7 @@ class ConfigParser:
 
                 job_index = job_index + 1
             except KeyError:
-                logging.error("Error in config file, ping_jobs KeyError" )
+                logging.error("Error in config file, ping_jobs KeyError")
 
     def parse_api(self):
         """
@@ -175,14 +179,40 @@ class ConfigParser:
             self.api_config['username'] = self.file_content['api']['username']
             self.api_config['passwd'] = self.file_content['api']['passwd']
 
-            self.api_config['proto'] = safe_parse_value(content=self.file_content['api'], key='proto', default_value='http')
+            self.api_config['proto'] = safe_parse_value(content=self.file_content['api'], key='proto',
+                                                        default_value='http')
             self.api_config['port'] = safe_parse_value(content=self.file_content['api'], key='port', default_value=80)
+            self.api_config['timeout'] = safe_parse_value(content=self.file_content['api'], key='timeout',
+                                                          default_value=10)
+
+            if 'startup' in self.file_content['api']:
+                self.api_config['startup'] = {}
+                self.api_config['startup']['test'] = safe_parse_value(content=self.file_content['api']['startup'],
+                                                                      key='test', default_value=True)
+                self.api_config['startup']['timeout'] = safe_parse_value(
+                                                                            content=self.file_content['api']['startup'],
+                                                                            key='timeout', default_value=10)
+                self.api_config['startup']['exit_on_fail'] = safe_parse_value(
+                    content=self.file_content['api']['startup'], key='exit_on_fail', default_value=False)
+                self.api_config['startup']['retry_after'] = safe_parse_value(
+                    content=self.file_content['api']['startup'], key='retry_after', default_value=10)
+            else:
+                self.api_config['startup'] = {}
+                self.api_config['startup']['test'] = True
+                self.api_config['startup']['timeout'] = 10
+                self.api_config['startup']['exit_on_fail'] = False
+                self.api_config['startup']['retry_after'] = 10
 
             logging.debug(msg="api-host " + self.api_config['host'])
             logging.debug(msg="api-username " + self.api_config['username'])
             logging.debug(msg='api-passwd ' + hashlib.sha256(str(self.api_config['passwd']).encode()).hexdigest())
             logging.debug(msg='api-proto ' + self.api_config['proto'])
             logging.debug(msg='api-port ' + str(self.api_config['port']))
+            logging.debug(msg='api-timeout ' + str(self.api_config['timeout']))
+            logging.debug(msg='api-startup-test ' + str(self.api_config['startup']['test']))
+            logging.debug(msg='api-startup-timeout ' + str(self.api_config['startup']['timeout']))
+            logging.debug(msg='api-startup-exit_on_fail ' + str(self.api_config['startup']['exit_on_fail']))
+            logging.debug(msg='api-startup-test-retry_after ' + str(self.api_config['startup']['retry_after']))
 
         except KeyError:
             logging.error("Config file error / api / KeyError")

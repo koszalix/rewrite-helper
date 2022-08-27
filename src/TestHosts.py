@@ -6,6 +6,7 @@ import logging
 
 from src.jobs import http, ping
 
+
 class TestHosts:
 
     def __init__(self, http_configs=None, ping_configs=None, api_connector=None, privileged=False):

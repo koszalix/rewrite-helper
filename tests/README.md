@@ -51,7 +51,7 @@ Before run, ensure if directory test/unit/fixtures/config_files/read_config_file
 
 # Notes about virtual machines
 ## AdGuardHome 
-IP address 192.168.56.103  
+IP address 192.168.56.104 
 Web interface port 80  
 Username admin  
 Password 12345678  

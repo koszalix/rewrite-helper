@@ -110,6 +110,11 @@ class TestApi(unittest.TestCase):
                          "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto https")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 93")
+        self.assertEqual(captured_logs.records[5].getMessage(), "api-timeout 7")
+        self.assertEqual(captured_logs.records[6].getMessage(), "api-startup-test False")
+        self.assertEqual(captured_logs.records[7].getMessage(), "api-startup-timeout 11")
+        self.assertEqual(captured_logs.records[8].getMessage(), "api-startup-exit_on_fail True")
+        self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 7")
 
     def test_api_port_default(self):
         """
@@ -126,6 +131,12 @@ class TestApi(unittest.TestCase):
                          "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto https")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 80")
+        self.assertEqual(captured_logs.records[5].getMessage(), "api-timeout 7")
+        self.assertEqual(captured_logs.records[6].getMessage(), "api-startup-test False")
+        self.assertEqual(captured_logs.records[7].getMessage(), "api-startup-timeout 11")
+        self.assertEqual(captured_logs.records[8].getMessage(), "api-startup-exit_on_fail True")
+        self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 7")
+
 
     def test_api_proto_default(self):
         """
@@ -142,6 +153,11 @@ class TestApi(unittest.TestCase):
                          "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto http")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 93")
+        self.assertEqual(captured_logs.records[5].getMessage(), "api-timeout 7")
+        self.assertEqual(captured_logs.records[6].getMessage(), "api-startup-test False")
+        self.assertEqual(captured_logs.records[7].getMessage(), "api-startup-timeout 11")
+        self.assertEqual(captured_logs.records[8].getMessage(), "api-startup-exit_on_fail True")
+        self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 7")
 
     def test_api_all_default(self):
         """
@@ -158,7 +174,17 @@ class TestApi(unittest.TestCase):
                          "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
         self.assertEqual(captured_logs.records[3].getMessage(), "api-proto http")
         self.assertEqual(captured_logs.records[4].getMessage(), "api-port 80")
+        self.assertEqual(captured_logs.records[5].getMessage(), "api-timeout 10")
+        self.assertEqual(captured_logs.records[6].getMessage(), "api-startup-test True")
+        self.assertEqual(captured_logs.records[7].getMessage(), "api-startup-timeout 10")
+        self.assertEqual(captured_logs.records[8].getMessage(), "api-startup-exit_on_fail False")
+        self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 10")
 
+    def test_start_empty(self):
+        pass
+
+    def test_timeout_no_provided(self):
+        pass
 
 class TestHttpJobs(unittest.TestCase):
 

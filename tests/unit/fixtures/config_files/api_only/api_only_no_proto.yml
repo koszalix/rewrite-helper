@@ -3,3 +3,9 @@ api:
   port: 93
   username: admin
   passwd: admin
+  timeout: 7
+  startup:
+    test: False
+    timeout: 11
+    exit_on_fail: True
+    retry_after: 7

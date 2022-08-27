@@ -2,7 +2,7 @@ import logging
 
 import requests
 from requests.auth import HTTPBasicAuth
-
+import time
 
 from src.utils import check_protocol_slashed
 
@@ -12,25 +12,46 @@ class ApiConnector:
     Realize connection between script and adguardhome, add, remove, change dns rewrite entries
     """
 
-    def __init__(self, config, test_connection=True):
+    def __init__(self, config, test_connection):
         """
         :param config: dictionary contains all configuration needed to communicate with adguard api.
                        Syntax:
                         {
                             'host': # adguard ip
-                            'port': # connection port
-                            'proto': # api protocol http or https
+                            'port': # connection port (default 80)
+                            'proto': # api protocol http or https (default http)
                             'username': # admin user name
                             'passwd': # admin password
+                            'timeout': # connection timeout, if any request will exceed this value will be treated as
+                                        # failure
+                            'startup':{
+                                'test': # set True to test connection to api on start (default True)
+                                'timeout': # Timeout off test connection (default 10)
+                                'exit_on_fail': # Exit when test connection fail, if set to False test connection
+                                                # will run in loop until success (default False)
+                                'retry_after': # time to repeat next test connection if previous test fails (default 10)
+                                }
 
                         }
-        :param: test_connection: check connection to api on class init
+        :param test_connection: check connection to api on class init
         """
         self.host = check_protocol_slashed(config['proto']) + config['host'] + ":" + str(config['port'])
         self.auth = HTTPBasicAuth(config['username'], config['passwd'])
 
+        self.timeout = config['timeout']
+
+        test_connection = config['startup']['test']
+        exit_on_fail = config['startup']['exit_on_fail']
+        retry_after = config['startup']['retry_after']
+        self.test_timeout = config['startup']['timeout']
+
         if test_connection:
-            self.test_connection()
+            if exit_on_fail:
+                if self.test_connection() is False:
+                    exit(-1)
+            else:
+                while self.test_connection() is False:
+                    time.sleep(retry_after)
 
     def test_connection(self):
         """
@@ -39,7 +60,7 @@ class ApiConnector:
         """
         url = self.host + "/control/status"
         try:
-            response = requests.get(url=url, auth=self.auth)
+            response = requests.get(url=url, auth=self.auth, timeout=self.timeout)
 
             if response.status_code != 200:
                 logging.error("Api test fails -> status code: " + str(response.status_code))
@@ -64,7 +85,7 @@ class ApiConnector:
         url = self.host + "/control/rewrite/list"
 
         try:
-            response = requests.get(url=url, auth=self.auth)
+            response = requests.get(url=url, auth=self.auth, timeout=self.timeout)
 
             if response.status_code == 200:
                 for entry in response.json():
@@ -99,7 +120,7 @@ class ApiConnector:
                 "domain": domain,
                 "answer": answer
             }
-            response = requests.post(url=url, json=data, auth=self.auth)
+            response = requests.post(url=url, json=data, auth=self.auth, timeout=self.timeout)
             if response.status_code == 200:
                 logging.info("Deletion of entry successful")
                 return True
@@ -132,7 +153,7 @@ class ApiConnector:
                 "domain": domain,
                 "answer": answer
             }
-            response = requests.post(url=url, json=data, auth=self.auth)
+            response = requests.post(url=url, json=data, auth=self.auth, timeout=self.timeout)
             if response.status_code == 200:
                 logging.info("Adding of entry successful")
                 return True

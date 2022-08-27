@@ -75,4 +75,3 @@ class Test(Common, threading.Thread):
             logging.info("Test stop for domain:" + self.dns_domain)
             self.api_callback()
             time.sleep(self.interval)
-

@@ -32,7 +32,7 @@ create_links(){
 }
 
 create_service(){
-  cp src/rewrite-helper.service /etc/systemd/system/rewrite-helper.service
+  cp rewrite-helper.service /etc/systemd/system/rewrite-helper.service
   systemctl enable rewrite-helper.service
 }
 

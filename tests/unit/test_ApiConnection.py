@@ -14,19 +14,33 @@ class TestApi(unittest.TestCase):
         """
         # Change, depends on your system
         api_configs_correct = {
-            'host': '192.168.56.103',
+            'host': '192.168.56.104',
             'port': 80,
             'proto': 'http',
             'username': 'admin',
-            'passwd': '12345678'
+            'passwd': '12345678',
+            'timeout': 10,
+            'startup': {
+                'test': False,
+                'timeout': 5,
+                'exit_on_fail': True,
+                'retry_after': 10
+            }
         }
 
         api_configs_wrong_auth = {
-            'host': '192.168.56.103',
+            'host': '192.168.56.104',
             'port': 80,
             'proto': 'http',
             'username': 'admin',
-            'passwd': '123456378'
+            'passwd': '123456378',
+            'timeout': 10,
+            'startup': {
+                'test':  False,
+                'timeout':  5,
+                'exit_on_fail':  True,
+                'retry_after': 10
+            }
         }
         self.api_correct = ApiConnector(config=api_configs_correct, test_connection=False)
         self.api_wrong_auth = ApiConnector(config=api_configs_wrong_auth, test_connection=False)
