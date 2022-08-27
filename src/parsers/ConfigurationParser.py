@@ -5,8 +5,8 @@ import glob
 import os
 import hashlib
 
-from .utils import safe_parse_value
-from .utils import check_linux_permissions
+from src.utils import safe_parse_value
+from src.utils import check_linux_permissions
 
 class ConfigParser:
     """

@@ -4,7 +4,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 
-from .utils import check_protocol_slashed
+from src.utils import check_protocol_slashed
 
 
 class ApiConnector:

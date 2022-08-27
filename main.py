@@ -1,11 +1,10 @@
 #!/bin/python3
 
-from ApiConnector import ApiConnector
-from TestHosts import TestHosts
-from ConfigurationParser import ConfigParser
-from CliParser import CliParser
+from src.api.ApiConnector import ApiConnector
+from src.TestHosts import TestHosts
+from src.parsers.ConfigurationParser import ConfigParser
+from src.parsers.CliParser import CliParser
 
-import asyncio
 import sys
 import logging
 
@@ -27,7 +26,5 @@ if __name__ == '__main__':
                           ping_configs=ConfigParser.ping_configs,
                           privileged=CliParser.run_privileged)
 
-    event_loop = asyncio.new_event_loop()
-    event_loop.create_task(TestHosts.start(event_loop))
+    TestHosts.start()
 
-    event_loop.run_forever()
