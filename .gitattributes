@@ -1,0 +1,6 @@
+test/vms/* filter=lfs diff=lfs merge=lfs -text
+*.vbox filter=lfs diff=lfs merge=lfs -text
+*.vbox-prev filter=lfs diff=lfs merge=lfs -text
+*.vdi filter=lfs diff=lfs merge=lfs -text
+*.sab filter=lfs diff=lfs merge=lfs -text
+*.sav filter=lfs diff=lfs merge=lfs -text
