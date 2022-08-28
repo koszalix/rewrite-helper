@@ -8,6 +8,7 @@ import hashlib
 from src.utils import parse_value_with_default
 from src.utils import check_linux_permissions
 from src.utils import parse_logging_level
+from src.utils import match_port_to_protocol
 
 class ConfigParser:
     """
@@ -123,7 +124,10 @@ class ConfigParser:
                 self.http_configs[job_index]['proto'] = parse_value_with_default(content=job, key='proto',
                                                                                  default_value='http')
                 self.http_configs[job_index]['port'] = parse_value_with_default(content=job, key='port',
-                                                                                default_value=80)
+                                                                                default_value=match_port_to_protocol(
+                                                                                    proto=self.http_configs[job_index]['proto'],
+                                                                                    default_port=80)
+                                                                                )
 
                 self.http_configs[job_index]['timeout'] = parse_value_with_default(content=job, key='timeout',
                                                                                    default_value=10)
