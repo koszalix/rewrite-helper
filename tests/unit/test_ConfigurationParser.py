@@ -469,6 +469,8 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
         self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
+
+
 class TestPingJobs(unittest.TestCase):
     def setUp(self):
         """
@@ -626,6 +628,33 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
         self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
+
+
+class TestStaticEntry(unittest.TestCase):
+    def setUp(self):
+        """
+        Create absolute path to config file directory
+        :return:
+        """
+        self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/static_entry/"
+
+    def test_static_entry(self):
+        parser = ConfigParser(file=self.working_directory + 'static_entry.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parser_static_entry()
+        self.assertEqual(captured_logs.records[0].getMessage(), "static-entry-domain test.lan")
+        self.assertEqual(captured_logs.records[1].getMessage(), "static-entry-answer 1.1.1.1")
+
+    def test_static_entry_multiple_instances(self):
+        parser = ConfigParser(file=self.working_directory + 'static_entry_multiple_instances.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parser_static_entry()
+        self.assertEqual(captured_logs.records[0].getMessage(), "static-entry-domain test.lan")
+        self.assertEqual(captured_logs.records[1].getMessage(), "static-entry-answer 1.1.1.1")
+        self.assertEqual(captured_logs.records[2].getMessage(), "static-entry-domain xsv.lan")
+        self.assertEqual(captured_logs.records[3].getMessage(), "static-entry-answer 1.2.3.4")
 
 
 class TestAnyYaml(unittest.TestCase):

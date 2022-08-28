@@ -10,6 +10,7 @@ from src.utils import check_linux_permissions
 from src.utils import parse_logging_level
 from src.utils import match_port_to_protocol
 
+
 class ConfigParser:
     """
     Read and parse config file. Run .parse() to run all parses.
@@ -23,6 +24,7 @@ class ConfigParser:
         self.file_content = {}
         self.http_configs = {}
         self.ping_configs = {}
+        self.config_static_entry = {}
         self.api_config = {}
         self.config_config ={}
 
@@ -184,6 +186,20 @@ class ConfigParser:
                 job_index = job_index + 1
             except KeyError:
                 logging.error("Error in config file, ping_jobs KeyError")
+
+    def parser_static_entry(self):
+        job_index = 0
+        for jobs in self.file_content['static_entry']:
+            try:
+                job = jobs['job']
+                self.config_static_entry['domain'] = job['domain']
+                self.config_static_entry['answer'] = job['answer']
+                logging.debug(msg="static-entry-domain " + self.config_static_entry['domain'])
+                logging.debug(msg="static-entry-answer " + self.config_static_entry['answer'])
+
+                job_index += 1
+            except KeyError:
+                logging.error("Error in config file, http_jobs KeyError")
 
     def parse_api(self):
         """
