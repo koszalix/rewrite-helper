@@ -172,7 +172,6 @@ class TestApi(unittest.TestCase):
         self.assertEqual(self.api_wrong_auth.rewrite_delete(answer='2.3.4.5', domain='test.lan'), None)
 
 
-
 if __name__ == "__main__":
     unittest.main()
 

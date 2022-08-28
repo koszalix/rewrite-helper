@@ -4,12 +4,12 @@ Perform test on hosts
 
 import logging
 
-from src.jobs import http, ping
+from src.jobs import http, ping, static_entry
 
 
 class TestHosts:
 
-    def __init__(self, http_configs=None, ping_configs=None, api_connector=None, privileged=False):
+    def __init__(self, http_configs=None, ping_configs=None, static_entry_configs=None, api_connector=None, privileged=False):
         """
         Configure and run jobs, interact with adguardhome
         Job is a single test to perform on host for ex: get status code of a webpage or ping.
@@ -58,13 +58,14 @@ class TestHosts:
         """
         self.http_configs = http_configs
         self.ping_configs = ping_configs
-
+        self.static_entry_configs = static_entry_configs
         self.api_connector = api_connector
 
         self.privileged = privileged
 
         self.ping_tasks = []
         self.http_tasks = []
+        self.static_entry_tasks = []
 
     def prepare_http_tasks(self):
         """
@@ -111,6 +112,19 @@ class TestHosts:
                 return False
         return True
 
+    def prepare_static_entry_tasks(self):
+        for i in range(0, len(self.static_entry_configs)):
+            try:
+                self.static_entry_tasks.append(static_entry.Test(
+                    domain=self.static_entry_configs[i]['domain'],
+                    answer=self.static_entry_configs[i]['answer'],
+                    interval=self.static_entry_configs[i]['interval'],
+                    api_connect=self.api_connector))
+            except KeyError:
+                logging.error("Internal error, provide static entry config missing key")
+                return False
+        return True
+
     def start(self):
         """
         Start test loops for all the tests provided in configs,
@@ -119,7 +133,10 @@ class TestHosts:
         """
         self.prepare_http_tasks()
         self.prepare_ping_tasks()
+        self.prepare_static_entry_tasks()
         for task in self.ping_tasks:
             task.start()
         for task in self.http_tasks:
+            task.start()
+        for task in self.static_entry_tasks:
             task.start()

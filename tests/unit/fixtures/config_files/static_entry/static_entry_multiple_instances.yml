@@ -1,0 +1,9 @@
+static_entry:
+  - job:
+      domain: test.lan
+      answer: 1.1.1.1
+      interval: 23
+  - job:
+      domain: xsv.lan
+      answer: 1.2.3.4
+      interval: 44
