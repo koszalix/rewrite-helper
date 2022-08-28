@@ -7,7 +7,8 @@ import hashlib
 
 from src.utils import parse_value_with_default
 from src.utils import check_linux_permissions
-
+from src.utils import parse_logging_level
+from src.utils import match_port_to_protocol
 
 class ConfigParser:
     """
@@ -23,6 +24,7 @@ class ConfigParser:
         self.http_configs = {}
         self.ping_configs = {}
         self.api_config = {}
+        self.config_config ={}
 
     def find_any_yml(self):
         """
@@ -55,6 +57,9 @@ class ConfigParser:
 
             f.close()
             self.file_content = yaml.load(stream=content_of_file, Loader=SafeLoader)
+            if self.file_content is None:
+                logging.error("Can't load config file, file empty")
+                return False
             # no need to log this in production, it's handled by self.get_configs()
             logging.debug("Config file read successful")
             return True
@@ -119,7 +124,10 @@ class ConfigParser:
                 self.http_configs[job_index]['proto'] = parse_value_with_default(content=job, key='proto',
                                                                                  default_value='http')
                 self.http_configs[job_index]['port'] = parse_value_with_default(content=job, key='port',
-                                                                                default_value=80)
+                                                                                default_value=match_port_to_protocol(
+                                                                                    proto=self.http_configs[job_index]['proto'],
+                                                                                    default_port=80)
+                                                                                )
 
                 self.http_configs[job_index]['timeout'] = parse_value_with_default(content=job, key='timeout',
                                                                                    default_value=10)
@@ -193,7 +201,6 @@ class ConfigParser:
                                                                default_value=80)
             self.api_config['timeout'] = parse_value_with_default(content=self.file_content['api'], key='timeout',
                                                                   default_value=10)
-
             if 'startup' in self.file_content['api']:
                 self.api_config['startup'] = {}
                 self.api_config['startup']['test'] = parse_value_with_default(
@@ -228,6 +235,34 @@ class ConfigParser:
             logging.error("Config file error / api / KeyError")
             exit(-2)
 
+    def parse_config(self):
+        """
+        Pase config section
+        :return:
+        """
+        try:
+            if 'config' in self.file_content:
+                self.config_config['wait'] = parse_value_with_default(
+                                            content=self.file_content['config'], key='wait', default_value=0)
+                log_level = parse_value_with_default(
+                    content=self.file_content['config'], key="log_level", default_value="N/A")
+
+                self.config_config['log_level'] = parse_logging_level(logging_str=log_level)
+
+                self.config_config['log_file'] = parse_value_with_default(
+                    content=self.file_content['config'], key='log_file', default_value="N/A")
+            else:
+                self.config_config['wait'] = 0
+                self.config_config['log_level'] = False
+                self.config_config['log_file'] = "N/A"
+
+            logging.debug(msg="config-wait " + str(self.config_config['wait']))
+            logging.debug(msg="config-log_level " + str(self.config_config['log_level']))
+            logging.debug(msg="config-log_file " + str(self.config_config['log_file']))
+        except KeyError:
+            logging.error("Config file error / api / KeyError")
+            exit(-2)
+
     def parse(self):
         """
         Read file and parse all kind of jobs
@@ -249,4 +284,5 @@ class ConfigParser:
             self.parse_ping()
 
         self.parse_api()
+        self.parse_config()
         logging.info("Config loaded")

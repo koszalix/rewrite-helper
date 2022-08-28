@@ -1,8 +1,11 @@
 import unittest
+from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 from src.utils import check_protocol_slashed
 from src.utils import parse_value_with_default
 from src.utils import check_linux_permissions
+from src.utils import parse_logging_level
+from src.utils import match_port_to_protocol
 
 
 class CheckProtocolSlashed(unittest.TestCase):
@@ -118,6 +121,53 @@ class CheckLinuxPermissions(unittest.TestCase):
 
     def test_permission_lower_than_target_all_char(self):
         self.assertEqual(check_linux_permissions("333", "444"), False)
+
+
+class ParseLoggingLevel(unittest.TestCase):
+    def test_str_debug(self):
+        self.assertEqual(parse_logging_level(logging_str="DEBUG"), DEBUG)
+
+    def test_str_info(self):
+        self.assertEqual(parse_logging_level(logging_str="INFO"), INFO)
+
+    def test_str_warning(self):
+        self.assertEqual(parse_logging_level(logging_str="WARNING"), WARNING)
+
+    def test_str_error(self):
+        self.assertEqual(parse_logging_level(logging_str="ERROR"), ERROR)
+
+    def test_str_critical(self):
+        self.assertEqual(parse_logging_level(logging_str="CRITICAL"), CRITICAL)
+
+    def test_invalid_strint(self):
+        self.assertEqual(parse_logging_level(logging_str="N/A"), False)
+        self.assertEqual(parse_logging_level(logging_str="xdsd"), False)
+
+    def test_float(self):
+        self.assertEqual(parse_logging_level(logging_str=3.14), False)
+        self.assertEqual(parse_logging_level(logging_str=-3.14), False)
+
+    def test_bool(self):
+        self.assertEqual(parse_logging_level(logging_str=True), False)
+        self.assertEqual(parse_logging_level(logging_str=False), False)
+
+    def test_int(self):
+        self.assertEqual(parse_logging_level(logging_str=3), False)
+        self.assertEqual(parse_logging_level(logging_str=-3), False)
+
+
+class MatchPortToProtocol(unittest.TestCase):
+    def test_default(self):
+        self.assertEqual(match_port_to_protocol(proto="test"), 80)
+
+    def test_default_changed(self):
+        self.assertEqual(match_port_to_protocol(proto="test", default_port=32), 32)
+
+    def test_http(self):
+        self.assertEqual(match_port_to_protocol(proto="http"), 80)
+
+    def test_https(self):
+        self.assertEqual(match_port_to_protocol(proto="tests"), 80)
 
 
 if __name__ == '__main__':

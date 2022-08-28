@@ -337,6 +337,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover ")
         self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
+
     def test_http_job_no_failover_single(self):
         """
         Test behavior of http job parser when failover key contains only single value
@@ -386,7 +387,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
         self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
         self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 80")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 443")
         self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
         self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
@@ -441,6 +442,33 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
         self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 10")
 
+    def test_http_job_auto_port_http(self):
+        parser = ConfigParser(file=self.working_directory + 'http_job_auto_port_http.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto http")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 80")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
+
+    def test_http_job_auto_port_https(self):
+        parser = ConfigParser(file=self.working_directory + 'http_job_auto_port_https.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
+        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
+        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
+        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
+        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 443")
+        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
+        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
+        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
 class TestPingJobs(unittest.TestCase):
     def setUp(self):
         """
@@ -649,6 +677,89 @@ class TestAnyYaml(unittest.TestCase):
         parser = ConfigParser(file=self.working_directory + "no_permissions/config.yml")
         self.assertEqual(parser.find_any_yml(), False)
 
+
+class TestConfig(unittest.TestCase):
+    """
+    Test parser_config() in different circumstances
+    Note
+    str(logging.DEBUG) = '10'
+    str(logging.INFO) = '20'
+    str(logging.WARNING) = '30'
+    str(logging.ERROR) = '40'
+    str(logging.CRITICAL) = '50'
+    """
+    def setUp(self):
+        """
+        Create absolute path to config file directory
+        :return:
+        """
+        self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/config/"
+
+    def test_all_default(self):
+        """
+        Test behavior of method parse_config() when config file don't contain config section
+        :return:
+        """
+        parser = ConfigParser(file=self.working_directory + 'all_default.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_config()
+        self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 0")
+        self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level False")
+        self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file N/A")
+
+    def test_section_name_only(self):
+        """
+        Test behavior of method parse_config() when config file contain empty config section, other section is needed
+        ( if config file is empty program-should raise another kind of exception)
+        :return:
+        """
+        parser = ConfigParser(file=self.working_directory + 'section_name_only.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_config()
+        self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 0")
+        self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level False")
+        self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file N/A")
+
+    def test_no_log_level(self):
+        """
+        Test behavior of method parse_config() when config file contain config section without log_level parameter
+        :return:
+        """
+        parser = ConfigParser(file=self.working_directory + 'no_log_level.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_config()
+        self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 77")
+        self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level False")
+        self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file /var/log/log.txt")
+
+    def test_no_log_file(self):
+        """
+        Test behavior of method parse_config() when config file contain config section without log_file parameter
+        :return:
+        """
+        parser = ConfigParser(file=self.working_directory + 'no_log_file.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_config()
+        self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 77")
+        self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level 10")
+        self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file N/A")
+
+    def test_no_wait(self):
+        """
+        Test behavior of method parse_config() when config file contain config section without wait parameter
+        :return:
+        """
+        parser = ConfigParser(file=self.working_directory + 'no_wait.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_config()
+        self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 0")
+        self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level 10")
+        self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file /var/log/log.txt")
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)

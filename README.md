@@ -47,7 +47,7 @@ All configuration settings are stored in file: /etc/rewrite-helper/config.yml.
 If file 'config.yml' not exist or is not readable program will try to find
 another '.yml' file, but it's highly recommended to keep settings in config.yml  
 
-## Setting up credentials to [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome).
+## Setting up api connection to [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome).
 Edit section named api:
 ```yaml
 api:
@@ -76,7 +76,19 @@ api:
 `startup/exit_on_fail` - exit when test connection fails, when set to False program will try to connect to api until success 
 `retry_after` - time to repeat next test connection if previous test fails
 `startup/retry_after` - time between next test connection to api if previous connection fails
-
+## Configure miscellaneous software options
+Add following section to config file
+```yaml
+config:
+  wait:
+  log_level:
+  log_file:
+```
+`wait` - time in seconds to wait before programs start, setting this value may be helpful on system startup when 
+         rewrite-helper starts faster than AdGuardHome  
+`log_level` - set log level, available levels DEBUG, INFO, WARNING, ERROR, CRITICAL  
+`log_file` - set log output file (full path)  
+If log_level or log_file is no specified or value is incorrect program will read those parameters from cli.
 ## Configuring jobs
 Job is set of hosts IP addresses within one domain. When host to which IP address domain is pointing is down, then dns
 answer will be changed to IP address of host with is up. 
@@ -129,20 +141,22 @@ http_jobs:
 `timeout` - test timeout, if host is not responding after that time it will be treated as dead.  
 `primary` - primary dns answer, this answer has the highest priority, 
 `failover` - list of IP addresses to switch dns answer when primary host is down  
-
+#### Default ports
+When there is no port configured but protocol is set to http default port will be 80, 
+if protocol is set to https default will be 443
 ## Default values
 To make configuration easier some config option have assigned default values. To use default values of specific option
 do not put this option to config file.
 
-| Section     | Option       | Value | Section   | Option   | Value |
-|-------------|--------------|-------|-----------|----------|-------|
-| api         | proto        | http  | http_jobs | interval | 60    |
-| api         | port         | 80    | http_jobs | status   | 200   |
-| api/startup | test         | True  | http_jobs | proto    | http  |
-| api/startup | timeout      | 10    | http_jobs | port     | 80    |
-| api/startup | exit_on_fail | False | ping_jobs | interval | 60    |
-| api/startup | retry_after  | 10    | ping_jobs | timeout  | 2     |
-| http_jobs   | timeout      | 10    | ping_jobs | count    | 2     |
+| Section     | Option       | Value | Section   | Option   | Value  |
+|-------------|--------------|-------|-----------|----------|--------|
+| api         | proto        | http  | http_jobs | interval | 60     |
+| api         | port         | 80    | http_jobs | status   | 200    |
+| api/startup | test         | True  | http_jobs | proto    | http   |
+| api/startup | timeout      | 10    | http_jobs | port     | 80/443 |
+| api/startup | exit_on_fail | False | ping_jobs | interval | 60     |
+| api/startup | retry_after  | 10    | ping_jobs | timeout  | 2      |
+| http_jobs   | timeout      | 10    | ping_jobs | count    | 2      |
  
 
 ## Work without failover

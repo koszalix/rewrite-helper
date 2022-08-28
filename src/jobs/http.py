@@ -51,7 +51,7 @@ class Test(Common, threading.Thread):
             logging.info("Test (start) of: " + host)
             response = requests.get(url=self.proto + host + ":"+ str(self.port), timeout=self.timeout)
             if response.status_code == self.correct_status_code:
-                logging.info("Test (status) of: " + host + " ok")
+                logging.info("Test (status) of: " + self.proto + host + ":"+ str(self.port) + " ok")
                 return True
             else:
                 logging.info(
