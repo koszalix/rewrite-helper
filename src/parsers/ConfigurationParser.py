@@ -56,6 +56,9 @@ class ConfigParser:
 
             f.close()
             self.file_content = yaml.load(stream=content_of_file, Loader=SafeLoader)
+            if self.file_content is None:
+                logging.error("Can't load config file, file empty")
+                return False
             # no need to log this in production, it's handled by self.get_configs()
             logging.debug("Config file read successful")
             return True
@@ -277,4 +280,5 @@ class ConfigParser:
             self.parse_ping()
 
         self.parse_api()
+        self.parse_config()
         logging.info("Config loaded")
