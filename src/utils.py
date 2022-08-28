@@ -23,6 +23,7 @@ def parse_logging_level(logging_str):
     else:
         return False
 
+
 def check_protocol_slashed(proto=""):
     """
     Check if provided protocol have slashes at the end, if not stick it.
@@ -40,7 +41,6 @@ def check_protocol_slashed(proto=""):
         return proto + "//"
     else:
         return proto + "://"
-
 
 
 def parse_value_with_default(content, key, default_value):
@@ -73,3 +73,20 @@ def check_linux_permissions(permissions, target):
         if char_permissions < char_target:
             return False
     return True
+
+
+def match_port_to_protocol(proto, default_port=80):
+    """
+    Match port for protocol
+    :param proto: protocol to find port
+    :param default_port: port returned when proto wasn't found
+    :return: matched port or default port
+    """
+    protocols_and_ports = {
+        'http': 80,
+        'https': 443,
+    }
+    if proto in protocols_and_ports:
+        return protocols_and_ports[proto]
+    else:
+        return default_port
