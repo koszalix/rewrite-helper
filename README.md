@@ -68,14 +68,15 @@ api:
 `proto` - communication protocol http or https  
 `username` - admin username  
 `passwd` - admin password  
-`port` - connection port
-`timeout` - maximum time to response, if api request exceeded this time request wil be treated as fail
-`startup` - specify behavior on app start
-`startup/test` - test connection to api 
-`startup/timeout` - timeout for api connection test
-`startup/exit_on_fail` - exit when test connection fails, when set to False program will try to connect to api until 
-success
+`port` - connection port  
+`timeout` - maximum time to response, if api request exceeded this time request wil be treated as fail   
+`startup` - specify behavior on app start  
+`startup/test` - test connection to api   
+`startup/timeout` - timeout for api connection test  
+`startup/exit_on_fail` - exit when test connection fails, when set to False program will try to connect to api until success 
+`retry_after` - time to repeat next test connection if previous test fails
 `startup/retry_after` - time between next test connection to api if previous connection fails
+
 ## Configuring jobs
 Job is set of hosts IP addresses within one domain. When host to which IP address domain is pointing is down, then dns
 answer will be changed to IP address of host with is up. 
