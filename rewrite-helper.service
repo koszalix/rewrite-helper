@@ -4,7 +4,7 @@ Description=DNS Rewrite manager for AdGuardHome
 [Service]
 User=root
 WorkingDirectory=/usr/share/rewrite-helper
-ExecStart=/usr/share/rewrite-helper/main.py /etc/rewrite-helper/config.yml --log-level=DEBUG --log-file=/var/log/rewrite-helper/rewrite-helper.log
+ExecStart=/usr/share/rewrite-helper/main.py /etc/rewrite-helper/config.yml --log-level=ERROR --log-file=/var/log/rewrite-helper/rewrite-helper.log
 Restart=always
 
 [Install]

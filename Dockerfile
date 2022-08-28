@@ -10,4 +10,4 @@ RUN pip3 install -r requirements.txt
 COPY src /app/src
 COPY main.py /app/main.py
 
-CMD ["python3", "/app/main.py", "/app/config/config.yml", "--privileged"]
+CMD ["python3", "/app/main.py", "/app/config/config.yml", "--privileged", "--log-level=ERROR"]

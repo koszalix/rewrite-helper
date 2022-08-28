@@ -47,7 +47,8 @@ This file must have 000 permission. This file is ignored by git (due to in insuf
 ### Preparing environment for test: TestReadConfigFile.test_file_is_a_directory()
 Before run, ensure if directory test/unit/fixtures/config_files/read_config_file/a_directory exist, this directory should be empty.
 
-### Download and install AdGuardHome vm
+### Install AdGuardHome vm manually
+Run VirtualBox goto tools select import and import a vm
 
 # Notes about virtual machines
 ## AdGuardHome 

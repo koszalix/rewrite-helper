@@ -1,5 +1,5 @@
 # Disclaimer
-This software is still in development
+Program seems to work, but it's still in early alpha stage
 
 # Rewrite helper
 This is a program for managing DNS rewrites in [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome). Main idea 
