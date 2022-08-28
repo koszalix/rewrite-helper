@@ -2,3 +2,4 @@ static_entry:
   - job:
       domain: test.lan
       answer: 1.1.1.1
+      interval: 23
