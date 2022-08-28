@@ -1,7 +1,7 @@
 import unittest
 
 from src.utils import check_protocol_slashed
-from src.utils import safe_parse_value
+from src.utils import parse_value_with_default
 from src.utils import check_linux_permissions
 
 
@@ -31,22 +31,47 @@ class CheckProtocolSlashed(unittest.TestCase):
         self.assertEqual(check_protocol_slashed("https:/"), "https://")
 
 
-class SafeParseValue(unittest.TestCase):
+class ParseValueWithDefault(unittest.TestCase):
     def test_key_in_content_value_assigned(self):
         content = {'key-a': 32, 'key-B': 33, 'key-c': 'key-B'}
-        self.assertEqual(safe_parse_value(content=content, key='key-B', default_value=80), 33)
+        self.assertEqual(parse_value_with_default(content=content, key='key-B', default_value=80), 33)
 
     def test_key_in_content_value_assigned_strings(self):
         content = {'key-a': '32', 'key-B': '33', 'key-c': 'key-B'}
-        self.assertEqual(safe_parse_value(content=content, key='key-B', default_value=80), '33')
+        self.assertEqual(parse_value_with_default(content=content, key='key-B', default_value='80'), '33')
 
     def test_default_value(self):
         content = {'key-a': '32', 'key-B': '33', 'key-c': 'key-b'}
-        self.assertEqual(safe_parse_value(content=content, key='key-t', default_value=80), 80)
+        self.assertEqual(parse_value_with_default(content=content, key='key-t', default_value=80), 80)
 
     def test_default_value_strings(self):
         content = {'key-a': '32', 'key-B': '33', 'key-c': 'key-B'}
-        self.assertEqual(safe_parse_value(content=content, key='key-t', default_value='80'), '80')
+        self.assertEqual(parse_value_with_default(content=content, key='key-t', default_value='80'), '80')
+
+    def test_content_is_none(self):
+        content = None
+        self.assertEqual(parse_value_with_default(content=content, key="test", default_value=80), 80)
+
+    def test_key_value_is_none(self):
+        content = {'key-x': 33, 'key-a': None}
+        self.assertEqual(parse_value_with_default(content=content, key="key-a", default_value=80), 80)
+
+    def test_type_int(self):
+        content = {'key-a': '32', 'key-B': '33', 'key-c': 'key-B'}
+        self.assertEqual(type(parse_value_with_default(content=content, key='key-B', default_value=80)), int)
+
+    def test_type_float(self):
+        content = {'key-a': '32', 'key-B': '33', 'key-c': 'key-B'}
+        self.assertEqual(type(parse_value_with_default(content=content, key='key-B', default_value=80.0)), float)
+
+    def test_type_bool(self):
+        content = {'key-a': '32', 'key-B': '33', 'key-c': 'key-B'}
+        self.assertEqual(type(parse_value_with_default(content=content, key='key-B', default_value=True)), bool)
+
+    def test_type_string(self):
+        content = {'key-a': '32', 'key-B': '33', 'key-c': 'key-B'}
+        self.assertEqual(type(parse_value_with_default(content=content, key='key-B', default_value='80')), str)
+
 
 class CheckLinuxPermissions(unittest.TestCase):
     def test_equal(self):
