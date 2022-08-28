@@ -1,0 +1,3 @@
+config:
+  wait: 77
+  log_file: /var/log/log.txt

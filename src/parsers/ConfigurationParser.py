@@ -24,6 +24,7 @@ class ConfigParser:
         self.ping_configs = {}
         self.api_config = {}
         self.config_config ={}
+
     def find_any_yml(self):
         """
         Find file with .yml extension
@@ -235,10 +236,10 @@ class ConfigParser:
         try:
             if 'config' in self.file_content:
                 self.config_config['wait'] = parse_value_with_default(
-                                            content=self.file_content['config'], key='wait', default_value=10)
+                                            content=self.file_content['config'], key='wait', default_value=0)
                 log_level = parse_value_with_default(
                     content=self.file_content['config'], key="log_level", default_value="N/A")
-                
+
                 self.config_config['log_level'] = parse_logging_level(logging_str=log_level)
 
                 self.config_config['log_file'] = parse_value_with_default(
@@ -247,6 +248,10 @@ class ConfigParser:
                 self.config_config['wait'] = 0
                 self.config_config['log_level'] = False
                 self.config_config['log_file'] = "N/A"
+
+            logging.debug(msg="config-wait " + str(self.config_config['wait']))
+            logging.debug(msg="config-log_level " + str(self.config_config['log_level']))
+            logging.debug(msg="config-log_file " + str(self.config_config['log_file']))
         except KeyError:
             logging.error("Config file error / api / KeyError")
             exit(-2)

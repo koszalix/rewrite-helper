@@ -1,0 +1,3 @@
+config:
+  wait: 77
+  log_level: DEBUG

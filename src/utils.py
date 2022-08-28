@@ -3,6 +3,7 @@ Miscellaneous method and classes used by other parts of program
 """
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 
+
 def parse_logging_level(logging_str):
     """
     Convert loging level as string to logging object
