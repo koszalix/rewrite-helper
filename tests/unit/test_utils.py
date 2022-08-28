@@ -5,6 +5,8 @@ from src.utils import check_protocol_slashed
 from src.utils import parse_value_with_default
 from src.utils import check_linux_permissions
 from src.utils import parse_logging_level
+from src.utils import match_port_to_protocol
+
 
 class CheckProtocolSlashed(unittest.TestCase):
     def test_http_slashed(self):
@@ -152,5 +154,21 @@ class ParseLoggingLevel(unittest.TestCase):
     def test_int(self):
         self.assertEqual(parse_logging_level(logging_str=3), False)
         self.assertEqual(parse_logging_level(logging_str=-3), False)
+
+
+class MatchPortToProtocol(unittest.TestCase):
+    def test_default(self):
+        self.assertEqual(match_port_to_protocol(proto="test"), 80)
+
+    def test_default_changed(self):
+        self.assertEqual(match_port_to_protocol(proto="test", default_port=32), 32)
+
+    def test_http(self):
+        self.assertEqual(match_port_to_protocol(proto="http"), 80)
+
+    def test_https(self):
+        self.assertEqual(match_port_to_protocol(proto="tests"), 80)
+
+
 if __name__ == '__main__':
     unittest.main()
