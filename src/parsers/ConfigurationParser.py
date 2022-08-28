@@ -238,10 +238,15 @@ class ConfigParser:
                                             content=self.file_content['config'], key='wait', default_value=10)
                 log_level = parse_value_with_default(
                     content=self.file_content['config'], key="log_level", default_value="N/A")
+                
                 self.config_config['log_level'] = parse_logging_level(logging_str=log_level)
 
-                self.config_config['log-file'] = parse_value_with_default(
+                self.config_config['log_file'] = parse_value_with_default(
                     content=self.file_content['config'], key='log_file', default_value="N/A")
+            else:
+                self.config_config['wait'] = 0
+                self.config_config['log_level'] = False
+                self.config_config['log_file'] = "N/A"
         except KeyError:
             logging.error("Config file error / api / KeyError")
             exit(-2)
