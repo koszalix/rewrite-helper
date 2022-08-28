@@ -144,6 +144,21 @@ http_jobs:
 #### Default ports
 When there is no port configured but protocol is set to http default port will be 80, 
 if protocol is set to https default will be 443
+
+## Configuring static entry
+In opposition to jobs, static entry do not test host accessibility. Static entry only test if dns rewrite exist in 
+AdGuardHome, it not guaranties any kind of high availability but may be usefully for devices like network printers, 
+routers etc. To Configure static entry add following lines to configurations file.
+```yaml
+static_entry:
+  - job:
+      domain: 
+      answer: 
+      interval:
+```
+`domain` - dns rewrite domain
+`answer` - ip address assigned to domain
+`interval` - seconds between checks
 ## Default values
 To make configuration easier some config option have assigned default values. To use default values of specific option
 do not put this option to config file.

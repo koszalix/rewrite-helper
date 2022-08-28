@@ -24,7 +24,7 @@ class ConfigParser:
         self.file_content = {}
         self.http_configs = {}
         self.ping_configs = {}
-        self.config_static_entry = {}
+        self.static_entry_configs = {}
         self.api_config = {}
         self.config_config ={}
 
@@ -192,14 +192,19 @@ class ConfigParser:
         for jobs in self.file_content['static_entry']:
             try:
                 job = jobs['job']
-                self.config_static_entry['domain'] = job['domain']
-                self.config_static_entry['answer'] = job['answer']
-                logging.debug(msg="static-entry-domain " + self.config_static_entry['domain'])
-                logging.debug(msg="static-entry-answer " + self.config_static_entry['answer'])
+                self.static_entry_configs[job_index] = {}
+                self.static_entry_configs[job_index]['domain'] = job['domain']
+                self.static_entry_configs[job_index]['answer'] = job['answer']
+                self.static_entry_configs[job_index]['interval'] = parse_value_with_default(content=job,
+                                                                                 key='interval',
+                                                                                 default_value=60)
+                logging.debug(msg="static-entry-domain " + self.static_entry_configs[job_index]['domain'])
+                logging.debug(msg="static-entry-answer " + self.static_entry_configs[job_index]['answer'])
+                logging.debug(msg="static-entry-interval " + str(self.static_entry_configs[job_index]['interval']))
 
                 job_index += 1
             except KeyError:
-                logging.error("Error in config file, http_jobs KeyError")
+                logging.error("Error in config file, static_entry KeyError")
 
     def parse_api(self):
         """
@@ -298,6 +303,10 @@ class ConfigParser:
         if "ping_jobs" in self.file_content:
             logging.info(msg="ping jobs found")
             self.parse_ping()
+
+        if 'static_entry' in self.file_content:
+            logging.info(msg="static entry found")
+            self.parser_static_entry()
 
         self.parse_api()
         self.parse_config()
