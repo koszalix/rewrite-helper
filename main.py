@@ -1,25 +1,40 @@
 #!/bin/python3
+import sys
+import logging
+import time
 
 from src.api.ApiConnector import ApiConnector
 from src.TestHosts import TestHosts
 from src.parsers.ConfigurationParser import ConfigParser
 from src.parsers.CliParser import CliParser
 
-import sys
-import logging
+
 
 if __name__ == '__main__':
+    # need to set to info to inform users about state of config file
+    logging.basicConfig(level=logging.DEBUG)
+
     CliParser = CliParser(sys.argv)
     CliParser.find_args()
-
-    if CliParser.log_file == "":
-        logging.basicConfig(level=CliParser.log_level)
-    else:
-        logging.basicConfig(level=CliParser.log_level, filename=CliParser.log_file)
 
     ConfigParser = ConfigParser(file=CliParser.config_file)
     ConfigParser.parse()
 
+    if ConfigParser.config_config['log_level'] is not False:
+        print('level from file')
+        log_level = ConfigParser.config_config['log_level']
+    else:
+        print('level from cli')
+        log_level = CliParser.log_level
+
+    if ConfigParser.config_config['log_file'] != "N/A":
+        print('file from file')
+        log_file = ConfigParser.config_config['log_file']
+    else:
+        print('file from cli')
+        log_file = CliParser.log_file
+
+    time.sleep(ConfigParser.config_config['wait'])
     ApiConnector = ApiConnector(config=ConfigParser.api_config)
     TestHosts = TestHosts(api_connector=ApiConnector,
                           http_configs=ConfigParser.http_configs,
