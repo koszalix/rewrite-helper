@@ -1,7 +1,26 @@
 """
 Miscellaneous method and classes used by other parts of program
 """
+from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 
+def parse_logging_level(logging_str):
+    """
+    Convert loging level as string to logging object
+    :param logging_str: str: logging level
+    :return: logging level object (if possible) or False if can't match level
+    """
+    if logging_str == "DEBUG":
+        return DEBUG
+    elif logging_str == "INFO":
+        return INFO
+    elif logging_str == "WARNING":
+        return WARNING
+    elif logging_str == "ERROR":
+        return ERROR
+    elif logging_str == "CRITICAL":
+        return CRITICAL
+    else:
+        return False
 
 def check_protocol_slashed(proto=""):
     """
