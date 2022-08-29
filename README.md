@@ -73,9 +73,8 @@ api:
 `startup` - specify behavior on app start  
 `startup/test` - test connection to api   
 `startup/timeout` - timeout for api connection test  
-`startup/exit_on_fail` - exit when test connection fails, when set to False program will try to connect to api until success 
-`retry_after` - time to repeat next test connection if previous test fails
-`startup/retry_after` - time between next test connection to api if previous connection fails
+`startup/exit_on_fail` - exit when test connection fails, when set to False program will try to connect to api until success
+`startup/retry_after` - time between next test connection to api if previous connection fails  
 ## Configure miscellaneous software options
 Add following section to config file
 ```yaml
@@ -88,7 +87,7 @@ config:
          rewrite-helper starts faster than AdGuardHome  
 `log_level` - set log level, available levels DEBUG, INFO, WARNING, ERROR, CRITICAL  
 `log_file` - set log output file (full path)  
-If log_level or log_file is no specified or value is incorrect program will read those parameters from cli.
+If log_level or log_file is no specified or value is incorrect program will read those parameters from cli.  
 ## Configuring jobs
 Job is set of hosts IP addresses within one domain. When host to which IP address domain is pointing is down, then dns
 answer will be changed to IP address of host with is up. 
@@ -110,9 +109,9 @@ ping_jobs:
 ```
 `domain` - dns rewrite domain, for ex.: server.lan  
 `interval` - seconds between tests.  
-`count` - numer of packages send to host on each test.  
-`timeout` - test timeout, if host is not responding after that time it will be treated as dead.  
-`primary` - primary dns answer, this answer has the highest priority, 
+`count` - numer of packages send to host on each test.    
+`timeout` - test timeout, if host is not responding after that time it will be treated as dead.   
+`primary` - primary dns answer, this answer has the highest priority,  
 `failover` - list of IP addresses to switch dns answer when primary host is down  
 
 ### Configuring http job
@@ -137,9 +136,9 @@ http_jobs:
 `interval` - seconds between tests.  
 `status` - if response code received from host is the same as this setting host will be treated as live.  
 `proto` - communication protocol (http or https)  
-`port` - connection port
+`port` - connection port  
 `timeout` - test timeout, if host is not responding after that time it will be treated as dead.  
-`primary` - primary dns answer, this answer has the highest priority, 
+`primary` - primary dns answer, this answer has the highest priority,  
 `failover` - list of IP addresses to switch dns answer when primary host is down  
 #### Default ports
 When there is no port configured but protocol is set to http default port will be 80, 
@@ -147,7 +146,7 @@ if protocol is set to https default will be 443
 
 ## Configuring static entry
 In opposition to jobs, static entry do not test host accessibility. Static entry only test if dns rewrite exist in 
-AdGuardHome, it not guaranties any kind of high availability but may be usefully for devices like network printers, 
+AdGuardHome, it not guaranties any kind of redundancy but may be usefully for devices like network printers, 
 routers etc. To Configure static entry add following lines to configurations file.
 ```yaml
 static_entry:
@@ -156,10 +155,10 @@ static_entry:
       answer: 
       interval:
 ```
-`domain` - dns rewrite domain
-`answer` - ip address assigned to domain
-`interval` - seconds between checks
-## Default values
+`domain` - dns rewrite domain  
+`answer` - ip address assigned to domain  
+`interval` - seconds between checks  
+## Default values  
 To make configuration easier some config option have assigned default values. To use default values of specific option
 do not put this option to config file.
 
