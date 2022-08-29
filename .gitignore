@@ -301,3 +301,6 @@ tests/unit/fixtures/config_files/read_config_file/no_permissions/*
 # vms takes a lot of space
 tests/unit/fixtures/vms
 tests/vms
+*.log
+*.log.*
+tests/vms/*/Logs
