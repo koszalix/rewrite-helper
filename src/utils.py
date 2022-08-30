@@ -33,7 +33,9 @@ def check_protocol_slashed(proto=""):
     :param proto:
     :return: str: protocol with slashes
     """
-    if proto[-3:] == "://":
+    if len(proto) == 0:
+        return ""
+    elif proto[-3:] == "://":
         return proto
     elif proto[-2:] == ":/":
         return proto + "/"

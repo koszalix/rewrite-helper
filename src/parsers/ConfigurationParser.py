@@ -9,6 +9,7 @@ from src.utils import parse_value_with_default
 from src.utils import check_linux_permissions
 from src.utils import parse_logging_level
 from src.utils import match_port_to_protocol
+from src.static import data
 
 
 class ConfigParser:
@@ -120,19 +121,19 @@ class ConfigParser:
                     self.http_configs[job_index]['dns_answer_failover'] = []
 
                 self.http_configs[job_index]['interval'] = parse_value_with_default(content=job, key='interval',
-                                                                                    default_value=60)
+                                                                                    default_value=data.HttpJob.interval)
                 self.http_configs[job_index]['status_code'] = parse_value_with_default(content=job, key='status',
-                                                                                       default_value=200)
+                                                                                       default_value=data.HttpJob.status)
                 self.http_configs[job_index]['proto'] = parse_value_with_default(content=job, key='proto',
                                                                                  default_value='http')
                 self.http_configs[job_index]['port'] = parse_value_with_default(content=job, key='port',
                                                                                 default_value=match_port_to_protocol(
                                                                                     proto=self.http_configs[job_index]['proto'],
-                                                                                    default_port=80)
+                                                                                    default_port=data.HttpJob.port)
                                                                                 )
 
                 self.http_configs[job_index]['timeout'] = parse_value_with_default(content=job, key='timeout',
-                                                                                   default_value=10)
+                                                                                   default_value=data.HttpJob.timeout)
 
                 logging.debug(msg="http-domain " + self.http_configs[job_index]['dns_domain'])
                 logging.debug(msg="http-interval " + str(self.http_configs[job_index]['interval']))
@@ -170,11 +171,11 @@ class ConfigParser:
                     self.ping_configs[job_index]['dns_answer_failover'] = []
 
                 self.ping_configs[job_index]['interval'] = parse_value_with_default(content=job, key='interval',
-                                                                                    default_value=60)
+                                                                                    default_value=data.PingJob.interval)
                 self.ping_configs[job_index]['timeout'] = parse_value_with_default(content=job, key='timeout',
-                                                                                   default_value=2)
+                                                                                   default_value=data.PingJob.timeout)
                 self.ping_configs[job_index]['count'] = parse_value_with_default(content=job, key='count',
-                                                                                 default_value=2)
+                                                                                 default_value=data.PingJob.count)
 
                 logging.debug(msg="ping-domain " + self.ping_configs[job_index]['dns_domain'])
                 logging.debug(msg="ping-interval " + str(self.ping_configs[job_index]['interval']))
@@ -197,7 +198,7 @@ class ConfigParser:
                 self.static_entry_configs[job_index]['answer'] = job['answer']
                 self.static_entry_configs[job_index]['interval'] = parse_value_with_default(content=job,
                                                                                  key='interval',
-                                                                                 default_value=60)
+                                                                                 default_value=data.StaticEntry.interval)
                 logging.debug(msg="static-entry-domain " + self.static_entry_configs[job_index]['domain'])
                 logging.debug(msg="static-entry-answer " + self.static_entry_configs[job_index]['answer'])
                 logging.debug(msg="static-entry-interval " + str(self.static_entry_configs[job_index]['interval']))
@@ -217,23 +218,23 @@ class ConfigParser:
             self.api_config['passwd'] = self.file_content['api']['passwd']
 
             self.api_config['proto'] = parse_value_with_default(content=self.file_content['api'], key='proto',
-                                                                default_value='http')
+                                                                default_value=data.Api.proto)
             self.api_config['port'] = parse_value_with_default(content=self.file_content['api'], key='port',
-                                                               default_value=80)
+                                                               default_value=data.Api.port)
             self.api_config['timeout'] = parse_value_with_default(content=self.file_content['api'], key='timeout',
-                                                                  default_value=10)
+                                                                  default_value=data.Api.timeout)
             if 'startup' in self.file_content['api']:
                 self.api_config['startup'] = {}
                 self.api_config['startup']['test'] = parse_value_with_default(
                     content=self.file_content['api']['startup'],
-                    key='test', default_value=True)
+                    key='test', default_value=data.Api.Startup.test)
                 self.api_config['startup']['timeout'] = parse_value_with_default(
                     content=self.file_content['api']['startup'],
-                    key='timeout', default_value=10)
+                    key='timeout', default_value=data.Api.Startup.timeout)
                 self.api_config['startup']['exit_on_fail'] = parse_value_with_default(
-                    content=self.file_content['api']['startup'], key='exit_on_fail', default_value=False)
+                    content=self.file_content['api']['startup'], key='exit_on_fail', default_value=data.Api.Startup.exit_on_false)
                 self.api_config['startup']['retry_after'] = parse_value_with_default(
-                    content=self.file_content['api']['startup'], key='retry_after', default_value=10)
+                    content=self.file_content['api']['startup'], key='retry_after', default_value=data.Api.Startup.retry_after)
             else:
                 self.api_config['startup'] = {}
                 self.api_config['startup']['test'] = True
@@ -264,24 +265,24 @@ class ConfigParser:
         try:
             if 'config' in self.file_content:
                 self.config_config['wait'] = parse_value_with_default(
-                                            content=self.file_content['config'], key='wait', default_value=0)
+                                            content=self.file_content['config'], key='wait', default_value=data.Config.wait)
                 log_level = parse_value_with_default(
                     content=self.file_content['config'], key="log_level", default_value="N/A")
 
                 self.config_config['log_level'] = parse_logging_level(logging_str=log_level)
 
                 self.config_config['log_file'] = parse_value_with_default(
-                    content=self.file_content['config'], key='log_file', default_value="N/A")
+                    content=self.file_content['config'], key='log_file', default_value=data.Config.log_file)
             else:
-                self.config_config['wait'] = 0
-                self.config_config['log_level'] = False
-                self.config_config['log_file'] = "N/A"
+                self.config_config['wait'] = data.Config.wait
+                self.config_config['log_level'] = data.Config.log_level
+                self.config_config['log_file'] = data.Config.log_file
 
             logging.debug(msg="config-wait " + str(self.config_config['wait']))
             logging.debug(msg="config-log_level " + str(self.config_config['log_level']))
             logging.debug(msg="config-log_file " + str(self.config_config['log_file']))
         except KeyError:
-            logging.error("Config file error / api / KeyError")
+            logging.error("Config file error / Config / KeyError")
             exit(-2)
 
     def parse(self):

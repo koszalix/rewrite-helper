@@ -7,7 +7,7 @@ from icmplib import ping
 
 from src.api.ApiConnector import ApiConnector
 from ._common import Common
-
+from src.static import data
 
 class Test(Common, threading.Thread):
     """
@@ -24,16 +24,28 @@ class Test(Common, threading.Thread):
         :param dns_domain: str: domain which is used in dns rewrite
         :param dns_answer: str: default (primary) dns answers
         :param dns_answer_failover: list(str): dns answers in case when host on primary
-        :param api_connect: configured ApiConnector class
+        :param api_connect: configured ApiConnector class (on unittest set to None)
         :param privileged: run ping in privileged mode, see icmplib for documentation
          """
-        threading.Thread.__init__(self)
-        super().__init__(dns_domain=dns_domain, dns_answer=dns_answer, dns_answer_failover=dns_answer_failover,
-                         api_connect=api_connect)
 
-        self.timeout = timeout
+
+        # on unittest set api connect to None (avoid no necessary api object creating)
+        if api_connect is not None:
+            super().__init__(dns_domain=dns_domain, dns_answer=dns_answer, dns_answer_failover=dns_answer_failover,
+                            api_connect=api_connect)
+
+            threading.Thread.__init__(self)
         self.count = count
-        self.interval = interval
+
+        if interval <= 0:
+            self.interval = data.PingJob.interval
+        else:
+            self.interval = interval
+        if timeout <= 0:
+            self.timeout = data.PingJob.timeout
+        else:
+            self.timeout = timeout
+
         self.privileged = privileged
 
     def job_request(self, host):

@@ -9,7 +9,7 @@ import requests
 from src.api.ApiConnector import ApiConnector
 from ._common import Common
 from src.utils import check_protocol_slashed
-
+from src.static import data
 
 class Test(Common, threading.Thread):
     """
@@ -30,16 +30,26 @@ class Test(Common, threading.Thread):
         :param dns_answer_failover: list(str): dns answers in case when host on primary
         :param api_connect: configured ApiConnector class
         """
-        threading.Thread.__init__(self)
-        super().__init__(dns_domain=dns_domain, dns_answer=dns_answer, dns_answer_failover=dns_answer_failover,
+
+        # on unittest set api connect to None (avoid no necessary api object creating)
+        if api_connect is not None:
+            threading.Thread.__init__(self)
+            super().__init__(dns_domain=dns_domain, dns_answer=dns_answer, dns_answer_failover=dns_answer_failover,
                          api_connect=api_connect)
 
         self.correct_status_code = correct_status_code
-        self.interval = interval
+
         self.port = port
         self.proto = check_protocol_slashed(proto)
 
-        self.timeout= timeout
+        if interval <= 0:
+            self.interval = data.HttpJob.interval
+        else:
+            self.interval = interval
+        if timeout <= 0:
+            self.timeout = data.HttpJob.timeout
+        else:
+            self.timeout = timeout
 
     def job_request(self, host):
 
@@ -48,21 +58,21 @@ class Test(Common, threading.Thread):
         :return: True if host returns status the same code as configuration, False in other cases
         """
         try:
-            logging.info("Test (start) of: " + host)
-            response = requests.get(url=self.proto + host + ":"+ str(self.port), timeout=self.timeout)
+            logging.info("Test (start) of: " + self.proto + host + ":"+ str(self.port))
+            response = requests.get(url=self.proto + host + ":" + str(self.port), timeout=self.timeout)
             if response.status_code == self.correct_status_code:
-                logging.info("Test (status) of: " + self.proto + host + ":"+ str(self.port) + " ok")
+                logging.info("Test (status) of: " + self.proto + host + ":" + str(self.port) + " ok")
                 return True
             else:
                 logging.info(
-                    "Test (status) of: " + host + " failed (status code" + str(response.status_code) + " )")
+                    "Test (status) of: " + self.proto + host + ":" + str(self.port) + " failed (status code " + str(response.status_code) + ")")
                 return False
-        except requests.exceptions.MissingSchema as e:
-            logging.info("Test (status) of: " + host + " failed ")
+        except requests.exceptions.InvalidSchema as e:
+            logging.info("Test (status) of: " + self.proto + host + ":" + str(self.port) + " failed (Invalid schema)")
             logging.warning(str(e))
             return False
         except requests.ConnectionError:
-            logging.info("Test (status) of: " + host + " failed ( Connection error )")
+            logging.info("Test (status) of: " + self.proto + host + ":" + str(self.port) + " failed (Connection error)")
             return False
 
     def run(self):
