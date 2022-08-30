@@ -2,8 +2,9 @@
 
 # Running unit tests
 1. Run AdGuardHome vm 
-2. Ensure if ip address of vm is correct (see [Notes about virtual machines](#Notesaboutvirtualmachines) )
-3. Type following command
+2. Run DummyHost vm
+3. Ensure if ip address of vm is correct (see [Notes about virtual machines](#Notesaboutvirtualmachines) )
+4. Type following command
 ```bash
 python3 -m unittest discover -t .
 ```
@@ -29,12 +30,17 @@ To perform some test, extra steeps, such as setting file permissions, creating v
 chmod +x ./create_test_env.sh
 ./create_test_env.sh
 ```
-4. Go to VirtualBox 
-5. Open File->Host Network Manager
-6. Change ip range of vboxnet0 to 192.168.56.1/24
-7. Ensure if vm named AdGuardHome have network adapter 1 set to vboxnet0
-8. In case when changing ip range of vboxnet0 is impossible, change ip settings in tests/unit/test_ApiConnection.py
-
+This script will prepare test files but virtual machines must be created manually
+## Creating virtual machines
+1. Prepare two virtual machines with [Alpine Linux](https://alpinelinux.org/), named "AdGuardHome", "DummyHost"
+2. On DummyHost run following commands
+```sh
+apk update 
+apk add apache2
+/etc/init.d apache2 start
+```
+3. Change networks interfaces on VM's to host-only
+4. Ensure if settings of your machines are the same as setting in [# Notes about virtual machines] section.
 ## Create environment manually
 ### Preparing environment for test: TestAnyYaml.test_no_permission()
 Before run, ensure if there is a file named *config.yml* in directory *tests/unit/fixtures/config_files/any_yaml/no_permissions*.
@@ -47,14 +53,15 @@ This file must have 000 permission. This file is ignored by git (due to in insuf
 ### Preparing environment for test: TestReadConfigFile.test_file_is_a_directory()
 Before run, ensure if directory test/unit/fixtures/config_files/read_config_file/a_directory exist, this directory should be empty.
 
-### Install AdGuardHome vm manually
-Run VirtualBox goto tools select import and import a vm
-
 # Notes about virtual machines
 ## AdGuardHome 
-IP address 192.168.56.104 
-Web interface port 80  
-Username admin  
-Password 12345678  
-Vm username root  
-Vm password 12345678iQ  
+This vm runs AdGuardHome server
+Machine Settings:
+    IP address 192.168.56.104 
+    Web interface port 80  
+    Username admin  
+    Password 12345678
+## DummyHost
+This machine act's like a server for testing jobs
+Machine Settings:
+    IP address 192.168.56.105
