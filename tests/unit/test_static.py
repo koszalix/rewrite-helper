@@ -2,6 +2,7 @@ import unittest
 
 from src.static import data
 
+
 class TestData(unittest.TestCase):
     """
     Check if all api defaults values are correct (those values can be changed accidentally)
@@ -44,6 +45,7 @@ class TestData(unittest.TestCase):
 
     def test_http_job_proto(self):
         self.assertEqual(data.HttpJob.proto, "http")
+
 
 if __name__ == '__main__':
     unittest.main()
