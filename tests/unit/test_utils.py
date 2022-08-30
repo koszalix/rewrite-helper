@@ -33,6 +33,9 @@ class CheckProtocolSlashed(unittest.TestCase):
     def test_https_single_slash(self):
         self.assertEqual(check_protocol_slashed("https:/"), "https://")
 
+    def test_https_empty(self):
+        self.assertEqual(check_protocol_slashed(""), "")
+
 
 class ParseValueWithDefault(unittest.TestCase):
     def test_key_in_content_value_assigned(self):
