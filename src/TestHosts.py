@@ -53,6 +53,13 @@ class TestHosts:
                                                                                      # not working
                             },
                             }
+        :param: static_entry_configs: A dictionary containing all configuration about static_entry, syntax:
+                            {
+                                x: {
+                                    'domain': # domain used in dns rewrite
+                                    'answer': # dns answer
+                                    'interval': # seconds between checks
+                            }
         :param api_connector: object of ApiConnector class
         :param privileged: run test in privileged mode (some test need to be run by root user to open sockets)
         """
