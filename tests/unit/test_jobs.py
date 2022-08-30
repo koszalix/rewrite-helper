@@ -3,7 +3,9 @@ import unittest
 
 from src.jobs import ping
 from src.jobs import http
+from src.jobs import static_entry
 from src.static import data
+
 
 class TestPing(unittest.TestCase):
 
@@ -172,6 +174,18 @@ class TestHttp(unittest.TestCase):
             self.http_zero_timeout.job_request(host="192.168.56.105")
         self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: http://192.168.56.105:80")
         self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: http://192.168.56.105:80 ok")
+
+
+class TestStaticEntry(unittest.TestCase):
+    def setUp(self):
+        self.static_entry_negative_interval = static_entry.Test(domain="test.lan", answer="1.1.1.1", interval=-10, api_connect=None)
+        self.static_entry_zero_interval = static_entry.Test(domain="test.lan", answer="1.1.1.1", interval=-10, api_connect=None)
+
+    def test_zero_interval(self):
+        self.assertEqual(self.static_entry_zero_interval.interval, data.StaticEntry.interval)
+
+    def test_negative_interval(self):
+        self.assertEqual(self.static_entry_zero_interval.interval, data.StaticEntry.interval)
 
 
 if __name__ == "__main__":
