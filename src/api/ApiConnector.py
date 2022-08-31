@@ -126,6 +126,33 @@ class ApiConnector:
             logging.error(e)
             return None
 
+    def get_answer_of_domain(self, domain):
+        """
+        Return dns answer of provided domain
+        :param domain: domain to check
+        :return: str: dns answer (ip address), bool: False if domain not exist or N
+                      one when request status code was other than 200
+        """
+        url = self.host + "/control/rewrite/list"
+        try:
+            response = requests.get(url=url, auth=self.auth, timeout=self.timeout)
+
+            if response.status_code == 200:
+                for entry in response.json():
+
+                    if entry["domain"] == domain:
+                        return entry["answer"]
+
+                return False
+
+            else:
+                logging.error("Server responded with status code:" + str(response.status_code))
+                return None
+
+        except requests.exceptions.ConnectionError as e:
+            logging.error(e)
+            return None
+
     def delete_entry(self, answer, domain):
         """
         Remove rewrite entry

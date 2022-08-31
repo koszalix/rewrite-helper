@@ -199,6 +199,34 @@ class TestApi(unittest.TestCase):
         """
         self.assertEqual(self.api_wrong_auth.domain_exist(domain="this_domain_not_exist.delete"), None)
 
+    def test_get_answer_of_domain_exit_correct_auth(self):
+        """
+        Test behavior of method get_answer_of_domain when domain exist and auth is correct
+        :return:
+        """
+        self.assertEqual(self.api_correct.get_answer_of_domain(domain="donot.delete"), "1.1.1.1")
+
+    def test_get_answer_of_domain_not_exit_correct_auth(self):
+        """
+        Test behavior of method get_answer_of_domain when domain exist and auth is correct
+        :return:
+        """
+        self.assertEqual(self.api_correct.get_answer_of_domain(domain="xdsdsadaddonot.delete"), False)
+
+    def test_get_answer_of_domain_exit_wrong_auth(self):
+        """
+        Test behavior of method get_answer_of_domain when domain exist and auth is incorrect
+        :return:
+        """
+        self.assertEqual(self.api_wrong_auth.get_answer_of_domain(domain="donot.delete"), None)
+
+    def test_get_answer_of_domain_not_exit_wrong_auth(self):
+        """
+        Test behavior of method get_answer_of_domain when domain exist and auth is incorrect
+        :return:
+        """
+        self.assertEqual(self.api_wrong_auth.get_answer_of_domain(domain="xdsdsadaddonot.delete"), None)
+
 if __name__ == "__main__":
     unittest.main()
 
