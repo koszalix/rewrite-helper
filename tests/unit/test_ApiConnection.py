@@ -33,7 +33,7 @@ class TestApi(unittest.TestCase):
             'port': 80,
             'proto': 'http',
             'username': 'admin',
-            'passwd': '123456378',
+            'passwd': '123456232',
             'timeout': 10,
             'startup': {
                 'test':  False,
