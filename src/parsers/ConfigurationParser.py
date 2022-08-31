@@ -274,19 +274,19 @@ class ConfigParser:
                 self.config_config['log_file'] = parse_value_with_default(
                     content=self.file_content['config'], key='log_file', default_value=data.Config.log_file)
 
-                self.config_config['invalid_entry'] = parse_value_with_default(content=self.file_content['config'],
-                                                                                key='invalid_entry',
-                                                                                default_value=data.Config.invalid_entry)
+                self.config_config['entry_exist'] = parse_value_with_default(content=self.file_content['config'],
+                                                                             key='entry_exist',
+                                                                             default_value=data.Config.entry_exist)
             else:
                 self.config_config['wait'] = data.Config.wait
                 self.config_config['log_level'] = data.Config.log_level
                 self.config_config['log_file'] = data.Config.log_file
-                self.config_config['invalid_entry'] = data.Config.invalid_entry
+                self.config_config['entry_exist'] = data.Config.entry_exist
 
             logging.debug(msg="config-wait " + str(self.config_config['wait']))
             logging.debug(msg="config-log_level " + str(self.config_config['log_level']))
             logging.debug(msg="config-log_file " + str(self.config_config['log_file']))
-            logging.debug(msg="config-invalid_entry " + str(self.config_config['invalid_entry']))
+            logging.debug(msg="config-entry_exist " + str(self.config_config['entry_exist']))
         except KeyError:
             logging.error("Config file error / Config / KeyError")
             exit(-2)

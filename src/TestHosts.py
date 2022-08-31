@@ -62,7 +62,7 @@ class TestHosts:
                             }
         :param config_configs: A dictionary containing miscellaneous software options, syntax:
                             {
-                                'invalid_entry': str: # set what to do when domain is registered in AdGuardHome but
+                                'entry_exist': str: # set what to do when domain is registered in AdGuardHome but
                                                       # answer don't match to any of answers from config file.
                                                       # Available options: KEEP - keep actual domain and add new,
                                                       # DELETE - delete existing domain
@@ -94,12 +94,12 @@ class TestHosts:
         if state is None:
             return False
 
-        if self.config_configs['invalid_entry'] == "KEEP":
+        if self.config_configs['entry_exist'] == "KEEP":
             return True
 
 
         if state:
-            if self.config_configs['invalid_entry'] == "DROP":
+            if self.config_configs['entry_exist'] == "DROP":
                 return False
             else:
                 existing_answer = self.api_connector.get_answer_of_domain(domain=domain)

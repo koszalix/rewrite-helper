@@ -1,4 +1,4 @@
 config:
   wait: 77
   log_level: DEBUG
-  invalid_entry: DROP
+  entry_exist: DROP

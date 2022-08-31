@@ -82,13 +82,13 @@ config:
   wait:
   log_level:
   log_file:
-  invalid_answer:
+  entry_exist:
 ```
 `wait` - time in seconds to wait before programs start, setting this value may be helpful on system startup when 
          rewrite-helper starts faster than AdGuardHome  
 `log_level` - set log level, available levels DEBUG, INFO, WARNING, ERROR, CRITICAL  
 `log_file` - set log output file (full path)  
-`invalid_entry` - set what to do when domain is registered in AdGuardHome but answer don't match to any of answers 
+`entry_exist` - set what to do when domain is registered in AdGuardHome but answer don't match to any of answers 
                   from config file. Available options: 
                         KEEP - keep actual domain and add new, 
                         DROP - treat job as if it didn't exist

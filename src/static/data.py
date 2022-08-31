@@ -19,7 +19,7 @@ class Config:
     wait = 0
     log_level = False
     log_file = "N/A"
-    invalid_entry = 'KEEP'
+    entry_exist = 'KEEP'
 
 class PingJob:
     interval = 60
