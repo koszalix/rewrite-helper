@@ -175,7 +175,7 @@ cover/
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
+webui/db.sqlite3
 db.sqlite3-journal
 
 # Flask stuff:
@@ -287,6 +287,8 @@ cython_debug/
 secret_config.yml
 secret
 secret/
+
+.idea
 
 log.txt
 *log.txt
