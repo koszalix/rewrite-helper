@@ -78,14 +78,14 @@ class TestApi(unittest.TestCase):
         Test behavior of method rewrite_add when  authentication is correct and entry don't exist
         :return:
         """
-        self.assertEqual(self.api_correct.rewrite_add(answer='1.1.1.1', domain='test.lan'), True)
+        self.assertEqual(self.api_correct.add_entry(answer='1.1.1.1', domain='test.lan'), True)
 
     def test_add_entry_wrong_auth(self):
         """
         Test behavior of method rewrite_add when  authentication is correct and entry don't exist
         :return:
         """
-        self.assertEqual(self.api_wrong_auth.rewrite_add(answer='1.1.1.1', domain='xtest.lan'), None)
+        self.assertEqual(self.api_wrong_auth.add_entry(answer='1.1.1.1', domain='xtest.lan'), None)
 
     def test_entry_exist_correct_auth_entry_exist(self):
         """
@@ -106,70 +106,70 @@ class TestApi(unittest.TestCase):
         Test behavior of method rewrite_add when  authentication is correct and entry exist
         :return:
         """
-        self.assertEqual(self.api_correct.rewrite_add(answer='1.1.1.1', domain='test.lan'), False)
+        self.assertEqual(self.api_correct.add_entry(answer='1.1.1.1', domain='test.lan'), False)
 
     def test_add_entry_wrong_auth_entry_exist(self):
         """
         Test behavior of method rewrite_add when  authentication is correct and entry exist
         :return:
         """
-        self.assertEqual(self.api_wrong_auth.rewrite_add(answer='1.1.1.1', domain='test.lan'), None)
+        self.assertEqual(self.api_wrong_auth.add_entry(answer='1.1.1.1', domain='test.lan'), None)
 
     def test_rewrite_change_answer_correct_auth(self):
         """
         Test behavior of method rewrite_change_answer when  authentication is correct and entry exist
         :return:
         """
-        self.assertEqual(self.api_correct.rewrite_change_answer(new_answer='2.3.4.5', old_answer='1.1.1.1', domain='test.lan'), True)
+        self.assertEqual(self.api_correct.change_entry_answer(new_answer='2.3.4.5', old_answer='1.1.1.1', domain='test.lan'), True)
 
     def test_rewrite_change_answer_correct_auth_entry_not_exist(self):
         """
         Test behavior of method rewrite_change_answer when  authentication is correct and entry not exist
         :return:
         """
-        self.assertEqual(self.api_correct.rewrite_change_answer(new_answer='2.3.4.5', old_answer='1.5.5.1', domain='xdtest.lan'), False)
+        self.assertEqual(self.api_correct.change_entry_answer(new_answer='2.3.4.5', old_answer='1.5.5.1', domain='xdtest.lan'), False)
 
     def test_rewrite_change_answer_wrong_auth(self):
         """
         Test behavior of method rewrite_change_answer when  authentication is incorrect and entry exist
         :return:
         """
-        self.assertEqual(self.api_wrong_auth.rewrite_change_answer(new_answer='2.3.4.5', old_answer='1.1.1.1', domain='test.lan'), None)
+        self.assertEqual(self.api_wrong_auth.change_entry_answer(new_answer='2.3.4.5', old_answer='1.1.1.1', domain='test.lan'), None)
 
     def test_rewrite_change_answer_wrong_auth_entry_not_exist(self):
         """
         Test behavior of method rewrite_change_answer when  authentication is incorrect and entry not exist
         :return:
         """
-        self.assertEqual(self.api_wrong_auth.rewrite_change_answer(new_answer='2.3.4.5', old_answer='1.5.5.1', domain='xdtest.lan'), None)
+        self.assertEqual(self.api_wrong_auth.change_entry_answer(new_answer='2.3.4.5', old_answer='1.5.5.1', domain='xdtest.lan'), None)
 
     def test_rewrite_delete_correct_auth(self):
         """
         Test behavior of method rewrite_delete when  authentication is correct and entry exist
         :return:
         """
-        self.assertEqual(self.api_correct.rewrite_delete(answer='2.3.4.5', domain='test.lan'), True)
+        self.assertEqual(self.api_correct.delete_entry(answer='2.3.4.5', domain='test.lan'), True)
 
     def test_rewrite_delete_wrong_auth(self):
         """
         Test behavior of method rewrite_change_answer when  authentication is incorrect and entry not exist
         :return:
         """
-        self.assertEqual(self.api_wrong_auth.rewrite_delete(answer='2.3.4.5', domain='test.lan'), None)
+        self.assertEqual(self.api_wrong_auth.delete_entry(answer='2.3.4.5', domain='test.lan'), None)
 
     def test_rewrite_delete_correct_auth_entry_not_exist(self):
         """
         Test behavior of method rewrite_delete when  authentication is correct and entry exist
         :return:
         """
-        self.assertEqual(self.api_correct.rewrite_delete(answer='2.3.4.5', domain='test.lan'), False)
+        self.assertEqual(self.api_correct.delete_entry(answer='2.3.4.5', domain='test.lan'), False)
 
     def test_rewrite_delete_wrong_auth_entry_not_exist(self):
         """
         Test behavior of method rewrite_change_answer when  authentication is incorrect and entry not exist
         :return:
         """
-        self.assertEqual(self.api_wrong_auth.rewrite_delete(answer='2.3.4.5', domain='test.lan'), None)
+        self.assertEqual(self.api_wrong_auth.delete_entry(answer='2.3.4.5', domain='test.lan'), None)
 
 
 if __name__ == "__main__":

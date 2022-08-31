@@ -31,6 +31,6 @@ class Test(threading.Thread):
             logging.info(msg="Test start for domain:" + self.domain)
             status = self.job_request()
             if status is False:
-                self.api_connect.rewrite_add(answer=self.answer, domain=self.domain)
+                self.api_connect.add_entry(answer=self.answer, domain=self.domain)
             logging.info(msg="Test stop for domain:" + self.domain)
             time.sleep(self.interval)

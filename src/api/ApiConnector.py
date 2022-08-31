@@ -9,7 +9,7 @@ from src.utils import check_protocol_slashed
 
 class ApiConnector:
     """
-    Realize connection between script and adguardhome, add, remove, change dns rewrite entries
+    Realize connection between script and adguardhome, add, remove or change dns rewrite entries
     """
 
     def __init__(self, config):
@@ -23,10 +23,10 @@ class ApiConnector:
                             'username': # admin user name
                             'passwd': # admin password
                             'timeout': # connection timeout, if any request will exceed this value will be treated as
-                                        # failure
+                                        # a failure
                             'startup':{
                                 'test': # set True to test connection to api on start (default True)
-                                'timeout': # Timeout off test connection (default 10)
+                                'timeout': # Timeout of test connection (default 10)
                                 'exit_on_fail': # Exit when test connection fail, if set to False test connection
                                                 # will run in loop until success (default False)
                                 'retry_after': # time to repeat next test connection if previous test fails (default 10)
@@ -49,14 +49,14 @@ class ApiConnector:
             if exit_on_fail:
                 if self.test_connection() is False:
                     exit(-1)
-            else:
-                while self.test_connection() is False:
-                    time.sleep(retry_after)
+
+            while self.test_connection() is False:
+                time.sleep(retry_after)
 
     def test_connection(self):
         """
-        Check if script can connect to AdGuardHome api, if not program must exit
-        :return: True if connection successful, False if connection failure
+        Check if connection to AdGuardHome can be established
+        :return: True if connection was successful, False if connection was failure
         """
         url = self.host + "/control/status"
         try:
@@ -76,14 +76,11 @@ class ApiConnector:
     def entry_exist(self, answer, domain):
         """
         Check if provided entry (answer and domain) exist in rewrite list. Check is simple '1:1 check',
-         wild cards are treated literally
         :param answer: dns answer
         :param domain: dns domain
-        :return: True if entry exist, False if not,
-                 None when request status code was other than 200
+        :return: True if entry exist, False if not, None when request status code was other than 200
         """
         url = self.host + "/control/rewrite/list"
-
         try:
             response = requests.get(url=url, auth=self.auth, timeout=self.timeout)
 
@@ -103,7 +100,7 @@ class ApiConnector:
             logging.error(e)
             return None
 
-    def rewrite_delete(self, answer, domain):
+    def delete_entry(self, answer, domain):
         """
         Remove rewrite entry
         :param answer: dns answer
@@ -131,12 +128,11 @@ class ApiConnector:
         elif exist is None:
             logging.info("Deletion of entry failed due to previous errors")
             return None
-
         else:
             logging.info("Deletion of entry failed (does entry exist ?)")
             return False
 
-    def rewrite_add(self, answer, domain):
+    def add_entry(self, answer, domain):
         """
         Add rewrite entry
         :param answer: dns answer
@@ -169,9 +165,9 @@ class ApiConnector:
             logging.info("Adding of entry failed (does entry exist ?)")
             return False
 
-    def rewrite_change_answer(self, new_answer, old_answer, domain):
+    def change_entry_answer(self, new_answer, old_answer, domain):
         """
-        Change ip of dns rewrite entry
+        Change answer of dns rewrite entry
         :param new_answer: dns answer after change
         :param old_answer: actual dns answer
         :param domain: dns domain
@@ -184,9 +180,9 @@ class ApiConnector:
         if status is not True:
             return status
 
-        status = self.rewrite_delete(answer=old_answer, domain=domain)
+        status = self.delete_entry(answer=old_answer, domain=domain)
         if status:
-            status = self.rewrite_add(answer=new_answer, domain=domain)
+            status = self.add_entry(answer=new_answer, domain=domain)
             return status
         else:
             return status

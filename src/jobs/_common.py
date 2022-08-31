@@ -44,7 +44,7 @@ class Common:
                     self.actual_dns_answer = host
                     return
             # no host was found create a new one
-            self.api_connector.rewrite_add(domain=self.dns_domain, answer=self.dns_answer_primary)
+            self.api_connector.add_entry(domain=self.dns_domain, answer=self.dns_answer_primary)
             self.actual_dns_answer = self.dns_answer_primary
 
     def api_callback(self):
@@ -61,10 +61,10 @@ class Common:
                         logging.info(
                             "Rewriting for " + self.dns_domain + " from " + str(self.actual_dns_answer) + " to " +
                             self.dns_answer_failover[host_id])
-                        change_status = self.api_connector.rewrite_change_answer(old_answer=self.actual_dns_answer,
-                                                                                 new_answer=self.dns_answer_failover[
+                        change_status = self.api_connector.change_entry_answer(old_answer=self.actual_dns_answer,
+                                                                               new_answer=self.dns_answer_failover[
                                                                                      host_id],
-                                                                                 domain=self.dns_domain)
+                                                                               domain=self.dns_domain)
                         if change_status:
                             self.actual_dns_answer = self.dns_answer_failover[host_id]
                         return
@@ -72,11 +72,11 @@ class Common:
                         return
 
         if (self.primary_answer_status is True) and self.actual_dns_answer != self.dns_answer_primary:
-            change_status = self.api_connector.rewrite_change_answer(old_answer=self.actual_dns_answer,
-                                                                     new_answer=self.dns_answer_primary,
-                                                                     domain=self.dns_domain)
+            change_status = self.api_connector.change_entry_answer(old_answer=self.actual_dns_answer,
+                                                                   new_answer=self.dns_answer_primary,
+                                                                   domain=self.dns_domain)
             if change_status:
                 self.actual_dns_answer = self.dns_answer_primary
 
-        # in case when entry not exist due to server unreachable or person who delete entry from AdGuardHome web ui
+        # in case when entry not exist due to server unreachable or person who delete entry from AdGuardHome webui ui
         self._any_entry_exist()
