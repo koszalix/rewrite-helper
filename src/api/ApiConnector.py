@@ -100,6 +100,32 @@ class ApiConnector:
             logging.error(e)
             return None
 
+    def domain_exist(self, domain):
+        """
+        Check if provided domain exist in rewrite list. Check is simple '1:1 check',
+        :param domain: domain to check
+        :return: True if domain exist, False if not, None when request status code was other than 200
+        """
+        url = self.host + "/control/rewrite/list"
+        try:
+            response = requests.get(url=url, auth=self.auth, timeout=self.timeout)
+
+            if response.status_code == 200:
+                for entry in response.json():
+
+                    if entry["domain"] == domain:
+                        return True
+
+                return False
+
+            else:
+                logging.error("Server responded with status code:" + str(response.status_code))
+                return None
+
+        except requests.exceptions.ConnectionError as e:
+            logging.error(e)
+            return None
+
     def delete_entry(self, answer, domain):
         """
         Remove rewrite entry

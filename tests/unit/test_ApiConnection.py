@@ -171,6 +171,33 @@ class TestApi(unittest.TestCase):
         """
         self.assertEqual(self.api_wrong_auth.delete_entry(answer='2.3.4.5', domain='test.lan'), None)
 
+    def test_domain_exist_really_exist_correct_auth(self):
+        """
+        Test behavior of method domain_exists when domain exist and authentication is correct
+        :return:
+        """
+        self.assertEqual(self.api_correct.domain_exist(domain="donot.delete"), True)
+
+    def test_domain_exist_not_really_exist_correct_auth(self):
+        """
+        Test behavior of method domain_exists when domain not exist and authentication is correct
+        :return:
+        """
+        self.assertEqual(self.api_correct.domain_exist(domain="this_domain_not_exist.delete"), False)
+
+    def test_domain_exist_really_exist_wrong_auth(self):
+        """
+        Test behavior of method domain_exists when domain exist and authentication is correct
+        :return:
+        """
+        self.assertEqual(self.api_wrong_auth.domain_exist(domain="donot.delete"), None)
+
+    def test_domain_exist_not_really_exist_wrong_auth(self):
+        """
+        Test behavior of method domain_exists when domain not exist and authentication is correct
+        :return:
+        """
+        self.assertEqual(self.api_wrong_auth.domain_exist(domain="this_domain_not_exist.delete"), None)
 
 if __name__ == "__main__":
     unittest.main()
