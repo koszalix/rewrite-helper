@@ -14,7 +14,7 @@ class TestApi(unittest.TestCase):
         """
         # Change, depends on your system
         api_configs_correct = {
-            'host': '192.168.56.104',
+            'host': '192.168.56.103',
             'port': 80,
             'proto': 'http',
             'username': 'admin',
@@ -29,7 +29,7 @@ class TestApi(unittest.TestCase):
         }
 
         api_configs_wrong_auth = {
-            'host': '192.168.56.104',
+            'host': '192.168.56.103',
             'port': 80,
             'proto': 'http',
             'username': 'admin',

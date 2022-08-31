@@ -1,4 +1,4 @@
 config:
   wait: 77
   log_level: DEBUG
-  invalid_entry: DROP
+  log_file: /var/log/log.txt

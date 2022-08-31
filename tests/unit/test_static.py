@@ -37,6 +37,9 @@ class TestData(unittest.TestCase):
     def test_config_log_file(self):
         self.assertEqual(data.Config.log_file, "N/A")
 
+    def test_config_invalid_entry(self):
+        self.assertEqual(data.Config.invalid_entry, 'KEEP')
+
     def test_ping_job_interval(self):
         self.assertEqual(data.PingJob.interval, 60)
 

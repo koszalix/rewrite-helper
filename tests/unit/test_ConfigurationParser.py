@@ -748,6 +748,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 0")
         self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level False")
         self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file N/A")
+        self.assertEqual(captured_logs.records[3].getMessage(), "config-invalid_entry KEEP")
 
     def test_section_name_only(self):
         """
@@ -762,6 +763,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 0")
         self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level False")
         self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file N/A")
+        self.assertEqual(captured_logs.records[3].getMessage(), "config-invalid_entry KEEP")
 
     def test_no_log_level(self):
         """
@@ -775,6 +777,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 77")
         self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level False")
         self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file /var/log/log.txt")
+        self.assertEqual(captured_logs.records[3].getMessage(), "config-invalid_entry DROP")
 
     def test_no_log_file(self):
         """
@@ -788,6 +791,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 77")
         self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level 10")
         self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file N/A")
+        self.assertEqual(captured_logs.records[3].getMessage(), "config-invalid_entry DROP")
 
     def test_no_wait(self):
         """
@@ -801,6 +805,21 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 0")
         self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level 10")
         self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file /var/log/log.txt")
+        self.assertEqual(captured_logs.records[3].getMessage(), "config-invalid_entry DROP")
+
+    def test_no_invalid_entry(self):
+        """
+        Test behavior of method parse_config() when config file contain config section without invalid_entry parameter
+        :return:
+        """
+        parser = ConfigParser(file=self.working_directory + 'no_invalid_entry.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_config()
+        self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 77")
+        self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level 10")
+        self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file /var/log/log.txt")
+        self.assertEqual(captured_logs.records[3].getMessage(), "config-invalid_entry KEEP")
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
