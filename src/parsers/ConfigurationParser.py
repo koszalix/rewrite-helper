@@ -17,7 +17,7 @@ class ConfigParser:
     Read and parse config file. Run .parse() to run all parses.
     """
 
-    def __init__(self, file):
+    def __init__(self, file: str):
         """
         :param file: path to config file
         """
@@ -27,7 +27,7 @@ class ConfigParser:
         self.ping_configs = {}
         self.static_entry_configs = {}
         self.api_config = {}
-        self.config_config ={}
+        self.config_config = {}
 
     def find_any_yml(self):
         """
@@ -47,7 +47,7 @@ class ConfigParser:
         else:
             return False
 
-    def read_config_file(self, filename):
+    def read_config_file(self, filename: str):
         """
         Read data from config file
         :param filename: file to read from
@@ -55,7 +55,7 @@ class ConfigParser:
         """
         try:
             f = open(file=filename, mode="r")
-            # using additional variables prevents from,  unclosed file when errors occurs while parsing yaml
+            # using additional variables prevents from unclosed file, when errors occur while parsing yaml
             content_of_file = f.read()
 
             f.close()
@@ -123,12 +123,14 @@ class ConfigParser:
                 self.http_configs[job_index]['interval'] = parse_value_with_default(content=job, key='interval',
                                                                                     default_value=data.HttpJob.interval)
                 self.http_configs[job_index]['status_code'] = parse_value_with_default(content=job, key='status',
-                                                                                       default_value=data.HttpJob.status)
+                                                                                       default_value=
+                                                                                       data.HttpJob.status)
                 self.http_configs[job_index]['proto'] = parse_value_with_default(content=job, key='proto',
                                                                                  default_value='http')
                 self.http_configs[job_index]['port'] = parse_value_with_default(content=job, key='port',
                                                                                 default_value=match_port_to_protocol(
-                                                                                    proto=self.http_configs[job_index]['proto'],
+                                                                                    proto=self.http_configs[job_index][
+                                                                                        'proto'],
                                                                                     default_port=data.HttpJob.port)
                                                                                 )
 
@@ -197,8 +199,9 @@ class ConfigParser:
                 self.static_entry_configs[job_index]['domain'] = job['domain']
                 self.static_entry_configs[job_index]['answer'] = job['answer']
                 self.static_entry_configs[job_index]['interval'] = parse_value_with_default(content=job,
-                                                                                 key='interval',
-                                                                                 default_value=data.StaticEntry.interval)
+                                                                                            key='interval',
+                                                                                            default_value=
+                                                                                            data.StaticEntry.interval)
                 logging.debug(msg="static-entry-domain " + self.static_entry_configs[job_index]['domain'])
                 logging.debug(msg="static-entry-answer " + self.static_entry_configs[job_index]['answer'])
                 logging.debug(msg="static-entry-interval " + str(self.static_entry_configs[job_index]['interval']))
@@ -232,9 +235,11 @@ class ConfigParser:
                     content=self.file_content['api']['startup'],
                     key='timeout', default_value=data.Api.Startup.timeout)
                 self.api_config['startup']['exit_on_fail'] = parse_value_with_default(
-                    content=self.file_content['api']['startup'], key='exit_on_fail', default_value=data.Api.Startup.exit_on_false)
+                    content=self.file_content['api']['startup'], key='exit_on_fail',
+                    default_value=data.Api.Startup.exit_on_false)
                 self.api_config['startup']['retry_after'] = parse_value_with_default(
-                    content=self.file_content['api']['startup'], key='retry_after', default_value=data.Api.Startup.retry_after)
+                    content=self.file_content['api']['startup'], key='retry_after',
+                    default_value=data.Api.Startup.retry_after)
             else:
                 self.api_config['startup'] = {}
                 self.api_config['startup']['test'] = True
@@ -265,7 +270,7 @@ class ConfigParser:
         try:
             if 'config' in self.file_content:
                 self.config_config['wait'] = parse_value_with_default(
-                                            content=self.file_content['config'], key='wait', default_value=data.Config.wait)
+                    content=self.file_content['config'], key='wait', default_value=data.Config.wait)
                 log_level = parse_value_with_default(
                     content=self.file_content['config'], key="log_level", default_value="N/A")
 

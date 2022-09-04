@@ -3,15 +3,16 @@
 # Running unit tests
 1. Run AdGuardHome vm 
 2. Run DummyHost vm
-3. Ensure if ip address of vm is correct (see [Notes about virtual machines](#Notesaboutvirtualmachines) )
+3. Ensure if ip address of vm is correct (see [Notes about virtual machines](#Notes about virtual machines) )
 4. Type following command
 ```bash
 python3 -m unittest discover -t .
 ```
-4. Goto [AdGuardHome vm](http://192.168.56.103/#dns_rewrites) webpage and check if there is no dns rewrite configured (excluding donot.delete)
+4. Goto [AdGuardHome vm](http://192.168.56.103/#dns_rewrites) webpage and check if there is no dns rewrite configured
+   (excluding do-not.delete)
 
-Some test needs virtual machines or special files, please read [Test environment](#Testenvironment) and 
-[Notes about virtual machines](#Notesaboutvirtualmachines) section before 
+Some test needs virtual machines or special files, please read [Test environment](#Test environment) and 
+[Notes about virtual machines'](#Notes about virtual machines) section before 
 running test.  
 
 

@@ -1,6 +1,5 @@
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 
-
 from src.utils import parse_logging_level
 
 
@@ -8,7 +7,8 @@ class CliParser:
     """
     Parse command line arguments
     """
-    def __init__(self, args):
+
+    def __init__(self, args: list):
         """
         :param args: sys.argv arguments
         """
@@ -52,10 +52,10 @@ class CliParser:
                 self.run_privileged = True
 
             elif arg[0:len('--log-file')] == '--log-file':
-                self.log_file = arg[len('--log-file')+1:]
+                self.log_file = arg[len('--log-file') + 1:]
 
             elif arg[0:len('--log-level')] == '--log-level':
-                level = parse_logging_level(arg[len('--log-level')+1:])
+                level = parse_logging_level(arg[len('--log-level') + 1:])
                 if level is not False:
                     self.log_level = level
             else:

@@ -7,9 +7,11 @@ import logging
 from src.jobs import http, ping, static_entry
 from src.api.ApiConnector import ApiConnector
 
+
 class TestHosts:
 
-    def __init__(self, http_configs: dict, ping_configs: dict, static_entry_configs: dict, api_connector: ApiConnector, config_configs=None,privileged=False):
+    def __init__(self, http_configs: dict, ping_configs: dict, static_entry_configs: dict, config_configs: dict,
+                 api_connector: ApiConnector, privileged=False):
         """
         Configure and run jobs, interact with adguardhome
         Job is a single test to perform on host for ex: get status code of a webpage or ping.
@@ -83,7 +85,7 @@ class TestHosts:
         self.http_tasks = []
         self.static_entry_tasks = []
 
-    def add_task(self, domain):
+    def add_task(self, domain: str):
         """
         Depends on config/invalid_answer and domain state decide if task should be added or not, when connection can't
         be established return False
@@ -96,7 +98,6 @@ class TestHosts:
 
         if self.config_configs['entry_exist'] == "KEEP":
             return True
-
 
         if state:
             if self.config_configs['entry_exist'] == "DROP":
@@ -120,15 +121,15 @@ class TestHosts:
             try:
                 if self.add_task(domain=self.http_configs[i]['dns_domain']):
                     self.http_tasks.append(http.Test(
-                                                        correct_status_code=self.http_configs[i]['status_code'],
-                                                        interval=self.http_configs[i]['interval'],
-                                                        port=self.http_configs[i]['port'],
-                                                        proto=self.http_configs[i]['proto'],
-                                                        timeout=self.http_configs[i]['timeout'],
-                                                        dns_answer=self.http_configs[i]['dns_answer'],
-                                                        dns_domain=self.http_configs[i]['dns_domain'],
-                                                        dns_answer_failover=self.http_configs[i]['dns_answer_failover'],
-                                                        api_connect=self.api_connector))
+                        correct_status_code=self.http_configs[i]['status_code'],
+                        interval=self.http_configs[i]['interval'],
+                        port=self.http_configs[i]['port'],
+                        proto=self.http_configs[i]['proto'],
+                        timeout=self.http_configs[i]['timeout'],
+                        dns_answer=self.http_configs[i]['dns_answer'],
+                        dns_domain=self.http_configs[i]['dns_domain'],
+                        dns_answer_failover=self.http_configs[i]['dns_answer_failover'],
+                        api_connect=self.api_connector))
             except KeyError:
                 logging.error("Internal error, provide http config missing key")
                 return False
@@ -144,14 +145,14 @@ class TestHosts:
             try:
                 if self.add_task(domain=self.ping_configs[i]['dns_domain']):
                     self.ping_tasks.append(ping.Test(
-                                                        timeout=self.ping_configs[i]['timeout'],
-                                                        count=self.ping_configs[i]['count'],
-                                                        interval=self.ping_configs[i]['interval'],
-                                                        dns_domain=self.ping_configs[i]['dns_domain'],
-                                                        dns_answer=self.ping_configs[i]['dns_answer'],
-                                                        dns_answer_failover=self.ping_configs[i]['dns_answer_failover'],
-                                                        api_connect=self.api_connector,
-                                                        privileged=self.privileged))
+                        timeout=self.ping_configs[i]['timeout'],
+                        count=self.ping_configs[i]['count'],
+                        interval=self.ping_configs[i]['interval'],
+                        dns_domain=self.ping_configs[i]['dns_domain'],
+                        dns_answer=self.ping_configs[i]['dns_answer'],
+                        dns_answer_failover=self.ping_configs[i]['dns_answer_failover'],
+                        api_connect=self.api_connector,
+                        privileged=self.privileged))
             except KeyError:
                 logging.error("Internal error, provide ping config missing key")
                 return False

@@ -20,4 +20,4 @@ chmod 000 unit/fixtures/config_files/any_yaml/no_permissions
 chmod 000 unit/fixtures/config_files/read_config_file/no_permissions
 
 # creating vms
-vboxmanage registervm $(pwd)"/vms/AdGuardHome/AdGuardHome.vbox"
+vboxmanage registervm "$(pwd)/vms/AdGuardHome/AdGuardHome.vbox"
