@@ -4,7 +4,7 @@ import unittest
 from src.jobs import ping
 from src.jobs import http
 from src.jobs import static_entry
-from src.static import data
+from src.data import default_data
 
 
 class TestPing(unittest.TestCase):
@@ -27,8 +27,12 @@ class TestPing(unittest.TestCase):
                                            dns_answer="192.168.56.105", interval=10,
                                            dns_answer_failover=["192.168.56.22"])
 
-        self.ping_negative_interval = ping.Test(count=2, timeout=1, dns_domain="test.lan", api_connect=None, dns_answer="192.168.56.105", interval=-10, dns_answer_failover=["192.168.56.22"])
-        self.ping_zero_interval = ping.Test(count=2, timeout=1, dns_domain="test.lan", api_connect=None, dns_answer="192.168.56.105", interval=0, dns_answer_failover=["192.168.56.22"])
+        self.ping_negative_interval = ping.Test(count=2, timeout=1, dns_domain="test.lan", api_connect=None,
+                                                dns_answer="192.168.56.105", interval=-10,
+                                                dns_answer_failover=["192.168.56.22"])
+        self.ping_zero_interval = ping.Test(count=2, timeout=1, dns_domain="test.lan", api_connect=None,
+                                            dns_answer="192.168.56.105", interval=0,
+                                            dns_answer_failover=["192.168.56.22"])
 
     def test_host_up(self):
         """
@@ -79,7 +83,7 @@ class TestPing(unittest.TestCase):
         Test ping job behavior when timeout is negative
         :return:
         """
-        self.assertEqual(self.ping_zero_timeout.timeout, data.PingJob.timeout)
+        self.assertEqual(self.ping_zero_timeout.timeout, default_data.PingJob.timeout)
         self.assertEqual(self.ping_negative_timeout.job_request(host="192.168.56.105"), True)
         with self.assertLogs(level=logging.INFO) as captured_logs:
             self.ping_negative_timeout.job_request(host="192.168.56.105")
@@ -92,54 +96,57 @@ class TestPing(unittest.TestCase):
         :return:
         """
         self.assertEqual(self.ping_zero_timeout.job_request(host="192.168.56.105"), True)
-        self.assertEqual(self.ping_zero_timeout.timeout, data.PingJob.timeout)
+        self.assertEqual(self.ping_zero_timeout.timeout, default_data.PingJob.timeout)
         with self.assertLogs(level=logging.INFO) as captured_logs:
             self.ping_negative_timeout.job_request(host="192.168.56.105")
         self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: 192.168.56.105")
         self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: 192.168.56.105 ok")
 
     def test_interval_negative(self):
-        self.assertEqual(self.ping_negative_interval.interval, data.PingJob.interval)
+        self.assertEqual(self.ping_negative_interval.interval, default_data.PingJob.interval)
 
     def test_interval_zero(self):
-        self.assertEqual(self.ping_zero_interval.interval, data.PingJob.interval)
+        self.assertEqual(self.ping_zero_interval.interval, default_data.PingJob.interval)
 
 
 class TestHttp(unittest.TestCase):
 
     def setUp(self):
-        self.http = http.Test(correct_status_code=200, interval=60, port=80, proto="http", timeout=1, dns_domain="test.lan", api_connect=None,
-                            dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
-
-        self.http_wrong_code = http.Test(correct_status_code=404, interval=60, port=80, proto="http", timeout=1,
+        self.http = http.Test(correct_status_code=200, interval=60, port=80, proto="http", timeout=1,
                               dns_domain="test.lan", api_connect=None,
                               dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
+
+        self.http_wrong_code = http.Test(correct_status_code=404, interval=60, port=80, proto="http", timeout=1,
+                                         dns_domain="test.lan", api_connect=None,
+                                         dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
 
         self.http_invalid_schema = http.Test(correct_status_code=404, interval=60, port=80, proto="", timeout=1,
                                              dns_domain="test.lan", api_connect=None,
                                              dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
 
-
         self.http_negative_timeout = http.Test(correct_status_code=200, interval=60, port=80, proto="http", timeout=-10,
                                                dns_domain="test.lan", api_connect=None,
+                                               dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
+
+        self.http_zero_timeout = http.Test(correct_status_code=200, interval=60, port=80, proto="http", timeout=0,
+                                           dns_domain="test.lan", api_connect=None,
+                                           dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
+
+        self.http_negative_interval = http.Test(correct_status_code=200, interval=-60, port=80, proto="http", timeout=1,
+                                                dns_domain="test.lan", api_connect=None,
                                                 dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
 
-        self.http_zero_timeout = http.Test(correct_status_code=200, interval=60, port=80, proto="http", timeout=0, dns_domain="test.lan", api_connect=None,
-                            dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
-
-
-        self.http_negative_interval = http.Test(correct_status_code=200, interval=-60, port=80, proto="http", timeout=1, dns_domain="test.lan", api_connect=None,
-                            dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
-
-        self.http_zero_interval = http.Test(correct_status_code=200, interval=0, port=80, proto="http", timeout=1, dns_domain="test.lan", api_connect=None,
-                            dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
+        self.http_zero_interval = http.Test(correct_status_code=200, interval=0, port=80, proto="http", timeout=1,
+                                            dns_domain="test.lan", api_connect=None,
+                                            dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
 
     def test_host_down(self):
         self.assertEqual(self.http.job_request(host="192.168.56.222"), False)
         with self.assertLogs(level=logging.INFO) as captured_logs:
             self.http.job_request(host="192.168.56.222")
         self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: http://192.168.56.222:80")
-        self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: http://192.168.56.222:80 failed (Connection error)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Test (status) of: http://192.168.56.222:80 failed (Connection error)")
 
     def test_host_up(self):
         self.assertEqual(self.http.job_request(host="192.168.56.105"), True)
@@ -153,24 +160,26 @@ class TestHttp(unittest.TestCase):
         with self.assertLogs(level=logging.INFO) as captured_logs:
             self.http_wrong_code.job_request(host="192.168.56.105")
         self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: http://192.168.56.105:80")
-        self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: http://192.168.56.105:80 failed (status code 200)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Test (status) of: http://192.168.56.105:80 failed (status code 200)")
 
     def test_invalid_schema(self):
         self.assertEqual(self.http_invalid_schema.job_request(host="192.168.56.105"), False)
         with self.assertLogs(level=logging.INFO) as captured_logs:
             self.http_invalid_schema.job_request(host="192.168.56.105")
         self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: 192.168.56.105:80")
-        self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: 192.168.56.105:80 failed (Invalid schema)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Test (status) of: 192.168.56.105:80 failed (Invalid schema)")
 
     def test_interval_zero(self):
-        self.assertEqual(self.http_zero_interval.interval, data.HttpJob.interval)
+        self.assertEqual(self.http_zero_interval.interval, default_data.HttpJob.interval)
 
     def test_interval_negative(self):
-        self.assertEqual(self.http_negative_interval.interval, data.HttpJob.interval)
+        self.assertEqual(self.http_negative_interval.interval, default_data.HttpJob.interval)
 
     def test_timeout_negative(self):
         self.assertEqual(self.http_negative_timeout.job_request(host="192.168.56.105"), True)
-        self.assertEqual(self.http_negative_timeout.timeout, data.HttpJob.timeout)
+        self.assertEqual(self.http_negative_timeout.timeout, default_data.HttpJob.timeout)
         with self.assertLogs(level=logging.INFO) as captured_logs:
             self.http_negative_timeout.job_request(host="192.168.56.105")
         self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: http://192.168.56.105:80")
@@ -178,7 +187,7 @@ class TestHttp(unittest.TestCase):
 
     def test_timeout_zero(self):
         self.assertEqual(self.http_zero_timeout.job_request(host="192.168.56.105"), True)
-        self.assertEqual(self.http_zero_timeout.timeout, data.HttpJob.timeout)
+        self.assertEqual(self.http_zero_timeout.timeout, default_data.HttpJob.timeout)
         with self.assertLogs(level=logging.INFO) as captured_logs:
             self.http_zero_timeout.job_request(host="192.168.56.105")
         self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: http://192.168.56.105:80")
@@ -187,14 +196,16 @@ class TestHttp(unittest.TestCase):
 
 class TestStaticEntry(unittest.TestCase):
     def setUp(self):
-        self.static_entry_negative_interval = static_entry.Test(domain="test.lan", answer="1.1.1.1", interval=-10, api_connect=None)
-        self.static_entry_zero_interval = static_entry.Test(domain="test.lan", answer="1.1.1.1", interval=-10, api_connect=None)
+        self.static_entry_negative_interval = static_entry.Test(domain="test.lan", answer="1.1.1.1", interval=-10,
+                                                                api_connect=None)
+        self.static_entry_zero_interval = static_entry.Test(domain="test.lan", answer="1.1.1.1", interval=-10,
+                                                            api_connect=None)
 
     def test_zero_interval(self):
-        self.assertEqual(self.static_entry_zero_interval.interval, data.StaticEntry.interval)
+        self.assertEqual(self.static_entry_zero_interval.interval, default_data.StaticEntry.interval)
 
     def test_negative_interval(self):
-        self.assertEqual(self.static_entry_zero_interval.interval, data.StaticEntry.interval)
+        self.assertEqual(self.static_entry_zero_interval.interval, default_data.StaticEntry.interval)
 
 
 if __name__ == "__main__":

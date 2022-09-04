@@ -1,20 +1,21 @@
 import logging
 import threading
 import time
+from typing import Union
 
 from src.api.ApiConnector import ApiConnector
-from src.static import data
+from src.data import default_data
 
 
 class Test(threading.Thread):
-    def __init__(self, domain: str, answer: str, interval: int, api_connect: ApiConnector):
+    def __init__(self, domain: str, answer: str, interval: int, api_connect: Union[ApiConnector, None]):
         if api_connect is not None:
             threading.Thread.__init__(self)
 
         self.domain = domain
         self.answer = answer
         if interval <= 0:
-            self.interval = data.StaticEntry.interval
+            self.interval = default_data.StaticEntry.interval
         else:
             self.interval = interval
 

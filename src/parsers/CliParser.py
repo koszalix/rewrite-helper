@@ -1,4 +1,4 @@
-from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
+from logging import INFO
 
 from src.utils import parse_logging_level
 

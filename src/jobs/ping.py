@@ -1,13 +1,14 @@
 import logging
 import threading
 import time
+from typing import Union
 
 from icmplib import NameLookupError as ICMPLookupError
 from icmplib import ping
 
 from src.api.ApiConnector import ApiConnector
 from ._common import Common
-from src.static import data
+from src.data import default_data
 
 
 class Test(Common, threading.Thread):
@@ -16,7 +17,7 @@ class Test(Common, threading.Thread):
     """
 
     def __init__(self, count: int, timeout: float, interval: int, dns_domain: str, dns_answer: str,
-                 dns_answer_failover: list, api_connect: ApiConnector, privileged=False):
+                 dns_answer_failover: list, api_connect: Union[ApiConnector, None], privileged=False):
         """
         Create configuration variables
         :param count: int: number of pakages will be sent to host
@@ -38,11 +39,11 @@ class Test(Common, threading.Thread):
         self.count = count
 
         if interval <= 0:
-            self.interval = data.PingJob.interval
+            self.interval = default_data.PingJob.interval
         else:
             self.interval = interval
         if timeout <= 0:
-            self.timeout = data.PingJob.timeout
+            self.timeout = default_data.PingJob.timeout
         else:
             self.timeout = timeout
 

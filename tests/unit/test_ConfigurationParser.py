@@ -645,30 +645,30 @@ class TestStaticEntry(unittest.TestCase):
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parser_static_entry()
-        self.assertEqual(captured_logs.records[0].getMessage(), "static-entry-domain test.lan")
-        self.assertEqual(captured_logs.records[1].getMessage(), "static-entry-answer 1.1.1.1")
-        self.assertEqual(captured_logs.records[2].getMessage(), "static-entry-interval 23")
+        self.assertEqual(captured_logs.records[0].getMessage(), "data-entry-domain test.lan")
+        self.assertEqual(captured_logs.records[1].getMessage(), "data-entry-answer 1.1.1.1")
+        self.assertEqual(captured_logs.records[2].getMessage(), "data-entry-interval 23")
 
     def test_static_entry_multiple_instances(self):
         parser = ConfigParser(file=self.working_directory + 'static_entry_multiple_instances.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parser_static_entry()
-        self.assertEqual(captured_logs.records[0].getMessage(), "static-entry-domain test.lan")
-        self.assertEqual(captured_logs.records[1].getMessage(), "static-entry-answer 1.1.1.1")
-        self.assertEqual(captured_logs.records[2].getMessage(), "static-entry-interval 23")
-        self.assertEqual(captured_logs.records[3].getMessage(), "static-entry-domain xsv.lan")
-        self.assertEqual(captured_logs.records[4].getMessage(), "static-entry-answer 1.2.3.4")
-        self.assertEqual(captured_logs.records[5].getMessage(), "static-entry-interval 44")
+        self.assertEqual(captured_logs.records[0].getMessage(), "data-entry-domain test.lan")
+        self.assertEqual(captured_logs.records[1].getMessage(), "data-entry-answer 1.1.1.1")
+        self.assertEqual(captured_logs.records[2].getMessage(), "data-entry-interval 23")
+        self.assertEqual(captured_logs.records[3].getMessage(), "data-entry-domain xsv.lan")
+        self.assertEqual(captured_logs.records[4].getMessage(), "data-entry-answer 1.2.3.4")
+        self.assertEqual(captured_logs.records[5].getMessage(), "data-entry-interval 44")
 
     def test_static_entry_no_interval(self):
         parser = ConfigParser(file=self.working_directory + 'static_entry_no_interval.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parser_static_entry()
-        self.assertEqual(captured_logs.records[0].getMessage(), "static-entry-domain test.lan")
-        self.assertEqual(captured_logs.records[1].getMessage(), "static-entry-answer 1.1.1.1")
-        self.assertEqual(captured_logs.records[2].getMessage(), "static-entry-interval 60")
+        self.assertEqual(captured_logs.records[0].getMessage(), "data-entry-domain test.lan")
+        self.assertEqual(captured_logs.records[1].getMessage(), "data-entry-answer 1.1.1.1")
+        self.assertEqual(captured_logs.records[2].getMessage(), "data-entry-interval 60")
 
 
 class TestAnyYaml(unittest.TestCase):

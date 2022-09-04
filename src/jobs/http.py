@@ -1,14 +1,14 @@
 import logging
 import threading
-
 import time
+from typing import Union
 
 import requests
 
 from src.api.ApiConnector import ApiConnector
 from ._common import Common
 from src.utils import check_protocol_slashed
-from src.static import data
+from src.data import default_data
 
 
 class Test(Common, threading.Thread):
@@ -17,7 +17,7 @@ class Test(Common, threading.Thread):
     """
 
     def __init__(self, correct_status_code: int, interval: int, port: int, proto: str, dns_domain: str, dns_answer: str,
-                 timeout: int, dns_answer_failover: list, api_connect: ApiConnector):
+                 timeout: int, dns_answer_failover: list, api_connect: Union[ApiConnector, None]):
         """
         Create configuration variables
         :param correct_status_code: status code recognised as "host ok"
@@ -43,11 +43,11 @@ class Test(Common, threading.Thread):
         self.proto = check_protocol_slashed(proto)
 
         if interval <= 0:
-            self.interval = data.HttpJob.interval
+            self.interval = default_data.HttpJob.interval
         else:
             self.interval = interval
         if timeout <= 0:
-            self.timeout = data.HttpJob.timeout
+            self.timeout = default_data.HttpJob.timeout
         else:
             self.timeout = timeout
 

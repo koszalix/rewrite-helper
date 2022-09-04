@@ -26,7 +26,7 @@ class Common:
 
         self.api_connector = api_connect
 
-        self.actual_dns_answer = False
+        self.actual_dns_answer = ""
 
         self._any_entry_exist()
 
@@ -44,6 +44,7 @@ class Common:
                     self.actual_dns_answer = host
                     return
             # no host was found create a new one
+            # TODO: check status of add_entry if it's fails decide what to do
             self.api_connector.add_entry(domain=self.dns_domain, answer=self.dns_answer_primary)
             self.actual_dns_answer = self.dns_answer_primary
 

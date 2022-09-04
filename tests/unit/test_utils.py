@@ -144,7 +144,7 @@ class ParseLoggingLevel(unittest.TestCase):
 
     def test_invalid_strint(self):
         self.assertEqual(parse_logging_level(logging_str="N/A"), False)
-        self.assertEqual(parse_logging_level(logging_str="xdsd"), False)
+        self.assertEqual(parse_logging_level(logging_str="invalid-string"), False)
 
     def test_float(self):
         self.assertEqual(parse_logging_level(logging_str=3.14), False)

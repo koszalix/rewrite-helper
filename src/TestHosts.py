@@ -168,7 +168,7 @@ class TestHosts:
                         interval=self.static_entry_configs[i]['interval'],
                         api_connect=self.api_connector))
             except KeyError:
-                logging.error("Internal error, provide static entry config missing key")
+                logging.error("Internal error, provide data entry config missing key")
                 return False
         return True
 
