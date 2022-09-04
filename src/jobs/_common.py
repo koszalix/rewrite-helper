@@ -8,7 +8,7 @@ class Common:
     Common method for other classes
     """
 
-    def __init__(self, dns_domain="", dns_answer="", dns_answer_failover=None, api_connect=ApiConnector):
+    def __init__(self, dns_domain: str, dns_answer: str, dns_answer_failover: list, api_connect: ApiConnector):
         """
         Create configuration variables
         :param dns_domain: str: domain which is used in dns rewrite
@@ -63,7 +63,7 @@ class Common:
                             self.dns_answer_failover[host_id])
                         change_status = self.api_connector.change_entry_answer(old_answer=self.actual_dns_answer,
                                                                                new_answer=self.dns_answer_failover[
-                                                                                     host_id],
+                                                                                   host_id],
                                                                                domain=self.dns_domain)
                         if change_status:
                             self.actual_dns_answer = self.dns_answer_failover[host_id]

@@ -9,13 +9,14 @@ from src.api.ApiConnector import ApiConnector
 from ._common import Common
 from src.static import data
 
+
 class Test(Common, threading.Thread):
     """
     Send ICMP package to all host mentioned in dns answers
     """
 
-    def __init__(self, count, timeout, interval, dns_domain, dns_answer, dns_answer_failover, api_connect=ApiConnector,
-                 privileged=False):
+    def __init__(self, count: int, timeout: float, interval: int, dns_domain: str, dns_answer: str,
+                 dns_answer_failover: list, api_connect: ApiConnector, privileged=False):
         """
         Create configuration variables
         :param count: int: number of pakages will be sent to host
@@ -28,11 +29,10 @@ class Test(Common, threading.Thread):
         :param privileged: run ping in privileged mode, see icmplib for documentation
          """
 
-
         # on unittest set api connect to None (avoid no necessary api object creating)
         if api_connect is not None:
             super().__init__(dns_domain=dns_domain, dns_answer=dns_answer, dns_answer_failover=dns_answer_failover,
-                            api_connect=api_connect)
+                             api_connect=api_connect)
 
             threading.Thread.__init__(self)
         self.count = count
@@ -48,7 +48,7 @@ class Test(Common, threading.Thread):
 
         self.privileged = privileged
 
-    def job_request(self, host):
+    def job_request(self, host: str):
         """
         Send ping to host
         :return: True if the host respond to ping, otherwise return False
