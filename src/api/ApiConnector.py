@@ -12,7 +12,7 @@ class ApiConnector:
     Realize connection between script and adguardhome, add, remove or change dns rewrite entries
     """
 
-    def __init__(self, config):
+    def __init__(self, config: dict):
         """
         :param config: dictionary contains all configuration needed to communicate with adguard api.
                        Syntax:
@@ -33,7 +33,6 @@ class ApiConnector:
                                 }
 
                         }
-        :param test_connection: check connection to api on class init
         """
         self.host = check_protocol_slashed(config['proto']) + config['host'] + ":" + str(config['port'])
         self.auth = HTTPBasicAuth(config['username'], config['passwd'])
@@ -73,7 +72,7 @@ class ApiConnector:
             logging.error("Can't establish connection to API")
             return False
 
-    def entry_exist(self, answer, domain):
+    def entry_exist(self, answer: str, domain: str):
         """
         Check if provided entry (answer and domain) exist in rewrite list. Check is simple '1:1 check',
         :param answer: dns answer
@@ -100,7 +99,7 @@ class ApiConnector:
             logging.error(e)
             return None
 
-    def domain_exist(self, domain):
+    def domain_exist(self, domain: str):
         """
         Check if provided domain exist in rewrite list. Check is simple '1:1 check',
         :param domain: domain to check
@@ -126,7 +125,7 @@ class ApiConnector:
             logging.error(e)
             return None
 
-    def get_answer_of_domain(self, domain):
+    def get_answer_of_domain(self, domain: str):
         """
         Return dns answer of provided domain
         :param domain: domain to check
@@ -153,7 +152,7 @@ class ApiConnector:
             logging.error(e)
             return None
 
-    def delete_entry(self, answer, domain):
+    def delete_entry(self, answer: str, domain: str):
         """
         Remove rewrite entry
         :param answer: dns answer
@@ -185,7 +184,7 @@ class ApiConnector:
             logging.info("Deletion of entry failed (does entry exist ?)")
             return False
 
-    def add_entry(self, answer, domain):
+    def add_entry(self, answer: str, domain: str):
         """
         Add rewrite entry
         :param answer: dns answer
@@ -218,7 +217,7 @@ class ApiConnector:
             logging.info("Adding of entry failed (does entry exist ?)")
             return False
 
-    def change_entry_answer(self, new_answer, old_answer, domain):
+    def change_entry_answer(self, new_answer: str, old_answer: str, domain: str):
         """
         Change answer of dns rewrite entry
         :param new_answer: dns answer after change
