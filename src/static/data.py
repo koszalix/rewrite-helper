@@ -21,6 +21,7 @@ class Config:
     log_file = "N/A"
     entry_exist = 'KEEP'
 
+
 class PingJob:
     interval = 60
     count = 2

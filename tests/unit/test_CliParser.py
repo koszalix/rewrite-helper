@@ -105,7 +105,7 @@ class TestCliParser(unittest.TestCase):
 
     def test_log_level(self):
         """
-        Test if '--log-level' argument and it's value are recognised correctly
+        Test if '--log-level' argument, and it's value are recognised correctly
         :return:
         """
         self.assertEqual(self.parser_0.log_level, DEBUG)

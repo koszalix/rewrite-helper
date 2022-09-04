@@ -36,7 +36,8 @@ class TestReadConfigFile(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "no_permissions/config.yml")
         self.assertEqual(captured_logs.records[0].getMessage(),
-                         "Can't open config file " + self.working_directory + "no_permissions/config.yml" + " permission error")
+                         "Can't open config file " + self.working_directory + "no_permissions/config.yml"
+                         + " permission error")
         self.assertEqual(parser.read_config_file(filename=self.working_directory + "no_permissions/config.yml"), False)
 
     def test_file_no_found(self):
@@ -48,7 +49,8 @@ class TestReadConfigFile(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "this_file_does_not_exist.yml")
         self.assertEqual(captured_logs.records[0].getMessage(),
-                         "Can't open config file " + self.working_directory + "this_file_does_not_exist.yml" + " file not found")
+                         "Can't open config file " + self.working_directory + "this_file_does_not_exist.yml" +
+                         " file not found")
         self.assertEqual(parser.read_config_file(filename=self.working_directory + "this_file_does_not_exist.yml"),
                          False)
 
@@ -820,6 +822,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level 10")
         self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file /var/log/log.txt")
         self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist KEEP")
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)

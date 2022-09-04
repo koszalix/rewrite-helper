@@ -67,5 +67,6 @@ class TestData(unittest.TestCase):
     def test_static_entry(self):
         self.assertEqual(data.StaticEntry.interval, 60)
 
+
 if __name__ == '__main__':
     unittest.main()

@@ -3,6 +3,7 @@ import unittest
 from src.TestHosts import TestHosts
 from src.api.ApiConnector import ApiConnector
 
+
 class TestHost(unittest.TestCase):
     def setUp(self):
         api_configs_correct = {
@@ -38,7 +39,7 @@ class TestHost(unittest.TestCase):
         self.api_correct = ApiConnector(config=api_configs_correct)
         self.api_wrong_auth = ApiConnector(config=api_configs_wrong_auth)
 
-        if self.api_correct.add_entry(domain='test-host.lan',answer="2.2.2.2") is False:
+        if self.api_correct.add_entry(domain='test-host.lan', answer="2.2.2.2") is False:
             exit(-1)
 
     def test_add_task_correct_auth_domain_exist_keep(self):
@@ -46,7 +47,8 @@ class TestHost(unittest.TestCase):
         Test behavior of add_task when auth is correct domain exist and invalid_entry is set to KEEP
         :return:
         """
-        testHost = TestHosts(api_connector=self.api_correct, config_configs={'entry_exist':'KEEP'}, http_configs={}, static_entry_configs={}, ping_configs={})
+        testHost = TestHosts(api_connector=self.api_correct, config_configs={'entry_exist': 'KEEP'}, http_configs={},
+                             static_entry_configs={}, ping_configs={})
         # ensure if domain exist, without that test is a little nonsense
         self.assertEqual(self.api_correct.domain_exist(domain="test-host.lan"), True)
         self.assertEqual(testHost.add_task(domain="test-host.lan"), True)
@@ -56,7 +58,8 @@ class TestHost(unittest.TestCase):
         Test behavior of add_task when auth is correct domain exist and invalid_entry is set to KEEP
         :return:
         """
-        testHost = TestHosts(api_connector=self.api_correct, config_configs={'entry_exist':'KEEP'}, http_configs={}, static_entry_configs={}, ping_configs={})
+        testHost = TestHosts(api_connector=self.api_correct, config_configs={'entry_exist': 'KEEP'}, http_configs={},
+                             static_entry_configs={}, ping_configs={})
         # ensure if domain not exist, without that test is a little nonsense
         self.assertEqual(self.api_correct.domain_exist(domain="tesxt-host.lan"), False)
         self.assertEqual(testHost.add_task(domain="tesxt-host.lan"), True)
@@ -111,7 +114,8 @@ class TestHost(unittest.TestCase):
         Test behavior of add_task when auth is correct domain exist and invalid_entry is set to KEEP
         :return:
         """
-        testHost = TestHosts(api_connector=self.api_wrong_auth, config_configs={'entry_exist':'KEEP'}, http_configs={}, static_entry_configs={}, ping_configs={})
+        testHost = TestHosts(api_connector=self.api_wrong_auth, config_configs={'entry_exist': 'KEEP'}, http_configs={},
+                             static_entry_configs={}, ping_configs={})
         self.assertEqual(testHost.add_task(domain="test-host.lan"), False)
 
     def test_add_task_wrong_auth_domain_not_exist_keep(self):
@@ -119,7 +123,8 @@ class TestHost(unittest.TestCase):
         Test behavior of add_task when auth is correct domain exist and invalid_entry is set to KEEP
         :return:
         """
-        testHost = TestHosts(api_connector=self.api_wrong_auth, config_configs={'entry_exist':'KEEP'}, http_configs={}, static_entry_configs={}, ping_configs={})
+        testHost = TestHosts(api_connector=self.api_wrong_auth, config_configs={'entry_exist': 'KEEP'}, http_configs={},
+                             static_entry_configs={}, ping_configs={})
         self.assertEqual(testHost.add_task(domain="tesxt-host.lan"), False)
 
     def test_add_task_wrong_auth_domain_exist_drop(self):
@@ -145,8 +150,8 @@ class TestHost(unittest.TestCase):
         Test behavior of add_task when auth is correct domain exist and invalid_entry is set to KEEP
         :return:
         """
-        testHost = TestHosts(api_connector=self.api_wrong_auth, config_configs={'entry_exist': 'DELETE'}, http_configs={},
-                             static_entry_configs={}, ping_configs={})
+        testHost = TestHosts(api_connector=self.api_wrong_auth, config_configs={'entry_exist': 'DELETE'},
+                             http_configs={}, static_entry_configs={}, ping_configs={})
         self.assertEqual(testHost.add_task(domain="test-host.lan"), False)
 
     def test_add_task_wrong_auth_domain_not_exist_delete(self):
@@ -154,13 +159,13 @@ class TestHost(unittest.TestCase):
         Test behavior of add_task when auth is correct domain exist and invalid_entry is set to KEEP
         :return:
         """
-        testHost = TestHosts(api_connector=self.api_wrong_auth, config_configs={'entry_exist': 'DELETE'}, http_configs={},
-                             static_entry_configs={}, ping_configs={})
+        testHost = TestHosts(api_connector=self.api_wrong_auth, config_configs={'entry_exist': 'DELETE'},
+                             http_configs={}, static_entry_configs={}, ping_configs={})
         self.assertEqual(testHost.add_task(domain="tesxt-host.lan"), False)
-
 
     def tearDown(self):
         self.api_correct.delete_entry(domain='test-host.lan',answer="2.2.2.2")
+
 
 if __name__ == "__main__":
     unittest.main()

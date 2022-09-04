@@ -64,7 +64,7 @@ def parse_value_with_default(content, key, default_value):
         return default_value
 
 
-def check_linux_permissions(permissions, target):
+def check_linux_permissions(permissions: str, target: str):
     """
     check linux permission are higher or equal to larger
     :param permissions: str: actual file or directory permissions
@@ -77,7 +77,7 @@ def check_linux_permissions(permissions, target):
     return True
 
 
-def match_port_to_protocol(proto, default_port=80):
+def match_port_to_protocol(proto: str, default_port=80):
     """
     Match port for protocol
     :param proto: protocol to find port

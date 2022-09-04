@@ -10,16 +10,25 @@ from src.static import data
 class TestPing(unittest.TestCase):
 
     def setUp(self):
-        self.ping = ping.Test(count=2, timeout=0.2, dns_domain="test.lan", api_connect=None,dns_answer="192.168.56.105", interval=10, dns_answer_failover=["192.168.56.22"])
+        self.ping = ping.Test(count=2, timeout=0.2, dns_domain="test.lan", api_connect=None,
+                              dns_answer="192.168.56.105", interval=10, dns_answer_failover=["192.168.56.22"])
 
-        self.ping_negative_count = ping.Test(count=2, timeout=0.2, dns_domain="test.lan", api_connect=None,dns_answer="192.168.56.105", interval=10, dns_answer_failover=["192.168.56.22"])
-        self.ping_zero_count = ping.Test(count=2, timeout=0.2, dns_domain="test.lan", api_connect=None,dns_answer="192.168.56.105", interval=10, dns_answer_failover=["192.168.56.22"])
+        self.ping_negative_count = ping.Test(count=2, timeout=0.2, dns_domain="test.lan", api_connect=None,
+                                             dns_answer="192.168.56.105", interval=10,
+                                             dns_answer_failover=["192.168.56.22"])
+        self.ping_zero_count = ping.Test(count=2, timeout=0.2, dns_domain="test.lan", api_connect=None,
+                                         dns_answer="192.168.56.105", interval=10,
+                                         dns_answer_failover=["192.168.56.22"])
 
-        self.ping_negative_timeout = ping.Test(count=2, timeout=-4, dns_domain="test.lan", api_connect=None,dns_answer="192.168.56.105", interval=10, dns_answer_failover=["192.168.56.22"])
-        self.ping_zero_timeout = ping.Test(count=2, timeout=-4, dns_domain="test.lan", api_connect=None,dns_answer="192.168.56.105", interval=10, dns_answer_failover=["192.168.56.22"])
+        self.ping_negative_timeout = ping.Test(count=2, timeout=-4, dns_domain="test.lan", api_connect=None,
+                                               dns_answer="192.168.56.105", interval=10,
+                                               dns_answer_failover=["192.168.56.22"])
+        self.ping_zero_timeout = ping.Test(count=2, timeout=-4, dns_domain="test.lan", api_connect=None,
+                                           dns_answer="192.168.56.105", interval=10,
+                                           dns_answer_failover=["192.168.56.22"])
 
-        self.ping_negative_interval = ping.Test(count=2, timeout=1, dns_domain="test.lan", api_connect=None,dns_answer="192.168.56.105", interval=-10, dns_answer_failover=["192.168.56.22"])
-        self.ping_zero_interval = ping.Test(count=2, timeout=1, dns_domain="test.lan", api_connect=None,dns_answer="192.168.56.105", interval=0, dns_answer_failover=["192.168.56.22"])
+        self.ping_negative_interval = ping.Test(count=2, timeout=1, dns_domain="test.lan", api_connect=None, dns_answer="192.168.56.105", interval=-10, dns_answer_failover=["192.168.56.22"])
+        self.ping_zero_interval = ping.Test(count=2, timeout=1, dns_domain="test.lan", api_connect=None, dns_answer="192.168.56.105", interval=0, dns_answer_failover=["192.168.56.22"])
 
     def test_host_up(self):
         """
