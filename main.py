@@ -9,7 +9,6 @@ from src.parsers.ConfigurationParser import ConfigParser
 from src.parsers.CliParser import CliParser
 
 
-
 if __name__ == '__main__':
     # need to set to info to inform users about state of config file
     logging.basicConfig(level=logging.INFO)
@@ -37,6 +36,7 @@ if __name__ == '__main__':
                           http_configs=ConfigParser.http_configs,
                           ping_configs=ConfigParser.ping_configs,
                           static_entry_configs=ConfigParser.static_entry_configs,
+                          config_configs=ConfigParser.config_config,
                           privileged=CliParser.run_privileged)
 
     TestHosts.start()
