@@ -9,6 +9,16 @@ from src.parsers.ConfigurationParser import ConfigParser
 from src.parsers.CliParser import CliParser
 
 
+def set_log_file(filename: str):
+    log_handlers = logging.getLogger().handlers
+    try:
+        log_handlers[0].setStream(open(file=filename, mode='a'))
+    except PermissionError:
+        logging.error("Can't set log file")
+    except OSError:
+        logging.error("Can't set log file")
+
+
 if __name__ == '__main__':
     # need to set to info to inform users about state of config file
     logging.basicConfig(level=logging.INFO)
@@ -28,8 +38,12 @@ if __name__ == '__main__':
         log_file = ConfigParser.config_config['log_file']
     else:
         log_file = CliParser.log_file
-    # TODO: add log file
+    if log_file != "":
+        print("l[", log_file)
+        set_log_file(filename=log_file)
+
     logging.getLogger().setLevel(level=log_level)
+
     time.sleep(ConfigParser.config_config['wait'])
     ApiConnector = ApiConnector(config=ConfigParser.api_config)
     TestHosts = TestHosts(api_connector=ApiConnector,

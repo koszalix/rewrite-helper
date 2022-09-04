@@ -78,6 +78,8 @@ class ConfigParser:
         except yaml.YAMLError:
             logging.info("Error in config file, invalid syntax")
             return False
+        except OSError:
+            logging.info("Can't open config file" + filename + " OS error")
 
     def get_configs(self):
         """
