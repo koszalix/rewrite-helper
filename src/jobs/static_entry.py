@@ -5,8 +5,9 @@ import time
 from src.api.ApiConnector import ApiConnector
 from src.static import data
 
+
 class Test(threading.Thread):
-    def __init__(self, domain, answer, interval, api_connect=ApiConnector):
+    def __init__(self, domain: str, answer: str, interval: int, api_connect: ApiConnector):
         if api_connect is not None:
             threading.Thread.__init__(self)
 

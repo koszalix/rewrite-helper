@@ -1,4 +1,4 @@
 config:
   wait: 77
   log_file: /var/log/log.txt
-  invalid_entry: DROP
+  entry_exist: DROP

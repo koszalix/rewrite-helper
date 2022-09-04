@@ -748,7 +748,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 0")
         self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level False")
         self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file N/A")
-        self.assertEqual(captured_logs.records[3].getMessage(), "config-invalid_entry KEEP")
+        self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist KEEP")
 
     def test_section_name_only(self):
         """
@@ -763,7 +763,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 0")
         self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level False")
         self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file N/A")
-        self.assertEqual(captured_logs.records[3].getMessage(), "config-invalid_entry KEEP")
+        self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist KEEP")
 
     def test_no_log_level(self):
         """
@@ -777,7 +777,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 77")
         self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level False")
         self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file /var/log/log.txt")
-        self.assertEqual(captured_logs.records[3].getMessage(), "config-invalid_entry DROP")
+        self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist DROP")
 
     def test_no_log_file(self):
         """
@@ -791,7 +791,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 77")
         self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level 10")
         self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file N/A")
-        self.assertEqual(captured_logs.records[3].getMessage(), "config-invalid_entry DROP")
+        self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist DROP")
 
     def test_no_wait(self):
         """
@@ -805,7 +805,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 0")
         self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level 10")
         self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file /var/log/log.txt")
-        self.assertEqual(captured_logs.records[3].getMessage(), "config-invalid_entry DROP")
+        self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist DROP")
 
     def test_no_invalid_entry(self):
         """
@@ -819,7 +819,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 77")
         self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level 10")
         self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file /var/log/log.txt")
-        self.assertEqual(captured_logs.records[3].getMessage(), "config-invalid_entry KEEP")
+        self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist KEEP")
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)

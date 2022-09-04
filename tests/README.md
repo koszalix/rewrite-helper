@@ -8,7 +8,7 @@
 ```bash
 python3 -m unittest discover -t .
 ```
-4. Goto [AdGuardHome vm](http://192.168.56.103/#dns_rewrites) webpage and check if there is no dns rewrite configured.
+4. Goto [AdGuardHome vm](http://192.168.56.103/#dns_rewrites) webpage and check if there is no dns rewrite configured (excluding donot.delete)
 
 Some test needs virtual machines or special files, please read [Test environment](#Testenvironment) and 
 [Notes about virtual machines](#Notesaboutvirtualmachines) section before 

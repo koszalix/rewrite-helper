@@ -5,11 +5,11 @@ Perform test on hosts
 import logging
 
 from src.jobs import http, ping, static_entry
-
+from src.api.ApiConnector import ApiConnector
 
 class TestHosts:
 
-    def __init__(self, http_configs=None, ping_configs=None, static_entry_configs=None, api_connector=None, privileged=False):
+    def __init__(self, http_configs: dict, ping_configs: dict, static_entry_configs: dict, api_connector: ApiConnector, config_configs=None,privileged=False):
         """
         Configure and run jobs, interact with adguardhome
         Job is a single test to perform on host for ex: get status code of a webpage or ping.
@@ -53,12 +53,20 @@ class TestHosts:
                                                                                      # not working
                             },
                             }
-        :param: static_entry_configs: A dictionary containing all configuration about static_entry, syntax:
+        :param static_entry_configs: A dictionary containing all configuration about static_entry, syntax:
                             {
                                 x: {
                                     'domain': # domain used in dns rewrite
                                     'answer': # dns answer
                                     'interval': # seconds between checks
+                            }
+        :param config_configs: A dictionary containing miscellaneous software options, syntax:
+                            {
+                                'entry_exist': str: # set what to do when domain is registered in AdGuardHome but
+                                                      # answer don't match to any of answers from config file.
+                                                      # Available options: KEEP - keep actual domain and add new,
+                                                      # DELETE - delete existing domain
+                                                      # DROP - treat job as if it didn't exist
                             }
         :param api_connector: object of ApiConnector class
         :param privileged: run test in privileged mode (some test need to be run by root user to open sockets)
@@ -67,12 +75,41 @@ class TestHosts:
         self.ping_configs = ping_configs
         self.static_entry_configs = static_entry_configs
         self.api_connector = api_connector
+        self.config_configs = config_configs
 
         self.privileged = privileged
 
         self.ping_tasks = []
         self.http_tasks = []
         self.static_entry_tasks = []
+
+    def add_task(self, domain):
+        """
+        Depends on config/invalid_answer and domain state decide if task should be added or not, when connection can't
+        be established return False
+        :return: True if task should be added, False if not (or connection can't be established)
+        """
+        state = self.api_connector.domain_exist(domain=domain)
+
+        if state is None:
+            return False
+
+        if self.config_configs['entry_exist'] == "KEEP":
+            return True
+
+
+        if state:
+            if self.config_configs['entry_exist'] == "DROP":
+                return False
+            else:
+                existing_answer = self.api_connector.get_answer_of_domain(domain=domain)
+                if type(existing_answer) is str:
+                    # delete_entry can return None too
+                    if self.api_connector.delete_entry(answer=existing_answer, domain=domain) is True:
+                        return True
+                    else:
+                        return False
+        return True
 
     def prepare_http_tasks(self):
         """
@@ -81,17 +118,17 @@ class TestHosts:
         """
         for i in range(0, len(self.http_configs)):
             try:
-                self.http_tasks.append(http.Test(
-                    correct_status_code=self.http_configs[i]['status_code'],
-                    interval=self.http_configs[i]['interval'],
-                    port=self.http_configs[i]['port'],
-                    proto=self.http_configs[i]['proto'],
-                    timeout=self.http_configs[i]['timeout'],
-                    dns_answer=self.http_configs[i]['dns_answer'],
-                    dns_domain=self.http_configs[i]['dns_domain'],
-                    dns_answer_failover=self.http_configs[i]['dns_answer_failover'],
-                    api_connect=self.api_connector))
-
+                if self.add_task(domain=self.http_configs[i]['dns_domain']):
+                    self.http_tasks.append(http.Test(
+                                                        correct_status_code=self.http_configs[i]['status_code'],
+                                                        interval=self.http_configs[i]['interval'],
+                                                        port=self.http_configs[i]['port'],
+                                                        proto=self.http_configs[i]['proto'],
+                                                        timeout=self.http_configs[i]['timeout'],
+                                                        dns_answer=self.http_configs[i]['dns_answer'],
+                                                        dns_domain=self.http_configs[i]['dns_domain'],
+                                                        dns_answer_failover=self.http_configs[i]['dns_answer_failover'],
+                                                        api_connect=self.api_connector))
             except KeyError:
                 logging.error("Internal error, provide http config missing key")
                 return False
@@ -105,15 +142,16 @@ class TestHosts:
 
         for i in range(0, len(self.ping_configs)):
             try:
-                self.ping_tasks.append(ping.Test(
-                                timeout=self.ping_configs[i]['timeout'],
-                                count=self.ping_configs[i]['count'],
-                                interval=self.ping_configs[i]['interval'],
-                                dns_domain=self.ping_configs[i]['dns_domain'],
-                                dns_answer=self.ping_configs[i]['dns_answer'],
-                                dns_answer_failover=self.ping_configs[i]['dns_answer_failover'],
-                                api_connect=self.api_connector,
-                                privileged=self.privileged))
+                if self.add_task(domain=self.ping_configs[i]['dns_domain']):
+                    self.ping_tasks.append(ping.Test(
+                                                        timeout=self.ping_configs[i]['timeout'],
+                                                        count=self.ping_configs[i]['count'],
+                                                        interval=self.ping_configs[i]['interval'],
+                                                        dns_domain=self.ping_configs[i]['dns_domain'],
+                                                        dns_answer=self.ping_configs[i]['dns_answer'],
+                                                        dns_answer_failover=self.ping_configs[i]['dns_answer_failover'],
+                                                        api_connect=self.api_connector,
+                                                        privileged=self.privileged))
             except KeyError:
                 logging.error("Internal error, provide ping config missing key")
                 return False
@@ -122,11 +160,12 @@ class TestHosts:
     def prepare_static_entry_tasks(self):
         for i in range(0, len(self.static_entry_configs)):
             try:
-                self.static_entry_tasks.append(static_entry.Test(
-                    domain=self.static_entry_configs[i]['domain'],
-                    answer=self.static_entry_configs[i]['answer'],
-                    interval=self.static_entry_configs[i]['interval'],
-                    api_connect=self.api_connector))
+                if self.add_task(domain=self.static_entry_configs[i]['domain']):
+                    self.static_entry_tasks.append(static_entry.Test(
+                        domain=self.static_entry_configs[i]['domain'],
+                        answer=self.static_entry_configs[i]['answer'],
+                        interval=self.static_entry_configs[i]['interval'],
+                        api_connect=self.api_connector))
             except KeyError:
                 logging.error("Internal error, provide static entry config missing key")
                 return False
