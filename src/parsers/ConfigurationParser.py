@@ -102,7 +102,7 @@ class ConfigParser:
 
         return False
 
-    def validate_dns(self, domain: str, primary_answer: str, failover_answers: str) -> bool:
+    def validate_dns(self, domain: str, primary_answer: str, failover_answers: list) -> bool:
         """
         Check if domain is valid domain, check if primary_answers and failover answers are valid ip addresses
         :param domain:
@@ -199,7 +199,6 @@ class ConfigParser:
         for jobs in self.file_content['ping_jobs']:
             try:
                 job = jobs['job']
-                self.ping_configs[job_index] = {}
                 dns_domain = job['domain']
                 dns_answer = job['answers']['primary']
 
@@ -212,14 +211,11 @@ class ConfigParser:
                     dns_failover = []
 
                 interval = parse_value_with_default(content=job, key='interval',
-                                                                                    default_value=
-                                                                                    default_data.PingJob.interval)
+                                                    default_value=default_data.PingJob.interval)
                 timeout = parse_value_with_default(content=job, key='timeout',
-                                                                                   default_value=
-                                                                                   default_data.PingJob.timeout)
+                                                   default_value=default_data.PingJob.timeout)
                 count = parse_value_with_default(content=job, key='count',
-                                                                                 default_value=
-                                                                                 default_data.PingJob.count)
+                                                 default_value=default_data.PingJob.count)
 
             except KeyError:
                 logging.error("Error in config file, ping_jobs KeyError")
@@ -244,26 +240,38 @@ class ConfigParser:
 
                 job_index = job_index + 1
 
+            else:
+                logging.info("Job for domain: " + dns_domain + " not added, due to invalid parameters")
+
     def parser_static_entry(self):
         job_index = 0
         for jobs in self.file_content['static_entry']:
             try:
                 job = jobs['job']
+
+                domain = job['domain']
+                answer = job['answer']
+                interval = parse_value_with_default(content=job, key='interval',
+                                                    default_value=default_data.StaticEntry.interval)
+
+            except KeyError:
+                logging.error("Error in config file, static_entry KeyError")
+
+            data_valid = self.validate_dns(domain=domain, primary_answer=answer, failover_answers=[])
+            if data_valid:
                 self.static_entry_configs[job_index] = {}
-                self.static_entry_configs[job_index]['domain'] = job['domain']
-                self.static_entry_configs[job_index]['answer'] = job['answer']
-                self.static_entry_configs[job_index]['interval'] = parse_value_with_default(
-                    content=job,
-                    key='interval',
-                    default_value=
-                    default_data.StaticEntry.interval)
+                self.static_entry_configs[job_index]['domain'] = domain
+                self.static_entry_configs[job_index]['answer'] = answer
+                self.static_entry_configs[job_index]['interval'] = interval
+
                 logging.debug(msg="data-entry-domain " + self.static_entry_configs[job_index]['domain'])
                 logging.debug(msg="data-entry-answer " + self.static_entry_configs[job_index]['answer'])
                 logging.debug(msg="data-entry-interval " + str(self.static_entry_configs[job_index]['interval']))
 
                 job_index += 1
-            except KeyError:
-                logging.error("Error in config file, static_entry KeyError")
+
+            else:
+                logging.info("Job for domain: " + domain + " not added, due to invalid parameters")
 
     def parse_api(self):
         """
