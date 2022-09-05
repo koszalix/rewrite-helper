@@ -7,7 +7,7 @@ from src.utils import check_linux_permissions
 from src.utils import parse_logging_level
 from src.utils import match_port_to_protocol
 from src.utils import check_domain_correctness
-
+from src.utils import check_ip_correctness
 
 class CheckProtocolSlashed(unittest.TestCase):
     def test_http_slashed(self):
@@ -594,6 +594,41 @@ class CheckDomainCorrectness(unittest.TestCase):
         self.assertEqual(check_domain_correctness(domain="example.com_"), False)
         self.assertEqual(check_domain_correctness(domain="_example.com"), False)
         self.assertEqual(check_domain_correctness(domain="example_.com"), False)
+
+
+class CheckIPCorrectness(unittest.TestCase):
+    def test_ipv4_class_A(self):
+        self.assertEqual(check_ip_correctness(ip="1.0.0.0"), True)
+        self.assertEqual(check_ip_correctness(ip="2.2.2.2"), True)
+        self.assertEqual(check_ip_correctness(ip="127.0.0.0"), True)
+
+        self.assertEqual(check_ip_correctness(ip="10.0.0.0"), True)
+        self.assertEqual(check_ip_correctness(ip="10.13.32.2"), True)
+        self.assertEqual(check_ip_correctness(ip="10.255.255.255"), True)
+
+    def test_ipv4_class_B(self):
+        self.assertEqual(check_ip_correctness(ip="128.0.0.0"), True)
+        self.assertEqual(check_ip_correctness(ip="191.23.12.0"), True)
+        self.assertEqual(check_ip_correctness(ip="191.255.0.0"), True)
+
+        self.assertEqual(check_ip_correctness(ip="172.16.0.0"), True)
+        self.assertEqual(check_ip_correctness(ip="172.16.23.0"), True)
+        self.assertEqual(check_ip_correctness(ip="172.31.255.255"), True)
+
+    def test_ipv4_class_C(self):
+        self.assertEqual(check_ip_correctness(ip="192.0.0.0"), True)
+        self.assertEqual(check_ip_correctness(ip="192.23.0.0"), True)
+        self.assertEqual(check_ip_correctness(ip="223.255.255.0"), True)
+
+        self.assertEqual(check_ip_correctness(ip="192.168.0.0"), True)
+        self.assertEqual(check_ip_correctness(ip="192.168.1.1"), True)
+        self.assertEqual(check_ip_correctness(ip="192.168.255.255"), True)
+
+    def test_ipv4_class_wrong(self):
+        self.assertEqual(check_ip_correctness(ip="s.0.0.0"), False)
+        self.assertEqual(check_ip_correctness(ip="999.999.999.999"), False)
+        self.assertEqual(check_ip_correctness(ip="-999.999.999.999"), False)
+        self.assertEqual(check_ip_correctness(ip="23"), False)
 
 
 if __name__ == '__main__':

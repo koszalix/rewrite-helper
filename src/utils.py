@@ -3,7 +3,7 @@ Miscellaneous method and classes used by other parts of program
 """
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 import re
-
+from socket import AF_INET, AF_INET6, inet_pton
 
 def parse_logging_level(logging_str):
     """
@@ -126,4 +126,17 @@ def check_domain_correctness(domain: str) -> bool:
 
 
 def check_ip_correctness(ip: str) -> bool:
-    pass
+    """
+    Check if provided ip address is valid ipv4 or ipv6.
+    :param ip:
+    :return: True if address is valid, False if not
+    """
+    try:
+        inet_pton(AF_INET, ip)
+        return True
+    except OSError:
+        try:
+            inet_pton(AF_INET6, ip)
+            return True
+        except OSError:
+            return False
