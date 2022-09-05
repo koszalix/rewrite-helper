@@ -472,6 +472,27 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
         self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
 
+    def test_http_job_invalid_domain_answer(self):
+        parser = ConfigParser(file=self.working_directory + 'http_invalid_domain.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: .test.com not added, due to invalid parameters")
+
+    def test_http_job_invalid_answer_primary(self):
+        parser = ConfigParser(file=self.working_directory + 'http_invalid_answer_primary.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_http_job_invalid_answer_failover(self):
+        parser = ConfigParser(file=self.working_directory + 'http_invalid_answer_failover.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: test-example.com not added, due to invalid parameters")
+
 
 class TestPingJobs(unittest.TestCase):
     def setUp(self):
@@ -631,6 +652,27 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
         self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
 
+    def test_ping_job_invalid_domain_answer(self):
+        parser = ConfigParser(file=self.working_directory + 'ping_invalid_domain.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: -test.com not added, due to invalid parameters")
+
+    def test_ping_job_invalid_answer_primary(self):
+        parser = ConfigParser(file=self.working_directory + 'ping_invalid_answer_primary.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_ping_job_invalid_answer_failover(self):
+        parser = ConfigParser(file=self.working_directory + 'ping_invalid_answer_failover.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: test-example.com not added, due to invalid parameters")
+
 
 class TestStaticEntry(unittest.TestCase):
     def setUp(self):
@@ -669,6 +711,20 @@ class TestStaticEntry(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "data-entry-domain test.lan")
         self.assertEqual(captured_logs.records[1].getMessage(), "data-entry-answer 1.1.1.1")
         self.assertEqual(captured_logs.records[2].getMessage(), "data-entry-interval 60")
+
+    def test_static_entry_invalid_domain_answer(self):
+        parser = ConfigParser(file=self.working_directory + 'static_entry_invalid_domain.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parser_static_entry()
+        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: test.com- not added, due to invalid parameters")
+
+    def test_static_entry_invalid_answer_primary(self):
+        parser = ConfigParser(file=self.working_directory + 'static_entry_invalid_answer.yml')
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parser_static_entry()
+        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: test.com not added, due to invalid parameters")
 
 
 class TestAnyYaml(unittest.TestCase):

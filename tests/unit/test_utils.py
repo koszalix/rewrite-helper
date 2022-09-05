@@ -9,6 +9,7 @@ from src.utils import match_port_to_protocol
 from src.utils import check_domain_correctness
 from src.utils import check_ip_correctness
 
+
 class CheckProtocolSlashed(unittest.TestCase):
     def test_http_slashed(self):
         self.assertEqual(check_protocol_slashed("http://"), "http://")
