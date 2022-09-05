@@ -99,13 +99,16 @@ def check_domain_correctness(domain: str) -> bool:
     """
     Check if domain is valid:
         1. contain only numbers, letters, hyphens or dot
-        2. length <= 63 characters                              ok
-        3. length of domain extension <= 4 characters           ok
-        4. don't start or end with dot or hyphens               ok
-        5. dot don't occur next to each others                  ok
+        2. length <= 63 characters
+        3. length of domain extension <= 4 characters
+        4. don't start or end with dot or hyphens
+        5. dot don't occur next to each others
     :param domain: domain to check
     :return: True if domain is valid, False if not
     """
+    # contain only numbers, letters, hyphens or dot
+    if re.search("[^\da-zA-Z.-]", domain) is not None:
+        return False
     # start with dot or hyphen
     if re.search("^[.-]|[.-]$", domain) is not None:
         return False

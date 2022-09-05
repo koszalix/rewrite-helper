@@ -443,6 +443,158 @@ class CheckDomainCorrectness(unittest.TestCase):
         self.assertEqual(check_domain_correctness(domain="test.test"), True)
         self.assertEqual(check_domain_correctness(domain="test...test"), False)
 
+    def test_domain_correct(self):
+        """
+        Test behavior of function check_domain_correctness when domain contains only valid chars
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="example.com"), True)
+        self.assertEqual(check_domain_correctness(domain="example-next.com"), True)
+        self.assertEqual(check_domain_correctness(domain="subdomain.example.com"), True)
+        self.assertEqual(check_domain_correctness(domain="subdomain.example.org.com"), True)
+        self.assertEqual(check_domain_correctness(domain="example.org.com"), True)
+        self.assertEqual(check_domain_correctness(domain="example12.org.com"), True)
+
+    def test_domain_colon_semicolon(self):
+        """
+        Test behavior of function check_domain_correctness when domain contains colon or semicolon
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="example:.com"), False)
+        self.assertEqual(check_domain_correctness(domain=":example.com"), False)
+        self.assertEqual(check_domain_correctness(domain=":example:.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example:page.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example;.com"), False)
+        self.assertEqual(check_domain_correctness(domain=";example.com"), False)
+        self.assertEqual(check_domain_correctness(domain=";example;.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example;page.com"), False)
+        self.assertEqual(check_domain_correctness(domain=":"), False)
+        self.assertEqual(check_domain_correctness(domain=";"), False)
+
+    def test_domain_brackets(self):
+        """
+        Test behavior of function check_domain_correctness when domain contains brackets
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="example{}test.com"), False)
+        self.assertEqual(check_domain_correctness(domain="{example}.com"), False)
+        self.assertEqual(check_domain_correctness(domain="{.com"), False)
+        self.assertEqual(check_domain_correctness(domain="}.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example[]test.com"), False)
+        self.assertEqual(check_domain_correctness(domain="[example].com"), False)
+        self.assertEqual(check_domain_correctness(domain="[.com"), False)
+        self.assertEqual(check_domain_correctness(domain="].com"), False)
+        self.assertEqual(check_domain_correctness(domain="example()test.com"), False)
+        self.assertEqual(check_domain_correctness(domain="(example).com"), False)
+        self.assertEqual(check_domain_correctness(domain="(.com"), False)
+        self.assertEqual(check_domain_correctness(domain=").com"), False)
+
+    def test_domain_math_symbols(self):
+        """brackets
+        Test behavior of function check_domain_correctness when domain contains math symbols
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="example+test.com"), False)
+        self.assertEqual(check_domain_correctness(domain="+example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com+"), False)
+        self.assertEqual(check_domain_correctness(domain="+example.com+"), False)
+
+        self.assertEqual(check_domain_correctness(domain="example=test.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com="), False)
+        self.assertEqual(check_domain_correctness(domain="=example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="=example.com="), False)
+
+        self.assertEqual(check_domain_correctness(domain="example/test.com"), False)
+        self.assertEqual(check_domain_correctness(domain="/example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com/"), False)
+        self.assertEqual(check_domain_correctness(domain="/example.com/"), False)
+
+        self.assertEqual(check_domain_correctness(domain="example*test.com"), False)
+        self.assertEqual(check_domain_correctness(domain="*example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com*"), False)
+        self.assertEqual(check_domain_correctness(domain="*example.com*"), False)
+
+        self.assertEqual(check_domain_correctness(domain="example%test.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com%"), False)
+        self.assertEqual(check_domain_correctness(domain="%example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="%example.com%"), False)
+
+    def test_domain_quotes_single(self):
+        """
+        Test behavior of function check_domain_correctness when domain contains quotes
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="'example.com'"), False)
+        self.assertEqual(check_domain_correctness(domain="'example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com'"), False)
+        self.assertEqual(check_domain_correctness(domain="example'.com"), False)
+
+    def test_domain_quotes_double(self):
+        """
+        Test behavior of function check_domain_correctness when domain contains quotes
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain='"example.com"'), False)
+        self.assertEqual(check_domain_correctness(domain='"example.com'), False)
+        self.assertEqual(check_domain_correctness(domain='example.com"'), False)
+        self.assertEqual(check_domain_correctness(domain='example".com'), False)
+
+    def test_domain_quotes(self):
+        """
+        Test behavior of function check_domain_correctness when domain contains quotes
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="`example.com`"), False)
+        self.assertEqual(check_domain_correctness(domain="`example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com`"), False)
+        self.assertEqual(check_domain_correctness(domain="example`.com"), False)
+
+        self.assertEqual(check_domain_correctness(domain="<example.com>"), False)
+        self.assertEqual(check_domain_correctness(domain="<example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com>"), False)
+        self.assertEqual(check_domain_correctness(domain="example>.com"), False)
+
+        self.assertEqual(check_domain_correctness(domain="<example.com<"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com<"), False)
+        self.assertEqual(check_domain_correctness(domain="<example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example<.com"), False)
+
+    def test_domain_special_chars(self):
+
+        """brackets
+        Test behavior of function check_domain_correctness when domain contains special chars
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="@example.com@"), False)
+        self.assertEqual(check_domain_correctness(domain="@example.com@"), False)
+        self.assertEqual(check_domain_correctness(domain="@example.com@"), False)
+        self.assertEqual(check_domain_correctness(domain="@example.com@"), False)
+
+        self.assertEqual(check_domain_correctness(domain="#example.com#"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com#"), False)
+        self.assertEqual(check_domain_correctness(domain="#example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example#.com"), False)
+
+        self.assertEqual(check_domain_correctness(domain="$example.com$"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com$"), False)
+        self.assertEqual(check_domain_correctness(domain="$example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example$.com"), False)
+
+        self.assertEqual(check_domain_correctness(domain="^example.com^"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com^"), False)
+        self.assertEqual(check_domain_correctness(domain="^example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example^.com"), False)
+
+        self.assertEqual(check_domain_correctness(domain="&example.com&"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com&"), False)
+        self.assertEqual(check_domain_correctness(domain="&example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example&.com"), False)
+
+        self.assertEqual(check_domain_correctness(domain="_example.com_"), False)
+        self.assertEqual(check_domain_correctness(domain="example.com_"), False)
+        self.assertEqual(check_domain_correctness(domain="_example.com"), False)
+        self.assertEqual(check_domain_correctness(domain="example_.com"), False)
+
 
 if __name__ == '__main__':
     unittest.main()
