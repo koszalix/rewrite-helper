@@ -502,7 +502,7 @@ class ValidateHttpResponseCode(unittest.TestCase):
         Test behavior of function ValidateHttpResponseCode when code is 600
         :return:
         """
-        self.assertEqual(validate_http_response_code(code=600), True)
+        self.assertEqual(validate_http_response_code(code=600), False)
 
 
 
