@@ -10,7 +10,7 @@ from src.utils import check_linux_permissions
 from src.utils import parse_logging_level
 from src.utils import match_port_to_protocol
 from src.data import default_data
-from src.utils import check_domain_correctness, check_ip_correctness
+from src.data.validator import check_ip_correctness, check_domain_correctness
 
 
 class ConfigParser:
