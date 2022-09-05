@@ -388,6 +388,32 @@ class CheckDomainCorrectness(unittest.TestCase):
         """
         self.assertEqual(check_domain_correctness(domain=".test.test."), False)
 
+    def test_length_domain_extension(self):
+        """
+        Test behavior of function check_domain_correctness when domain length of extension is <= 4
+        """
+        self.assertEqual(check_domain_correctness(domain="test.abcd"), True)
+        self.assertEqual(check_domain_correctness(domain="test.abc"), True)
+        self.assertEqual(check_domain_correctness(domain="test.ab"), True)
+        self.assertEqual(check_domain_correctness(domain="test.a"), True)
+
+    def test_length_domain_extension_to_long(self):
+        """
+        Test behavior of function check_domain_correctness when domain length of extension is > 4
+        """
+        self.assertEqual(check_domain_correctness(domain="test.abcde"), False)
+
+    def test_length_domain_extension_multiple_extensions(self):
+        """
+        Test behavior of function check_domain_correctness when domain length of extension is <= 4, but domain contains
+        multiple extensions
+        """
+        self.assertEqual(check_domain_correctness(domain="test.abcd.qwer"), True)
+        self.assertEqual(check_domain_correctness(domain="test.abcd.qwer.zxcv"), True)
+        self.assertEqual(check_domain_correctness(domain="a.b.c.d.e.f.g.h.i"), True)
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
