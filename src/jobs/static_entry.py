@@ -4,7 +4,7 @@ import time
 from typing import Union
 
 from src.api.ApiConnector import ApiConnector
-from src.data import default_data
+from src.data import default
 
 
 class Test(threading.Thread):
@@ -15,7 +15,7 @@ class Test(threading.Thread):
         self.domain = domain
         self.answer = answer
         if interval <= 0:
-            self.interval = default_data.StaticEntry.interval
+            self.interval = default.StaticEntry.interval
         else:
             self.interval = interval
 

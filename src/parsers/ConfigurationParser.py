@@ -9,7 +9,7 @@ from src.utils import parse_value_with_default
 from src.utils import check_linux_permissions
 from src.utils import parse_logging_level
 from src.utils import match_port_to_protocol
-from src.data import default_data
+from src.data import default
 from src.data.validator import check_ip_correctness, check_domain_correctness
 
 
@@ -143,20 +143,20 @@ class ConfigParser:
                     dns_failover = []
 
                 interval = parse_value_with_default(content=job, key='interval',
-                                                    default_value=default_data.HttpJob.interval)
+                                                    default_value=default.HttpJob.interval)
 
                 status_code = parse_value_with_default(content=job, key='status',
-                                                       default_value=default_data.HttpJob.status)
+                                                       default_value=default.HttpJob.status)
 
                 proto = parse_value_with_default(content=job, key='proto',
-                                                 default_value=default_data.HttpJob.proto)
+                                                 default_value=default.HttpJob.proto)
 
                 port = parse_value_with_default(content=job, key='port',
                                                 default_value=match_port_to_protocol(
-                                                    proto=proto, default_port=default_data.HttpJob.port))
+                                                    proto=proto, default_port=default.HttpJob.port))
 
                 timeout = parse_value_with_default(content=job, key='timeout',
-                                                   default_value=default_data.HttpJob.timeout)
+                                                   default_value=default.HttpJob.timeout)
 
             except KeyError:
                 logging.error("Error in config file, http_jobs KeyError")
@@ -211,11 +211,11 @@ class ConfigParser:
                     dns_failover = []
 
                 interval = parse_value_with_default(content=job, key='interval',
-                                                    default_value=default_data.PingJob.interval)
+                                                    default_value=default.PingJob.interval)
                 timeout = parse_value_with_default(content=job, key='timeout',
-                                                   default_value=default_data.PingJob.timeout)
+                                                   default_value=default.PingJob.timeout)
                 count = parse_value_with_default(content=job, key='count',
-                                                 default_value=default_data.PingJob.count)
+                                                 default_value=default.PingJob.count)
 
             except KeyError:
                 logging.error("Error in config file, ping_jobs KeyError")
@@ -252,7 +252,7 @@ class ConfigParser:
                 domain = job['domain']
                 answer = job['answer']
                 interval = parse_value_with_default(content=job, key='interval',
-                                                    default_value=default_data.StaticEntry.interval)
+                                                    default_value=default.StaticEntry.interval)
 
             except KeyError:
                 logging.error("Error in config file, static_entry KeyError")
@@ -284,25 +284,25 @@ class ConfigParser:
             self.api_config['passwd'] = self.file_content['api']['passwd']
 
             self.api_config['proto'] = parse_value_with_default(content=self.file_content['api'], key='proto',
-                                                                default_value=default_data.Api.proto)
+                                                                default_value=default.Api.proto)
             self.api_config['port'] = parse_value_with_default(content=self.file_content['api'], key='port',
-                                                               default_value=default_data.Api.port)
+                                                               default_value=default.Api.port)
             self.api_config['timeout'] = parse_value_with_default(content=self.file_content['api'], key='timeout',
-                                                                  default_value=default_data.Api.timeout)
+                                                                  default_value=default.Api.timeout)
             if 'startup' in self.file_content['api']:
                 self.api_config['startup'] = {}
                 self.api_config['startup']['test'] = parse_value_with_default(
                     content=self.file_content['api']['startup'],
-                    key='test', default_value=default_data.Api.Startup.test)
+                    key='test', default_value=default.Api.Startup.test)
                 self.api_config['startup']['timeout'] = parse_value_with_default(
                     content=self.file_content['api']['startup'],
-                    key='timeout', default_value=default_data.Api.Startup.timeout)
+                    key='timeout', default_value=default.Api.Startup.timeout)
                 self.api_config['startup']['exit_on_fail'] = parse_value_with_default(
                     content=self.file_content['api']['startup'], key='exit_on_fail',
-                    default_value=default_data.Api.Startup.exit_on_false)
+                    default_value=default.Api.Startup.exit_on_false)
                 self.api_config['startup']['retry_after'] = parse_value_with_default(
                     content=self.file_content['api']['startup'], key='retry_after',
-                    default_value=default_data.Api.Startup.retry_after)
+                    default_value=default.Api.Startup.retry_after)
             else:
                 self.api_config['startup'] = {}
                 self.api_config['startup']['test'] = True
@@ -333,24 +333,24 @@ class ConfigParser:
         try:
             if 'config' in self.file_content:
                 self.config_config['wait'] = parse_value_with_default(
-                    content=self.file_content['config'], key='wait', default_value=default_data.Config.wait)
+                    content=self.file_content['config'], key='wait', default_value=default.Config.wait)
                 log_level = parse_value_with_default(
                     content=self.file_content['config'], key="log_level", default_value="N/A")
 
                 self.config_config['log_level'] = parse_logging_level(logging_str=log_level)
 
                 self.config_config['log_file'] = parse_value_with_default(
-                    content=self.file_content['config'], key='log_file', default_value=default_data.Config.log_file)
+                    content=self.file_content['config'], key='log_file', default_value=default.Config.log_file)
 
                 self.config_config['entry_exist'] = parse_value_with_default(content=self.file_content['config'],
                                                                              key='entry_exist',
                                                                              default_value=
-                                                                             default_data.Config.entry_exist)
+                                                                             default.Config.entry_exist)
             else:
-                self.config_config['wait'] = default_data.Config.wait
-                self.config_config['log_level'] = default_data.Config.log_level
-                self.config_config['log_file'] = default_data.Config.log_file
-                self.config_config['entry_exist'] = default_data.Config.entry_exist
+                self.config_config['wait'] = default.Config.wait
+                self.config_config['log_level'] = default.Config.log_level
+                self.config_config['log_file'] = default.Config.log_file
+                self.config_config['entry_exist'] = default.Config.entry_exist
 
             logging.debug(msg="config-wait " + str(self.config_config['wait']))
             logging.debug(msg="config-log_level " + str(self.config_config['log_level']))

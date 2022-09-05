@@ -4,7 +4,7 @@ import unittest
 from src.jobs import ping
 from src.jobs import http
 from src.jobs import static_entry
-from src.data import default_data
+from src.data import default
 
 
 class TestPing(unittest.TestCase):
@@ -83,7 +83,7 @@ class TestPing(unittest.TestCase):
         Test ping job behavior when timeout is negative
         :return:
         """
-        self.assertEqual(self.ping_zero_timeout.timeout, default_data.PingJob.timeout)
+        self.assertEqual(self.ping_zero_timeout.timeout, default.PingJob.timeout)
         self.assertEqual(self.ping_negative_timeout.job_request(host="192.168.56.105"), True)
         with self.assertLogs(level=logging.INFO) as captured_logs:
             self.ping_negative_timeout.job_request(host="192.168.56.105")
@@ -96,17 +96,17 @@ class TestPing(unittest.TestCase):
         :return:
         """
         self.assertEqual(self.ping_zero_timeout.job_request(host="192.168.56.105"), True)
-        self.assertEqual(self.ping_zero_timeout.timeout, default_data.PingJob.timeout)
+        self.assertEqual(self.ping_zero_timeout.timeout, default.PingJob.timeout)
         with self.assertLogs(level=logging.INFO) as captured_logs:
             self.ping_negative_timeout.job_request(host="192.168.56.105")
         self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: 192.168.56.105")
         self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: 192.168.56.105 ok")
 
     def test_interval_negative(self):
-        self.assertEqual(self.ping_negative_interval.interval, default_data.PingJob.interval)
+        self.assertEqual(self.ping_negative_interval.interval, default.PingJob.interval)
 
     def test_interval_zero(self):
-        self.assertEqual(self.ping_zero_interval.interval, default_data.PingJob.interval)
+        self.assertEqual(self.ping_zero_interval.interval, default.PingJob.interval)
 
 
 class TestHttp(unittest.TestCase):
@@ -172,14 +172,14 @@ class TestHttp(unittest.TestCase):
                          "Test (status) of: 192.168.56.105:80 failed (Invalid schema)")
 
     def test_interval_zero(self):
-        self.assertEqual(self.http_zero_interval.interval, default_data.HttpJob.interval)
+        self.assertEqual(self.http_zero_interval.interval, default.HttpJob.interval)
 
     def test_interval_negative(self):
-        self.assertEqual(self.http_negative_interval.interval, default_data.HttpJob.interval)
+        self.assertEqual(self.http_negative_interval.interval, default.HttpJob.interval)
 
     def test_timeout_negative(self):
         self.assertEqual(self.http_negative_timeout.job_request(host="192.168.56.105"), True)
-        self.assertEqual(self.http_negative_timeout.timeout, default_data.HttpJob.timeout)
+        self.assertEqual(self.http_negative_timeout.timeout, default.HttpJob.timeout)
         with self.assertLogs(level=logging.INFO) as captured_logs:
             self.http_negative_timeout.job_request(host="192.168.56.105")
         self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: http://192.168.56.105:80")
@@ -187,7 +187,7 @@ class TestHttp(unittest.TestCase):
 
     def test_timeout_zero(self):
         self.assertEqual(self.http_zero_timeout.job_request(host="192.168.56.105"), True)
-        self.assertEqual(self.http_zero_timeout.timeout, default_data.HttpJob.timeout)
+        self.assertEqual(self.http_zero_timeout.timeout, default.HttpJob.timeout)
         with self.assertLogs(level=logging.INFO) as captured_logs:
             self.http_zero_timeout.job_request(host="192.168.56.105")
         self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: http://192.168.56.105:80")
@@ -202,10 +202,10 @@ class TestStaticEntry(unittest.TestCase):
                                                             api_connect=None)
 
     def test_zero_interval(self):
-        self.assertEqual(self.static_entry_zero_interval.interval, default_data.StaticEntry.interval)
+        self.assertEqual(self.static_entry_zero_interval.interval, default.StaticEntry.interval)
 
     def test_negative_interval(self):
-        self.assertEqual(self.static_entry_zero_interval.interval, default_data.StaticEntry.interval)
+        self.assertEqual(self.static_entry_zero_interval.interval, default.StaticEntry.interval)
 
 
 if __name__ == "__main__":
