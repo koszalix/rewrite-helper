@@ -1,9 +1,9 @@
 import unittest
 
-from src.data.validator import validate_domain, validate_ip, validate_network_port
+from src.data.validator import validate_domain, validate_ip, validate_network_port, validate_http_response_code
 
 
-class CheckDomainCorrectness(unittest.TestCase):
+class ValidateDomain(unittest.TestCase):
     def test_start_with_dot(self):
         """
         Test behavior of function check_domain_correctness when domain starts with dot
@@ -172,6 +172,7 @@ class CheckDomainCorrectness(unittest.TestCase):
         """
         self.assertEqual(validate_domain(domain="test.other.test"), True)
         self.assertEqual(validate_domain(domain="test.other.test.test"), True)
+        self.assertEqual(validate_domain(domain="adguard.example.com"), True)
 
     def test_dot_inside_start_with_dot(self):
         """
@@ -425,7 +426,7 @@ class CheckDomainCorrectness(unittest.TestCase):
         self.assertEqual(validate_domain(domain="example_.com"), False)
 
 
-class CheckIPCorrectness(unittest.TestCase):
+class ValidateIP(unittest.TestCase):
     def test_ipv4_class_A(self):
         self.assertEqual(validate_ip(ip="1.0.0.0"), True)
         self.assertEqual(validate_ip(ip="2.2.2.2"), True)
@@ -472,6 +473,38 @@ class ValidateNetworkPort(unittest.TestCase):
 
     def test_port_highest_value(self):
         self.assertEqual(validate_network_port(65535), True)
+
+
+class ValidateHttpResponseCode(unittest.TestCase):
+    def test_negative_code(self):
+        """
+        Test behavior of function ValidateHttpResponseCode when code is less than zero
+        :return:
+        """
+        self.assertEqual(validate_http_response_code(code=-3), False)
+
+    def test_zero_code(self):
+        """
+        Test behavior of function ValidateHttpResponseCode when code is zero
+        :return:
+        """
+        self.assertEqual(validate_http_response_code(code=0), False)
+
+    def test_ok_code(self):
+        """
+        Test behavior of function ValidateHttpResponseCode when code is correct
+        :return:
+        """
+        self.assertEqual(validate_http_response_code(code=200), True)
+
+    def test_code_to_high(self):
+        """
+        Test behavior of function ValidateHttpResponseCode when code is 600
+        :return:
+        """
+        self.assertEqual(validate_http_response_code(code=600), True)
+
+
 
 if __name__ == "__main__":
     unittest.main()

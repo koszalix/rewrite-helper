@@ -60,3 +60,14 @@ def validate_network_port(port: int) -> bool:
         return True
     else:
         return False
+
+
+def validate_http_response_code(code: int) -> bool:
+    """
+    Check if http response code correspond to any code defined in RFC7231(https://datatracker.ietf.org/doc/html/rfc7231)
+    :param code:
+    :return: True if code is valid http response code range, False if not
+    """
+    if 100 <= code < 600:
+        return True
+    return False

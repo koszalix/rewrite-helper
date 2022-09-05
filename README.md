@@ -64,7 +64,7 @@ api:
     retry_after: 10
 
 ```
-`host` - ip of adguardhome  
+`host` - ip or domain of adguardhome  
 `proto` - communication protocol http or https  
 `username` - admin username  
 `passwd` - admin password  
@@ -140,7 +140,7 @@ http_jobs:
 ```
 `domain` - dns rewrite domain, for ex.: server.lan  
 `interval` - seconds between tests.  
-`status` - if response code received from host is the same as this setting host will be treated as live.  
+`status` - http response status code; if code received from host is the same as code provided in this settings host will be treated as live.  
 `proto` - communication protocol (http or https)  
 `port` - connection port  
 `timeout` - test timeout, if host is not responding after that time it will be treated as dead.  
@@ -178,6 +178,15 @@ do not put this option to config file.
 | api/startup | retry_after  | 10    | ping_jobs | timeout  | 2      |
 | http_jobs   | timeout      | 10    | ping_jobs | count    | 2      |
  
+## Auto correctness check
+On start rewrite helper checks correctness of job parameters if correctness check fails job will not be added. 
+### Checks common for all jobs types
+Regardless of job type rewrite-helper will always check:
+1. Domain is correct 
+2. IP addresses are valid ipv4 or ipv6 addresses
+### Check specific for http jobs
+1. Port is from range 0 to 65535
+2. Response status code is valid according to [RFC7231](https://datatracker.ietf.org/doc/html/rfc7231)
 
 ## Work without failover
 In case when failover is no needed or there is no failover host now, leave failover empty or delete failover parameter.

@@ -10,7 +10,7 @@ from src.utils import check_linux_permissions
 from src.utils import parse_logging_level
 from src.utils import match_port_to_protocol
 from src.data import default
-from src.data.validator import validate_ip, validate_domain
+from src.data.validator import validate_ip, validate_domain, validate_network_port, validate_http_response_code
 
 
 class ConfigParser:
@@ -163,7 +163,8 @@ class ConfigParser:
                 break
 
             data_valid = self.validate_dns(domain=dns_domain, primary_answer=dns_answer, failover_answers=dns_failover)
-
+            data_valid = data_valid and validate_network_port(port=port)
+            data_valid = data_valid and validate_http_response_code(code=status_code)
             if data_valid:
 
                 self.http_configs[job_index] = {}
@@ -258,6 +259,7 @@ class ConfigParser:
                 logging.error("Error in config file, static_entry KeyError")
 
             data_valid = self.validate_dns(domain=domain, primary_answer=answer, failover_answers=[])
+
             if data_valid:
                 self.static_entry_configs[job_index] = {}
                 self.static_entry_configs[job_index]['domain'] = domain
@@ -279,36 +281,53 @@ class ConfigParser:
         :return:
         """
         try:
-            self.api_config['host'] = self.file_content['api']['host']
-            self.api_config['username'] = self.file_content['api']['username']
-            self.api_config['passwd'] = self.file_content['api']['passwd']
+            host = self.file_content['api']['host']
+            username = self.file_content['api']['username']
+            passwd = self.file_content['api']['passwd']
 
-            self.api_config['proto'] = parse_value_with_default(content=self.file_content['api'], key='proto',
+            proto = parse_value_with_default(content=self.file_content['api'], key='proto',
                                                                 default_value=default.Api.proto)
-            self.api_config['port'] = parse_value_with_default(content=self.file_content['api'], key='port',
+            port = parse_value_with_default(content=self.file_content['api'], key='port',
                                                                default_value=default.Api.port)
-            self.api_config['timeout'] = parse_value_with_default(content=self.file_content['api'], key='timeout',
+            timeout = parse_value_with_default(content=self.file_content['api'], key='timeout',
                                                                   default_value=default.Api.timeout)
             if 'startup' in self.file_content['api']:
-                self.api_config['startup'] = {}
-                self.api_config['startup']['test'] = parse_value_with_default(
+                startup_test = parse_value_with_default(
                     content=self.file_content['api']['startup'],
                     key='test', default_value=default.Api.Startup.test)
-                self.api_config['startup']['timeout'] = parse_value_with_default(
+                startup_timeout = parse_value_with_default(
                     content=self.file_content['api']['startup'],
                     key='timeout', default_value=default.Api.Startup.timeout)
-                self.api_config['startup']['exit_on_fail'] = parse_value_with_default(
+                startup_exit_on_fall = parse_value_with_default(
                     content=self.file_content['api']['startup'], key='exit_on_fail',
                     default_value=default.Api.Startup.exit_on_false)
-                self.api_config['startup']['retry_after'] = parse_value_with_default(
+                startup_retry_after = parse_value_with_default(
                     content=self.file_content['api']['startup'], key='retry_after',
                     default_value=default.Api.Startup.retry_after)
             else:
-                self.api_config['startup'] = {}
-                self.api_config['startup']['test'] = True
-                self.api_config['startup']['timeout'] = 10
-                self.api_config['startup']['exit_on_fail'] = False
-                self.api_config['startup']['retry_after'] = 10
+                startup_test = True
+                startup_timeout = 10
+                startup_exit_on_fall = False
+                startup_retry_after = 10
+
+        except KeyError:
+            logging.error("Config file error / api / KeyError")
+            exit(-2)
+
+        data_valid = validate_ip(ip=host) or validate_domain(domain=host)
+        data_valid = data_valid and validate_network_port(port=port)
+        if data_valid:
+            self.api_config['host'] = host
+            self.api_config['username'] = username
+            self.api_config['passwd'] = passwd
+            self.api_config['proto'] = proto
+            self.api_config['port'] = port
+            self.api_config['timeout'] = timeout
+            self.api_config['startup'] = {}
+            self.api_config['startup']['test'] = startup_test
+            self.api_config['startup']['timeout'] = startup_timeout
+            self.api_config['startup']['exit_on_fail'] = startup_exit_on_fall
+            self.api_config['startup']['retry_after'] = startup_retry_after
 
             logging.debug(msg="api-host " + self.api_config['host'])
             logging.debug(msg="api-username " + self.api_config['username'])
@@ -320,10 +339,8 @@ class ConfigParser:
             logging.debug(msg='api-startup-timeout ' + str(self.api_config['startup']['timeout']))
             logging.debug(msg='api-startup-exit_on_fail ' + str(self.api_config['startup']['exit_on_fail']))
             logging.debug(msg='api-startup-test-retry_after ' + str(self.api_config['startup']['retry_after']))
-
-        except KeyError:
-            logging.error("Config file error / api / KeyError")
-            exit(-2)
+        else:
+            logging.info("Api configuration error")
 
     def parse_config(self):
         """
