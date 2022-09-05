@@ -2,6 +2,7 @@
 Miscellaneous method and classes used by other parts of program
 """
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
+import re
 
 
 def parse_logging_level(logging_str):
@@ -92,3 +93,26 @@ def match_port_to_protocol(proto: str, default_port=80):
         return protocols_and_ports[proto]
     else:
         return default_port
+
+
+def check_domain_correctness(domain: str) -> bool:
+    """
+    Check if domain is valid:
+        1. contain only numbers, letters, hyphens or dot
+        2. length <= 63 characters
+        3. length of domain extension <= 4 characters
+        4. don't start or end with dot or hyphens
+    :param domain: domain to check
+    :return: True if domain is valid, False if not
+    """
+    # start with dot or hyphen
+    if re.search("^[.-]|[.-]$", domain) is not None:
+        return False
+    if len(domain) > 63:
+        return False
+
+    return True
+
+
+def check_ip_correctness(ip: str) -> bool:
+    pass

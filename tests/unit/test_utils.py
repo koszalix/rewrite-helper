@@ -6,7 +6,7 @@ from src.utils import parse_value_with_default
 from src.utils import check_linux_permissions
 from src.utils import parse_logging_level
 from src.utils import match_port_to_protocol
-
+from src.utils import check_domain_correctness
 
 class CheckProtocolSlashed(unittest.TestCase):
     def test_http_slashed(self):
@@ -171,6 +171,222 @@ class MatchPortToProtocol(unittest.TestCase):
 
     def test_https(self):
         self.assertEqual(match_port_to_protocol(proto="tests"), 80)
+
+
+class CheckDomainCorrectness(unittest.TestCase):
+    def test_start_with_dot(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts with dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain=".test"), False)
+
+    def test_start_with_hyphen(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts with hyphen
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="-test"), False)
+
+    def test_end_with_dot(self):
+        """
+        Test behavior of function check_domain_correctness when domain ends with dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="test."), False)
+
+    def test_end_with_hyphen(self):
+        """
+        Test behavior of function check_domain_correctness when domain ends with hyphen
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="test-"), False)
+
+    def test_start_end_with_dot(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts and ends with dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain=".test."), False)
+
+    def test_start_end_with_hyphen(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts and ends with hyphen
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="-test-"), False)
+
+    def test_end_with_dot_end_with_hyphen(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts with dot and ends with hyphen
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain=".test-"), False)
+
+    def test_start_with_hyphen_end_with_dot(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts with hyphen and ends with dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="-test."), False)
+
+    def test_start_with_dot_hyphen(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts with dot and next char is hyphen
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain=".-test"), False)
+
+    def test_start_with_hyphen_dot(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts with hyphen and next char is dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="-.test"), False)
+
+    def test_end_with_dot_hyphen(self):
+        """
+        Test behavior of function check_domain_correctness when domain ends with dot and next char is hyphen
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="test.-"), False)
+
+    def test_end_with_hyphen_dot(self):
+        """
+        Test behavior of function check_domain_correctness when domain ends with hyphen and next char is dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="test-."), False)
+
+    def test_start_with_dot_hyphen_end_with_hyphen_dot(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts with '.-' and ends with '-.'
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain=".-test-."), False)
+
+    def start_with_hyphen_dot_end_with_dot_hyphen(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts with '-.' and ends with '.-'
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="-.test.-"), False)
+
+    def test_start_with_dot_hyphen_end_with_dot_hyphen(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts with '.-' and ends with '.-'
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain=".-test.-"), False)
+
+    def test_start_with_hyphen_dot_end_with_hyphen_dot(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts with '-.' and ends with '-.'
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="-.test-."), False)
+
+    def test_start_with_hyphen_hyphen(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts with double hyphen
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="--test"), False)
+
+    def test_start_with_dot_dot(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts with double dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="..test"), False)
+
+    def test_end_with_hyphen_hyphen(self):
+        """
+        Test behavior of function check_domain_correctness when domain ends with double hyphen
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="test--"), False)
+
+    def test_end_with_dot_dot(self):
+        """
+        Test behavior of function check_domain_correctness when domain ends with double dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="test.."), False)
+
+    def test_start_with_hyphen_hyphen_end_with_hyphen_hyphen(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts and stop with double hyphen
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="--test--"), False)
+
+    def test_start_with_dot_dot_end_with_dot_dot(self):
+        """
+        Test behavior of function check_domain_correctness when domain starts and stop with double hyphen dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="..test.."), False)
+
+    def test_dot_inside(self):
+        """
+        Test behavior of function check_domain_correctness when dot is inside domain
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="test.test"), True)
+
+    def test_multiple_dot_inside(self):
+        """
+        Test behavior of function check_domain_correctness when there is more than one dot is inside domain
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="test.other.test"), True)
+        self.assertEqual(check_domain_correctness(domain="test.other.test.test"), True)
+
+    def test_dot_inside_start_with_dot(self):
+        """
+        Test behavior of function check_domain_correctness when dot is inside domain and domain starts with dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain=".test.test"), False)
+
+    def test_dot_inside_end_with_dot(self):
+        """
+        Test behavior of function check_domain_correctness when dot is inside domain and domain ends with dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="test.test."), False)
+
+    def test_dot_inside_start_with_dot_end_with_dot(self):
+        """
+        Test behavior of function check_domain_correctness when dot is inside domain; domain starts and ends with dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain=".test.test."), False)
+
+    def test_multiple_dot_inside_start_with_dot(self):
+        """
+        Test behavior of function check_domain_correctness when there is more than one dot  inside domain
+        and domain starts with dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain=".test.test"), False)
+
+    def test_multiple_dot_inside_end_with_dot(self):
+        """
+        Test behavior of function check_domain_correctness when there is more than one dot is inside domain
+        and domain ends with dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="test.test."), False)
+
+    def test_multiple_dot_inside_start_with_dot_end_with_dot(self):
+        """
+        Test behavior of function check_domain_correctness when there is more than one dot is inside domain,
+        domain starts and ends with dot
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain=".test.test."), False)
 
 
 if __name__ == '__main__':
