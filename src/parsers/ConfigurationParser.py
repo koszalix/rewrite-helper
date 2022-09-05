@@ -10,7 +10,7 @@ from src.utils import check_linux_permissions
 from src.utils import parse_logging_level
 from src.utils import match_port_to_protocol
 from src.data import default
-from src.data.validator import check_ip_correctness, check_domain_correctness
+from src.data.validator import validate_ip, validate_domain
 
 
 class ConfigParser:
@@ -110,13 +110,13 @@ class ConfigParser:
         :param failover_answers:
         :return: True if all everything is valid, False if not
         """
-        if check_domain_correctness(domain=domain) is False:
+        if validate_domain(domain=domain) is False:
             return False
-        elif check_ip_correctness(ip=primary_answer) is False:
+        elif validate_ip(ip=primary_answer) is False:
             return False
         else:
             for host in failover_answers:
-                if check_ip_correctness(host) is False:
+                if validate_ip(host) is False:
                     return False
             return True
 

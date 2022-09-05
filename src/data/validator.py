@@ -3,7 +3,7 @@ from _socket import inet_pton
 from socket import AF_INET, AF_INET6
 
 
-def check_ip_correctness(ip: str) -> bool:
+def validate_ip(ip: str) -> bool:
     """
     Check if provided ip address is valid ipv4 or ipv6.
     :param ip:
@@ -20,7 +20,7 @@ def check_ip_correctness(ip: str) -> bool:
             return False
 
 
-def check_domain_correctness(domain: str) -> bool:
+def validate_domain(domain: str) -> bool:
     """
     Check if domain is valid:
         1. contain only numbers, letters, hyphens or dot
