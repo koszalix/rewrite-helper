@@ -8,6 +8,7 @@ from src.utils import parse_logging_level
 from src.utils import match_port_to_protocol
 from src.utils import check_domain_correctness
 
+
 class CheckProtocolSlashed(unittest.TestCase):
     def test_http_slashed(self):
         self.assertEqual(check_protocol_slashed("http://"), "http://")
@@ -399,20 +400,48 @@ class CheckDomainCorrectness(unittest.TestCase):
 
     def test_length_domain_extension_to_long(self):
         """
-        Test behavior of function check_domain_correctness when domain length of extension is > 4
+        Test behavior of function check_domain_correctness when  length of domain extension is > 4
         """
         self.assertEqual(check_domain_correctness(domain="test.abcde"), False)
 
     def test_length_domain_extension_multiple_extensions(self):
         """
-        Test behavior of function check_domain_correctness when domain length of extension is <= 4, but domain contains
+        Test behavior of function check_domain_correctness when length of domain extension is <= 4, but domain contains
         multiple extensions
         """
         self.assertEqual(check_domain_correctness(domain="test.abcd.qwer"), True)
         self.assertEqual(check_domain_correctness(domain="test.abcd.qwer.zxcv"), True)
         self.assertEqual(check_domain_correctness(domain="a.b.c.d.e.f.g.h.i"), True)
 
+    def test_length_domain(self):
+        """
+        Test behavior of function check_domain_correctness when domain length is <= 63
+        :return:
+        """
+        # 63 char domain
+        self.assertEqual(check_domain_correctness(domain=
+                                                  "recite-rocking-irritably-threefold-enjoying-engross-unlock.com"),
+                         True)
 
+    def test_length_domain_to_long(self):
+        """
+        Test behavior of function check_domain_correctness when domain length is > 63
+        :return:
+        """
+        # 63 char domain
+        self.assertEqual(check_domain_correctness(domain=
+                                                  "recite-rocking-irritably-threefold-enjoying-engross-unlock-sel.com"),
+                         False)
+
+    def test_dot_next_to_each_other(self):
+        """
+        Test behavior of function check_domain_correctness when domain contains two or more dots which occur next to
+        each others
+        :return:
+        """
+        self.assertEqual(check_domain_correctness(domain="test..test"), False)
+        self.assertEqual(check_domain_correctness(domain="test.test"), True)
+        self.assertEqual(check_domain_correctness(domain="test...test"), False)
 
 
 if __name__ == '__main__':
