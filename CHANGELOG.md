@@ -2,7 +2,12 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-## [0.4.1]
+## [0.5.0] - 2022-09-05
+### Added
+- Domain name and answer auto validation
+- Http response status code validation
+
+## [0.4.1] - 2022-09-04
 ### Fixed
 - Log-file setting finally work
 

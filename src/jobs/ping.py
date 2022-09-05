@@ -8,7 +8,7 @@ from icmplib import ping
 
 from src.api.ApiConnector import ApiConnector
 from ._common import Common
-from src.data import default_data
+from src.data import default
 
 
 class Test(Common, threading.Thread):
@@ -39,11 +39,11 @@ class Test(Common, threading.Thread):
         self.count = count
 
         if interval <= 0:
-            self.interval = default_data.PingJob.interval
+            self.interval = default.PingJob.interval
         else:
             self.interval = interval
         if timeout <= 0:
-            self.timeout = default_data.PingJob.timeout
+            self.timeout = default.PingJob.timeout
         else:
             self.timeout = timeout
 

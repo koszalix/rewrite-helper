@@ -1,0 +1,5 @@
+static_entry:
+  - job:
+      domain: test.com
+      answer: t.e.s.t
+      interval: 23

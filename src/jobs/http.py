@@ -8,7 +8,7 @@ import requests
 from src.api.ApiConnector import ApiConnector
 from ._common import Common
 from src.utils import check_protocol_slashed
-from src.data import default_data
+from src.data import default
 
 
 class Test(Common, threading.Thread):
@@ -43,11 +43,11 @@ class Test(Common, threading.Thread):
         self.proto = check_protocol_slashed(proto)
 
         if interval <= 0:
-            self.interval = default_data.HttpJob.interval
+            self.interval = default.HttpJob.interval
         else:
             self.interval = interval
         if timeout <= 0:
-            self.timeout = default_data.HttpJob.timeout
+            self.timeout = default.HttpJob.timeout
         else:
             self.timeout = timeout
 

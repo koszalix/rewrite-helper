@@ -54,4 +54,3 @@ if __name__ == '__main__':
                           privileged=CliParser.run_privileged)
 
     TestHosts.start()
-
