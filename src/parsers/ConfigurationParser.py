@@ -196,31 +196,44 @@ class ConfigParser:
         :return:
         """
         job_index = 0
-
         for jobs in self.file_content['ping_jobs']:
             try:
                 job = jobs['job']
                 self.ping_configs[job_index] = {}
-                self.ping_configs[job_index]['dns_domain'] = job['domain']
-                self.ping_configs[job_index]['dns_answer'] = job['answers']['primary']
+                dns_domain = job['domain']
+                dns_answer = job['answers']['primary']
 
                 if 'failover' in job['answers']:
                     if job['answers']['failover'] is None:
-                        self.ping_configs[job_index]['dns_answer_failover'] = []
+                        dns_failover = []
                     else:
-                        self.ping_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
+                        dns_failover = job['answers']['failover']
                 else:
-                    self.ping_configs[job_index]['dns_answer_failover'] = []
+                    dns_failover = []
 
-                self.ping_configs[job_index]['interval'] = parse_value_with_default(content=job, key='interval',
+                interval = parse_value_with_default(content=job, key='interval',
                                                                                     default_value=
                                                                                     default_data.PingJob.interval)
-                self.ping_configs[job_index]['timeout'] = parse_value_with_default(content=job, key='timeout',
+                timeout = parse_value_with_default(content=job, key='timeout',
                                                                                    default_value=
                                                                                    default_data.PingJob.timeout)
-                self.ping_configs[job_index]['count'] = parse_value_with_default(content=job, key='count',
+                count = parse_value_with_default(content=job, key='count',
                                                                                  default_value=
                                                                                  default_data.PingJob.count)
+
+            except KeyError:
+                logging.error("Error in config file, ping_jobs KeyError")
+
+            data_valid = self.validate_dns(domain=dns_domain, primary_answer=dns_answer, failover_answers=dns_failover)
+
+            if data_valid:
+                self.ping_configs[job_index] = {}
+                self.ping_configs[job_index]['dns_domain'] = dns_domain
+                self.ping_configs[job_index]['dns_answer'] = dns_answer
+                self.ping_configs[job_index]['dns_answer_failover'] = dns_failover
+                self.ping_configs[job_index]['interval'] = interval
+                self.ping_configs[job_index]['timeout'] = timeout
+                self.ping_configs[job_index]['count'] = count
 
                 logging.debug(msg="ping-domain " + self.ping_configs[job_index]['dns_domain'])
                 logging.debug(msg="ping-interval " + str(self.ping_configs[job_index]['interval']))
@@ -230,8 +243,6 @@ class ConfigParser:
                 logging.debug(msg="ping-failover " + ' '.join(self.ping_configs[job_index]['dns_answer_failover']))
 
                 job_index = job_index + 1
-            except KeyError:
-                logging.error("Error in config file, ping_jobs KeyError")
 
     def parser_static_entry(self):
         job_index = 0
