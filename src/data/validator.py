@@ -48,3 +48,15 @@ def check_domain_correctness(domain: str) -> bool:
         return False
 
     return True
+
+
+def validate_network_port(port: int) -> bool:
+    """
+    Validate if port is from correct range
+    :param port:
+    :return: True if port is in range, False if not
+    """
+    if 0 <= port <= 65535:
+        return True
+    else:
+        return False

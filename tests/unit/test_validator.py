@@ -1,6 +1,6 @@
 import unittest
 
-from src.data.validator import check_domain_correctness, check_ip_correctness
+from src.data.validator import check_domain_correctness, check_ip_correctness, validate_network_port
 
 
 class CheckDomainCorrectness(unittest.TestCase):
@@ -458,3 +458,20 @@ class CheckIPCorrectness(unittest.TestCase):
         self.assertEqual(check_ip_correctness(ip="999.999.999.999"), False)
         self.assertEqual(check_ip_correctness(ip="-999.999.999.999"), False)
         self.assertEqual(check_ip_correctness(ip="23"), False)
+
+
+class ValidateNetworkPort(unittest.TestCase):
+    def test_port_under_range(self):
+        self.assertEqual(validate_network_port(-102), False)
+
+    def test_port_over_range(self):
+        self.assertEqual(validate_network_port(70000), False)
+
+    def test_port_lowest_value(self):
+        self.assertEqual(validate_network_port(0), True)
+
+    def test_port_highest_value(self):
+        self.assertEqual(validate_network_port(65535), True)
+
+if __name__ == "__main__":
+    unittest.main()
