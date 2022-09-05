@@ -10,6 +10,7 @@ from src.utils import check_linux_permissions
 from src.utils import parse_logging_level
 from src.utils import match_port_to_protocol
 from src.data import default_data
+from src.utils import check_domain_correctness, check_ip_correctness
 
 
 class ConfigParser:
@@ -101,6 +102,24 @@ class ConfigParser:
 
         return False
 
+    def validate_dns(self, domain: str, primary_answer: str, failover_answers: str) -> bool:
+        """
+        Check if domain is valid domain, check if primary_answers and failover answers are valid ip addresses
+        :param domain:
+        :param primary_answer:
+        :param failover_answers:
+        :return: True if all everything is valid, False if not
+        """
+        if check_domain_correctness(domain=domain) is False:
+            return False
+        elif check_ip_correctness(ip=primary_answer) is False:
+            return False
+        else:
+            for host in failover_answers:
+                if check_ip_correctness(host) is False:
+                    return False
+            return True
+
     def parse_http(self):
         """
         Parse http jobs, create dictionary compatible with TestHosts.py
@@ -108,39 +127,54 @@ class ConfigParser:
         """
         job_index = 0
         for jobs in self.file_content['http_jobs']:
+
             try:
                 job = jobs['job']
                 self.http_configs[job_index] = {}
-                self.http_configs[job_index]['dns_domain'] = job['domain']
-                self.http_configs[job_index]['dns_answer'] = job['answers']['primary']
+                dns_domain = job['domain']
+                dns_answer = job['answers']['primary']
 
                 if 'failover' in job['answers']:
                     if job['answers']['failover'] is None:
-                        self.http_configs[job_index]['dns_answer_failover'] = []
+                        dns_failover = []
                     else:
-                        self.http_configs[job_index]['dns_answer_failover'] = job['answers']['failover']
+                        dns_failover = job['answers']['failover']
                 else:
-                    self.http_configs[job_index]['dns_answer_failover'] = []
+                    dns_failover = []
 
-                self.http_configs[job_index]['interval'] = parse_value_with_default(content=job, key='interval',
-                                                                                    default_value=
-                                                                                    default_data.HttpJob.interval)
-                self.http_configs[job_index]['status_code'] = parse_value_with_default(content=job, key='status',
-                                                                                       default_value=
-                                                                                       default_data.HttpJob.status)
-                self.http_configs[job_index]['proto'] = parse_value_with_default(content=job, key='proto',
-                                                                                 default_value='http')
-                self.http_configs[job_index]['port'] = parse_value_with_default(content=job, key='port',
-                                                                                default_value=match_port_to_protocol(
-                                                                                    proto=self.http_configs[job_index][
-                                                                                        'proto'],
-                                                                                    default_port=
-                                                                                    default_data.HttpJob.port)
-                                                                                )
+                interval = parse_value_with_default(content=job, key='interval',
+                                                    default_value=default_data.HttpJob.interval)
 
-                self.http_configs[job_index]['timeout'] = parse_value_with_default(content=job, key='timeout',
-                                                                                   default_value=
-                                                                                   default_data.HttpJob.timeout)
+                status_code = parse_value_with_default(content=job, key='status',
+                                                       default_value=default_data.HttpJob.status)
+
+                proto = parse_value_with_default(content=job, key='proto',
+                                                 default_value=default_data.HttpJob.proto)
+
+                port = parse_value_with_default(content=job, key='port',
+                                                default_value=match_port_to_protocol(
+                                                    proto=proto, default_port=default_data.HttpJob.port))
+
+                timeout = parse_value_with_default(content=job, key='timeout',
+                                                   default_value=default_data.HttpJob.timeout)
+
+            except KeyError:
+                logging.error("Error in config file, http_jobs KeyError")
+                break
+
+            data_valid = self.validate_dns(domain=dns_domain, primary_answer=dns_answer, failover_answers=dns_failover)
+
+            if data_valid:
+
+                self.http_configs[job_index] = {}
+                self.http_configs[job_index]['dns_domain'] = dns_domain
+                self.http_configs[job_index]['dns_answer'] = dns_answer
+                self.http_configs[job_index]['dns_answer_failover'] = dns_failover
+                self.http_configs[job_index]['interval'] = interval
+                self.http_configs[job_index]['status_code'] = status_code
+                self.http_configs[job_index]['proto'] = proto
+                self.http_configs[job_index]['port'] = port
+                self.http_configs[job_index]['timeout'] = timeout
 
                 logging.debug(msg="http-domain " + self.http_configs[job_index]['dns_domain'])
                 logging.debug(msg="http-interval " + str(self.http_configs[job_index]['interval']))
@@ -152,8 +186,9 @@ class ConfigParser:
                 logging.debug(msg="http-timeout " + str(self.http_configs[job_index]['timeout']))
 
                 job_index = job_index + 1
-            except KeyError:
-                logging.error("Error in config file, http_jobs KeyError")
+
+            else:
+                logging.info("Job for domain: " + dns_domain + " not added, due to invalid parameters")
 
     def parse_ping(self):
         """
@@ -207,10 +242,10 @@ class ConfigParser:
                 self.static_entry_configs[job_index]['domain'] = job['domain']
                 self.static_entry_configs[job_index]['answer'] = job['answer']
                 self.static_entry_configs[job_index]['interval'] = parse_value_with_default(
-                                                                                    content=job,
-                                                                                    key='interval',
-                                                                                    default_value=
-                                                                                    default_data.StaticEntry.interval)
+                    content=job,
+                    key='interval',
+                    default_value=
+                    default_data.StaticEntry.interval)
                 logging.debug(msg="data-entry-domain " + self.static_entry_configs[job_index]['domain'])
                 logging.debug(msg="data-entry-answer " + self.static_entry_configs[job_index]['answer'])
                 logging.debug(msg="data-entry-interval " + str(self.static_entry_configs[job_index]['interval']))
