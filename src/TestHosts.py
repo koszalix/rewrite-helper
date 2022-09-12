@@ -131,7 +131,7 @@ class TestHosts:
                         dns_answer_failover=self.http_configs[i]['dns_answer_failover'],
                         api_connect=self.api_connector))
             except KeyError:
-                logging.error("Internal error, provide http config missing key")
+                logging.error(msg="Internal error, provide http config missing key")
                 return False
         return True
 
@@ -154,7 +154,7 @@ class TestHosts:
                         api_connect=self.api_connector,
                         privileged=self.privileged))
             except KeyError:
-                logging.error("Internal error, provide ping config missing key")
+                logging.error(msg="Internal error, provide ping config missing key")
                 return False
         return True
 
@@ -168,7 +168,7 @@ class TestHosts:
                         interval=self.static_entry_configs[i]['interval'],
                         api_connect=self.api_connector))
             except KeyError:
-                logging.error("Internal error, provide data entry config missing key")
+                logging.error(msg="Internal error, provide data entry config missing key")
                 return False
         return True
 
