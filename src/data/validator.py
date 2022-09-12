@@ -71,3 +71,22 @@ def validate_http_response_code(code: int) -> bool:
     if 100 <= code < 600:
         return True
     return False
+
+
+def validate_dns_rewrite(domain: str, primary_answer: str, failover_answers: list) -> bool:
+    """
+    Check if dns rewrite entry is valid.
+    :param domain:
+    :param primary_answer:
+    :param failover_answers:
+    :return: True if all everything is valid, False if not
+    """
+    if validate_domain(domain=domain) is False:
+        return False
+    elif validate_ip(ip=primary_answer) is False:
+        return False
+    else:
+        for host in failover_answers:
+            if validate_ip(host) is False:
+                return False
+        return True

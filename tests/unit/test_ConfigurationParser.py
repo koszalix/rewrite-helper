@@ -36,8 +36,7 @@ class TestReadConfigFile(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "no_permissions/config.yml")
         self.assertEqual(captured_logs.records[0].getMessage(),
-                         "Can't open config file " + self.working_directory + "no_permissions/config.yml"
-                         + " permission error")
+                         f"Can't open config file {self.working_directory}no_permissions/config.yml")
         self.assertEqual(parser.read_config_file(filename=self.working_directory + "no_permissions/config.yml"), False)
 
     def test_file_no_found(self):
@@ -49,8 +48,7 @@ class TestReadConfigFile(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "this_file_does_not_exist.yml")
         self.assertEqual(captured_logs.records[0].getMessage(),
-                         "Can't open config file " + self.working_directory + "this_file_does_not_exist.yml" +
-                         " file not found")
+                         f"Can't open config file {self.working_directory}this_file_does_not_exist.yml")
         self.assertEqual(parser.read_config_file(filename=self.working_directory + "this_file_does_not_exist.yml"),
                          False)
 
@@ -63,7 +61,7 @@ class TestReadConfigFile(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "a_directory")
         self.assertEqual(captured_logs.records[0].getMessage(),
-                         "Can't open config file" + self.working_directory + "a_directory" + " file is a directory")
+                         f"Can't open config file {self.working_directory}a_directory")
         self.assertEqual(parser.read_config_file(filename=self.working_directory + "a_directory"), False)
 
     def test_correct_file(self):
@@ -477,21 +475,24 @@ class TestHttpJobs(unittest.TestCase):
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: .test.com not added, due to invalid parameters")
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Job for domain: .test.com not added, due to invalid parameters")
 
     def test_http_job_invalid_answer_primary(self):
         parser = ConfigParser(file=self.working_directory + 'http_invalid_answer_primary.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: test.com not added, due to invalid parameters")
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
 
     def test_http_job_invalid_answer_failover(self):
         parser = ConfigParser(file=self.working_directory + 'http_invalid_answer_failover.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: test-example.com not added, due to invalid parameters")
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Job for domain: test-example.com not added, due to invalid parameters")
 
 
 class TestPingJobs(unittest.TestCase):
@@ -657,21 +658,24 @@ class TestPingJobs(unittest.TestCase):
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: -test.com not added, due to invalid parameters")
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Job for domain: -test.com not added, due to invalid parameters")
 
     def test_ping_job_invalid_answer_primary(self):
         parser = ConfigParser(file=self.working_directory + 'ping_invalid_answer_primary.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: test.com not added, due to invalid parameters")
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
 
     def test_ping_job_invalid_answer_failover(self):
         parser = ConfigParser(file=self.working_directory + 'ping_invalid_answer_failover.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: test-example.com not added, due to invalid parameters")
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Job for domain: test-example.com not added, due to invalid parameters")
 
 
 class TestStaticEntry(unittest.TestCase):
@@ -717,14 +721,16 @@ class TestStaticEntry(unittest.TestCase):
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parser_static_entry()
-        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: test.com- not added, due to invalid parameters")
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Job for domain: test.com- not added, due to invalid parameters")
 
     def test_static_entry_invalid_answer_primary(self):
         parser = ConfigParser(file=self.working_directory + 'static_entry_invalid_answer.yml')
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parser_static_entry()
-        self.assertEqual(captured_logs.records[0].getMessage(), "Job for domain: test.com not added, due to invalid parameters")
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
 
 
 class TestAnyYaml(unittest.TestCase):

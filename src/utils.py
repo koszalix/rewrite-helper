@@ -92,5 +92,3 @@ def match_port_to_protocol(proto: str, default_port=80):
         return protocols_and_ports[proto]
     else:
         return default_port
-
-
