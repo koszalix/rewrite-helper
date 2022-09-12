@@ -1,11 +1,20 @@
 """
-Perform test on hosts
-"""
+Configure and run jobs, interact with adguardhome
 
+Job is a single test to perform on host for ex: get status code of a webpage or ping.
+Job request is a single test performed at specific time to check host status,
+for example there is a job configured to test host performed every minute,
+so every minute program will start job request.
+Difference between job and job request:
+    Job is more like description what program must do to test a host
+    Job request is a more like actual work done every x seconds to test a host
+
+When a job request failed (host is dead), appropriate action will be done, to change dns answer of specific domain.
+"""
 import logging
 
 from src.jobs import http, ping, static_entry
-from src.api.ApiConnector import ApiConnector
+from src.api.connector import ApiConnector
 
 
 class TestHosts:
@@ -14,18 +23,8 @@ class TestHosts:
                  api_connector: ApiConnector, privileged=False):
         """
         Configure and run jobs, interact with adguardhome
-        Job is a single test to perform on host for ex: get status code of a webpage or ping.
-        Job request is a single test performed at specific time to check host status,
-        For example there is a job configured to test host performed every minute,
-        so every minute program will start job request.
-        Difference between job and job request:
-            Job is more like description what program must do to test a host
-            Job request is a more like actual work done every x seconds to test a host
 
         To run all job use method start()
-
-        When a job request failed (host is dead), appropriate action will be done, to change dns answer of specific
-        domain.
 
         :param http_configs:  A dictionary containing all configuration about http job, syntax:
                             {

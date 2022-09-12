@@ -5,7 +5,7 @@ from typing import Union
 
 import requests
 
-from src.api.ApiConnector import ApiConnector
+from src.api.connector import ApiConnector
 from ._common import Common
 from src.utils import check_protocol_slashed
 from src.data import default

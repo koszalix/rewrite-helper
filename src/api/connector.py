@@ -1,8 +1,7 @@
 import logging
-
+import time
 import requests
 from requests.auth import HTTPBasicAuth
-import time
 
 from src.utils import check_protocol_slashed
 

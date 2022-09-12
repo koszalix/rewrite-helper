@@ -6,7 +6,7 @@ from typing import Union
 from icmplib import NameLookupError as ICMPLookupError
 from icmplib import ping
 
-from src.api.ApiConnector import ApiConnector
+from src.api.connector import ApiConnector
 from ._common import Common
 from src.data import default
 

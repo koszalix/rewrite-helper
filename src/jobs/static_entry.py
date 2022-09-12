@@ -3,7 +3,7 @@ import threading
 import time
 from typing import Union
 
-from src.api.ApiConnector import ApiConnector
+from src.api.connector import ApiConnector
 from src.data import default
 
 

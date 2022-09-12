@@ -1,14 +1,12 @@
-import yaml
-from yaml.loader import SafeLoader
 import logging
 import glob
 import os
 import hashlib
 
-from src.utils import parse_value_with_default
-from src.utils import check_linux_permissions
-from src.utils import parse_logging_level
-from src.utils import match_port_to_protocol
+import yaml
+from yaml.loader import SafeLoader
+
+from src.utils import parse_value_with_default, check_linux_permissions, parse_logging_level, match_port_to_protocol
 from src.data import default
 from src.data.validator import validate_ip, validate_domain, validate_network_port, validate_http_response_code, \
     validate_dns_rewrite
@@ -98,7 +96,7 @@ class ConfigParser:
 
     def parse_http(self):
         """
-        Parse http jobs, create dictionary compatible with TestHosts.py
+        Parse http jobs, create dictionary compatible with run_jobs.py
         :return:
         """
         job_index = 0
@@ -169,7 +167,7 @@ class ConfigParser:
 
     def parse_ping(self):
         """
-        Parse ping job, create dictionary compatible with TestHosts.py
+        Parse ping job, create dictionary compatible with run_jobs.py
         :return:
         """
         job_index = 0
