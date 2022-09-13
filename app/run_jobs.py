@@ -13,8 +13,8 @@ When a job request failed (host is dead), appropriate action will be done, to ch
 """
 import logging
 
-from src.jobs import http, ping, static_entry
-from src.api.connector import ApiConnector
+from app.jobs import http, ping, static_entry
+from app.api.connector import ApiConnector
 
 
 class TestHosts:

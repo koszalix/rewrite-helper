@@ -1,6 +1,6 @@
 from logging import INFO
 
-from src.utils import parse_logging_level
+from app.utils import parse_logging_level
 
 
 class CliParser:

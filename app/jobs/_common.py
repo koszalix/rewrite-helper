@@ -1,4 +1,4 @@
-from src.api.connector import ApiConnector
+from app.api.connector import ApiConnector
 
 import logging
 
