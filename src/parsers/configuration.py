@@ -136,7 +136,8 @@ class ConfigParser:
                 logging.error("Error in config file, http_jobs KeyError")
                 break
 
-            data_valid = validate_dns_rewrite(domain=dns_domain, primary_answer=dns_answer, failover_answers=dns_failover)
+            data_valid = validate_dns_rewrite(domain=dns_domain, primary_answer=dns_answer,
+                                              failover_answers=dns_failover)
             data_valid = data_valid and validate_network_port(port=port)
             data_valid = data_valid and validate_http_response_code(code=status_code)
             if data_valid:
@@ -196,7 +197,8 @@ class ConfigParser:
                 logging.error("Error in config file, ping_jobs KeyError")
                 break
 
-            data_valid = validate_dns_rewrite(domain=dns_domain, primary_answer=dns_answer, failover_answers=dns_failover)
+            data_valid = validate_dns_rewrite(domain=dns_domain, primary_answer=dns_answer,
+                                              failover_answers=dns_failover)
 
             if data_valid:
                 self.ping_configs[job_index] = {}

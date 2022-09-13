@@ -27,21 +27,21 @@ def validate_domain(domain: str) -> bool:
         2. length <= 63 characters
         3. length of domain extension <= 4 characters
         4. don't start or end with dot or hyphens
-        5. dot don't occur next to each others
+        5. dots don't occur next to each others
     :param domain: domain to check
     :return: True if domain is valid, False if not
     """
     # contain only numbers, letters, hyphens or dot
-    if re.search("[^\da-zA-Z.-]", domain) is not None:
+    if re.search(r"[^a-zA-Z\d.-]", domain) is not None:
         return False
     # start with dot or hyphen
-    if re.search("^[.-]|[.-]$", domain) is not None:
+    if re.search(r"^[.-]|[.-]$", domain) is not None:
         return False
     # length of domain extension
     if len(domain.split(".")[-1]) > 4:
         return False
-    # dot don't occur next to each others, (only inside, if domain starts or end with dot previous if will cath catch)
-    if re.search("[..]\B", domain) is not None:
+    # dots occur next to each others, (only inside, if domain starts or end with dot previous if will cath catch)
+    if ('..' in domain) is True:
         return False
     # length of domain
     if len(domain) > 63:
