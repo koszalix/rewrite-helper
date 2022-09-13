@@ -1,10 +1,10 @@
 import logging
 import unittest
 
-from src.jobs import ping
-from src.jobs import http
-from src.jobs import static_entry
-from src.data import default
+from app.jobs import ping
+from app.jobs import http
+from app.jobs import static_entry
+from app.data import default
 
 
 class TestPing(unittest.TestCase):

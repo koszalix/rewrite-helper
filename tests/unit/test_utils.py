@@ -1,11 +1,11 @@
 import unittest
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 
-from src.utils import check_protocol_slashed
-from src.utils import parse_value_with_default
-from src.utils import check_linux_permissions
-from src.utils import parse_logging_level
-from src.utils import match_port_to_protocol
+from app.utils import check_protocol_slashed
+from app.utils import parse_value_with_default
+from app.utils import check_linux_permissions
+from app.utils import parse_logging_level
+from app.utils import match_port_to_protocol
 
 
 class CheckProtocolSlashed(unittest.TestCase):
