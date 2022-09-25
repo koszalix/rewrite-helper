@@ -54,16 +54,14 @@ class ConfigParser:
         :return: True if file read was successful, False in other cases
         """
         try:
-            f = open(file=filename, mode="r")
-            # using additional variables prevents from unclosed file, when errors occur while parsing yaml
-            content_of_file = f.read()
-
-            f.close()
+            with open(file=filename, mode="r") as f:
+                content_of_file = f.read()
 
             self.file_content = yaml.load(stream=content_of_file, Loader=SafeLoader)
             if self.file_content is None:
                 logging.error("Can't load config file, file empty")
                 return False
+
             # no need to log this in production, it's handled by self.get_configs()
             logging.debug("Config file read successful")
             return True
