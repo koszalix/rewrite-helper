@@ -1,16 +1,15 @@
-import yaml
-from yaml.loader import SafeLoader
 import logging
 import glob
 import os
 import hashlib
 
-from src.utils import parse_value_with_default
-from src.utils import check_linux_permissions
-from src.utils import parse_logging_level
-from src.utils import match_port_to_protocol
-from src.data import default
-from src.data.validator import validate_ip, validate_domain, validate_network_port, validate_http_response_code
+import yaml
+from yaml.loader import SafeLoader
+
+from app.utils import parse_value_with_default, check_linux_permissions, parse_logging_level, match_port_to_protocol
+from app.data import default
+from app.data.validator import validate_ip, validate_domain, validate_network_port, validate_http_response_code, \
+    validate_dns_rewrite
 
 
 class ConfigParser:
@@ -55,32 +54,23 @@ class ConfigParser:
         :return: True if file read was successful, False in other cases
         """
         try:
-            f = open(file=filename, mode="r")
-            # using additional variables prevents from unclosed file, when errors occur while parsing yaml
-            content_of_file = f.read()
+            with open(file=filename, mode="r") as f:
+                content_of_file = f.read()
 
-            f.close()
             self.file_content = yaml.load(stream=content_of_file, Loader=SafeLoader)
             if self.file_content is None:
                 logging.error("Can't load config file, file empty")
                 return False
+
             # no need to log this in production, it's handled by self.get_configs()
             logging.debug("Config file read successful")
             return True
-        except FileNotFoundError:
-            logging.info("Can't open config file " + filename + " file not found")
-            return False
-        except PermissionError:
-            logging.info("Can't open config file " + filename + " permission error")
-            return False
-        except IsADirectoryError:
-            logging.info("Can't open config file" + filename + " file is a directory")
+        except (FileNotFoundError, PermissionError, IsADirectoryError, OSError):
+            logging.info(f"Can't open config file {filename}")
             return False
         except yaml.YAMLError:
             logging.info("Error in config file, invalid syntax")
             return False
-        except OSError:
-            logging.info("Can't open config file" + filename + " OS error")
 
     def get_configs(self):
         """
@@ -97,32 +87,14 @@ class ConfigParser:
                 file_status = self.read_config_file(filename=potentially_file)
 
                 if file_status is True:
-                    logging.info("Config loaded (" + str(potentially_file) + ")")
+                    logging.info(f"Config loaded ({potentially_file})")
                     return True
 
         return False
 
-    def validate_dns(self, domain: str, primary_answer: str, failover_answers: list) -> bool:
-        """
-        Check if domain is valid domain, check if primary_answers and failover answers are valid ip addresses
-        :param domain:
-        :param primary_answer:
-        :param failover_answers:
-        :return: True if all everything is valid, False if not
-        """
-        if validate_domain(domain=domain) is False:
-            return False
-        elif validate_ip(ip=primary_answer) is False:
-            return False
-        else:
-            for host in failover_answers:
-                if validate_ip(host) is False:
-                    return False
-            return True
-
     def parse_http(self):
         """
-        Parse http jobs, create dictionary compatible with TestHosts.py
+        Parse http jobs, create dictionary compatible with run_jobs.py
         :return:
         """
         job_index = 0
@@ -162,7 +134,8 @@ class ConfigParser:
                 logging.error("Error in config file, http_jobs KeyError")
                 break
 
-            data_valid = self.validate_dns(domain=dns_domain, primary_answer=dns_answer, failover_answers=dns_failover)
+            data_valid = validate_dns_rewrite(domain=dns_domain, primary_answer=dns_answer,
+                                              failover_answers=dns_failover)
             data_valid = data_valid and validate_network_port(port=port)
             data_valid = data_valid and validate_http_response_code(code=status_code)
             if data_valid:
@@ -177,23 +150,23 @@ class ConfigParser:
                 self.http_configs[job_index]['port'] = port
                 self.http_configs[job_index]['timeout'] = timeout
 
-                logging.debug(msg="http-domain " + self.http_configs[job_index]['dns_domain'])
-                logging.debug(msg="http-interval " + str(self.http_configs[job_index]['interval']))
-                logging.debug(msg="http-status " + str(self.http_configs[job_index]['status_code']))
-                logging.debug(msg="http-proto " + self.http_configs[job_index]['proto'])
-                logging.debug(msg="http-port " + str(self.http_configs[job_index]['port']))
-                logging.debug(msg="http-primary " + self.http_configs[job_index]['dns_answer'])
-                logging.debug(msg="http-failover " + ' '.join(self.http_configs[job_index]['dns_answer_failover']))
-                logging.debug(msg="http-timeout " + str(self.http_configs[job_index]['timeout']))
+                logging.debug(msg=f"http-domain {self.http_configs[job_index]['dns_domain']}")
+                logging.debug(msg=f"http-interval {self.http_configs[job_index]['interval']}")
+                logging.debug(msg=f"http-status {self.http_configs[job_index]['status_code']}")
+                logging.debug(msg=f"http-proto {self.http_configs[job_index]['proto']}")
+                logging.debug(msg=f"http-port {self.http_configs[job_index]['port']}")
+                logging.debug(msg=f"http-primary {self.http_configs[job_index]['dns_answer']}")
+                logging.debug(msg=f"http-failover " + ' '.join(self.http_configs[job_index]['dns_answer_failover']))
+                logging.debug(msg=f"http-timeout {self.http_configs[job_index]['timeout']}")
 
                 job_index = job_index + 1
 
             else:
-                logging.info("Job for domain: " + dns_domain + " not added, due to invalid parameters")
+                logging.info(f"Job for domain: {dns_domain} not added, due to invalid parameters")
 
     def parse_ping(self):
         """
-        Parse ping job, create dictionary compatible with TestHosts.py
+        Parse ping job, create dictionary compatible with run_jobs.py
         :return:
         """
         job_index = 0
@@ -220,8 +193,10 @@ class ConfigParser:
 
             except KeyError:
                 logging.error("Error in config file, ping_jobs KeyError")
+                break
 
-            data_valid = self.validate_dns(domain=dns_domain, primary_answer=dns_answer, failover_answers=dns_failover)
+            data_valid = validate_dns_rewrite(domain=dns_domain, primary_answer=dns_answer,
+                                              failover_answers=dns_failover)
 
             if data_valid:
                 self.ping_configs[job_index] = {}
@@ -232,17 +207,17 @@ class ConfigParser:
                 self.ping_configs[job_index]['timeout'] = timeout
                 self.ping_configs[job_index]['count'] = count
 
-                logging.debug(msg="ping-domain " + self.ping_configs[job_index]['dns_domain'])
-                logging.debug(msg="ping-interval " + str(self.ping_configs[job_index]['interval']))
-                logging.debug(msg="ping-count " + str(self.ping_configs[job_index]['count']))
-                logging.debug(msg="ping-timeout " + str(self.ping_configs[job_index]['timeout']))
-                logging.debug(msg="ping-primary " + self.ping_configs[job_index]['dns_answer'])
-                logging.debug(msg="ping-failover " + ' '.join(self.ping_configs[job_index]['dns_answer_failover']))
+                logging.debug(msg=f"ping-domain {self.ping_configs[job_index]['dns_domain']}")
+                logging.debug(msg=f"ping-interval {self.ping_configs[job_index]['interval']}")
+                logging.debug(msg=f"ping-count {self.ping_configs[job_index]['count']}")
+                logging.debug(msg=f"ping-timeout {self.ping_configs[job_index]['timeout']}")
+                logging.debug(msg=f"ping-primary {self.ping_configs[job_index]['dns_answer']}")
+                logging.debug(msg=f"ping-failover " + ' '.join(self.ping_configs[job_index]['dns_answer_failover']))
 
                 job_index = job_index + 1
 
             else:
-                logging.info("Job for domain: " + dns_domain + " not added, due to invalid parameters")
+                logging.info(f"Job for domain: {dns_domain} not added, due to invalid parameters")
 
     def parser_static_entry(self):
         job_index = 0
@@ -257,8 +232,9 @@ class ConfigParser:
 
             except KeyError:
                 logging.error("Error in config file, static_entry KeyError")
+                break
 
-            data_valid = self.validate_dns(domain=domain, primary_answer=answer, failover_answers=[])
+            data_valid = validate_dns_rewrite(domain=domain, primary_answer=answer, failover_answers=[])
 
             if data_valid:
                 self.static_entry_configs[job_index] = {}
@@ -266,14 +242,14 @@ class ConfigParser:
                 self.static_entry_configs[job_index]['answer'] = answer
                 self.static_entry_configs[job_index]['interval'] = interval
 
-                logging.debug(msg="data-entry-domain " + self.static_entry_configs[job_index]['domain'])
-                logging.debug(msg="data-entry-answer " + self.static_entry_configs[job_index]['answer'])
-                logging.debug(msg="data-entry-interval " + str(self.static_entry_configs[job_index]['interval']))
+                logging.debug(msg=f"data-entry-domain {self.static_entry_configs[job_index]['domain']}")
+                logging.debug(msg=f"data-entry-answer {self.static_entry_configs[job_index]['answer']}")
+                logging.debug(msg=f"data-entry-interval {self.static_entry_configs[job_index]['interval']}")
 
                 job_index += 1
 
             else:
-                logging.info("Job for domain: " + domain + " not added, due to invalid parameters")
+                logging.info(msg=f"Job for domain: {domain} not added, due to invalid parameters")
 
     def parse_api(self):
         """
@@ -286,11 +262,11 @@ class ConfigParser:
             passwd = self.file_content['api']['passwd']
 
             proto = parse_value_with_default(content=self.file_content['api'], key='proto',
-                                                                default_value=default.Api.proto)
+                                             default_value=default.Api.proto)
             port = parse_value_with_default(content=self.file_content['api'], key='port',
-                                                               default_value=default.Api.port)
+                                            default_value=default.Api.port)
             timeout = parse_value_with_default(content=self.file_content['api'], key='timeout',
-                                                                  default_value=default.Api.timeout)
+                                               default_value=default.Api.timeout)
             if 'startup' in self.file_content['api']:
                 startup_test = parse_value_with_default(
                     content=self.file_content['api']['startup'],
@@ -310,37 +286,37 @@ class ConfigParser:
                 startup_exit_on_fall = False
                 startup_retry_after = 10
 
+            data_valid = validate_ip(ip=host) or validate_domain(domain=host)
+            data_valid = data_valid and validate_network_port(port=port)
+            if data_valid:
+                self.api_config['host'] = host
+                self.api_config['username'] = username
+                self.api_config['passwd'] = passwd
+                self.api_config['proto'] = proto
+                self.api_config['port'] = port
+                self.api_config['timeout'] = timeout
+                self.api_config['startup'] = {}
+                self.api_config['startup']['test'] = startup_test
+                self.api_config['startup']['timeout'] = startup_timeout
+                self.api_config['startup']['exit_on_fail'] = startup_exit_on_fall
+                self.api_config['startup']['retry_after'] = startup_retry_after
+
+                logging.debug(msg=f"api-host {self.api_config['host']}")
+                logging.debug(msg=f"api-username {self.api_config['username']}")
+                logging.debug(msg=f"api-passwd {hashlib.sha256(str(self.api_config['passwd']).encode()).hexdigest()}")
+                logging.debug(msg=f"api-proto {self.api_config['proto']}")
+                logging.debug(msg=f"api-port {self.api_config['port']}")
+                logging.debug(msg=f"api-timeout {self.api_config['timeout']}")
+                logging.debug(msg=f"api-startup-test {self.api_config['startup']['test']}")
+                logging.debug(msg=f"api-startup-timeout {self.api_config['startup']['timeout']}")
+                logging.debug(msg=f"api-startup-exit_on_fail {self.api_config['startup']['exit_on_fail']}")
+                logging.debug(msg=f"api-startup-test-retry_after {self.api_config['startup']['retry_after']}")
+            else:
+                logging.info("Api configuration error")
+
         except KeyError:
             logging.error("Config file error / api / KeyError")
             exit(-2)
-
-        data_valid = validate_ip(ip=host) or validate_domain(domain=host)
-        data_valid = data_valid and validate_network_port(port=port)
-        if data_valid:
-            self.api_config['host'] = host
-            self.api_config['username'] = username
-            self.api_config['passwd'] = passwd
-            self.api_config['proto'] = proto
-            self.api_config['port'] = port
-            self.api_config['timeout'] = timeout
-            self.api_config['startup'] = {}
-            self.api_config['startup']['test'] = startup_test
-            self.api_config['startup']['timeout'] = startup_timeout
-            self.api_config['startup']['exit_on_fail'] = startup_exit_on_fall
-            self.api_config['startup']['retry_after'] = startup_retry_after
-
-            logging.debug(msg="api-host " + self.api_config['host'])
-            logging.debug(msg="api-username " + self.api_config['username'])
-            logging.debug(msg='api-passwd ' + hashlib.sha256(str(self.api_config['passwd']).encode()).hexdigest())
-            logging.debug(msg='api-proto ' + self.api_config['proto'])
-            logging.debug(msg='api-port ' + str(self.api_config['port']))
-            logging.debug(msg='api-timeout ' + str(self.api_config['timeout']))
-            logging.debug(msg='api-startup-test ' + str(self.api_config['startup']['test']))
-            logging.debug(msg='api-startup-timeout ' + str(self.api_config['startup']['timeout']))
-            logging.debug(msg='api-startup-exit_on_fail ' + str(self.api_config['startup']['exit_on_fail']))
-            logging.debug(msg='api-startup-test-retry_after ' + str(self.api_config['startup']['retry_after']))
-        else:
-            logging.info("Api configuration error")
 
     def parse_config(self):
         """
@@ -361,18 +337,18 @@ class ConfigParser:
 
                 self.config_config['entry_exist'] = parse_value_with_default(content=self.file_content['config'],
                                                                              key='entry_exist',
-                                                                             default_value=
-                                                                             default.Config.entry_exist)
+                                                                             default_value=default.Config.entry_exist)
             else:
                 self.config_config['wait'] = default.Config.wait
                 self.config_config['log_level'] = default.Config.log_level
                 self.config_config['log_file'] = default.Config.log_file
                 self.config_config['entry_exist'] = default.Config.entry_exist
 
-            logging.debug(msg="config-wait " + str(self.config_config['wait']))
-            logging.debug(msg="config-log_level " + str(self.config_config['log_level']))
-            logging.debug(msg="config-log_file " + str(self.config_config['log_file']))
-            logging.debug(msg="config-entry_exist " + str(self.config_config['entry_exist']))
+            logging.debug(msg=f"config-wait {self.config_config['wait']}")
+            logging.debug(msg=f"config-log_level {self.config_config['log_level']}")
+            logging.debug(msg=f"config-log_file {self.config_config['log_file']}")
+            logging.debug(msg=f"config-entry_exist {self.config_config['entry_exist']}")
+
         except KeyError:
             logging.error("Config file error / Config / KeyError")
             exit(-2)

@@ -2,8 +2,8 @@ import unittest
 
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 
-from src.parsers.CliParser import CliParser
-from src.parsers.CliParser import parse_logging_level
+from app.parsers.cli import CliParser
+from app.parsers.cli import parse_logging_level
 
 
 class TestParseLoggingLevel(unittest.TestCase):

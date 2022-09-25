@@ -1,6 +1,6 @@
 import unittest
 
-from src.data.validator import validate_domain, validate_ip, validate_network_port, validate_http_response_code
+from app.data.validator import validate_domain, validate_ip, validate_network_port, validate_http_response_code
 
 
 class ValidateDomain(unittest.TestCase):
@@ -250,7 +250,7 @@ class ValidateDomain(unittest.TestCase):
         """
         # 63 char domain
         self.assertEqual(validate_domain(domain=
-                                                  "recite-rocking-irritably-threefold-enjoying-engross-unlock.com"),
+                                         "recite-rocking-irritably-threefold-enjoying-engross-unlock.com"),
                          True)
 
     def test_length_domain_to_long(self):
@@ -260,7 +260,7 @@ class ValidateDomain(unittest.TestCase):
         """
         # 63 char domain
         self.assertEqual(validate_domain(domain=
-                                                  "recite-rocking-irritably-threefold-enjoying-engross-unlock-sel.com"),
+                                         "recite-rocking-irritably-threefold-enjoying-engross-unlock-sel.com"),
                          False)
 
     def test_dot_next_to_each_other(self):
@@ -390,7 +390,6 @@ class ValidateDomain(unittest.TestCase):
         self.assertEqual(validate_domain(domain="example<.com"), False)
 
     def test_domain_special_chars(self):
-
         """brackets
         Test behavior of function check_domain_correctness when domain contains special chars
         :return:
@@ -503,7 +502,6 @@ class ValidateHttpResponseCode(unittest.TestCase):
         :return:
         """
         self.assertEqual(validate_http_response_code(code=600), False)
-
 
 
 if __name__ == "__main__":

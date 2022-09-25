@@ -1,6 +1,6 @@
 import unittest
 
-from src.data import default
+from app.data import default
 
 
 class TestData(unittest.TestCase):

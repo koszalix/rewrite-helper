@@ -1,12 +1,13 @@
 #!/bin/python3
 import sys
-import logging
 import time
+import logging
 
-from src.api.ApiConnector import ApiConnector
-from src.TestHosts import TestHosts
-from src.parsers.ConfigurationParser import ConfigParser
-from src.parsers.CliParser import CliParser
+
+from app.api.connector import ApiConnector
+from app.run_jobs import TestHosts
+from app.parsers.configuration import ConfigParser
+from app.parsers.cli import CliParser
 
 
 def set_log_file(filename: str):

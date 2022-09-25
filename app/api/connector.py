@@ -1,10 +1,9 @@
 import logging
-
+import time
 import requests
 from requests.auth import HTTPBasicAuth
-import time
 
-from src.utils import check_protocol_slashed
+from app.utils import check_protocol_slashed
 
 
 class ApiConnector:
@@ -62,14 +61,14 @@ class ApiConnector:
             response = requests.get(url=url, auth=self.auth, timeout=self.timeout)
 
             if response.status_code != 200:
-                logging.error("Api test fails -> status code: " + str(response.status_code))
+                logging.error(msg=f"Api test fail status code: {response.status_code}")
                 return False
             else:
-                logging.info("Api test successful")
+                logging.info(msg="Api test successful")
                 return True
 
         except requests.ConnectionError:
-            logging.error("Can't establish connection to API")
+            logging.error(msg="Can't establish connection to API")
             return False
 
     def entry_exist(self, answer: str, domain: str):
@@ -92,7 +91,7 @@ class ApiConnector:
                 return False
 
             else:
-                logging.error("Server responded with status code:" + str(response.status_code))
+                logging.error(msg=f"Server responded with status code: {response.status_code}")
                 return None
 
         except requests.exceptions.ConnectionError as e:
@@ -118,7 +117,7 @@ class ApiConnector:
                 return False
 
             else:
-                logging.error("Server responded with status code:" + str(response.status_code))
+                logging.error(msg=f"Server responded with status code: status code: {response.status_code}")
                 return None
 
         except requests.exceptions.ConnectionError as e:
@@ -145,7 +144,7 @@ class ApiConnector:
                 return False
 
             else:
-                logging.error("Server responded with status code:" + str(response.status_code))
+                logging.error(msg=f"Server responded with status code: {response.status_code}")
                 return None
 
         except requests.exceptions.ConnectionError as e:
@@ -160,7 +159,7 @@ class ApiConnector:
         :return: True if deletion was successful, False if deletion wasn't successful (for ex. entry does not exist),
                  None if request status code was other than 200
         """
-        logging.info(("Processing entry (remove) " + domain + " " + answer))
+        logging.info(msg=f"Processing entry (remove) {domain} {answer}")
         exist = self.entry_exist(answer=answer, domain=domain)
 
         if exist:
@@ -171,17 +170,17 @@ class ApiConnector:
             }
             response = requests.post(url=url, json=data, auth=self.auth, timeout=self.timeout)
             if response.status_code == 200:
-                logging.info("Deletion of entry successful")
+                logging.info(msg="Deletion of entry successful")
                 return True
             else:
-                logging.info("Deletion of entry failed, server status code: " + str(response.status_code))
+                logging.info(msg="Deletion of entry failed, server status code: {response.status_code}")
                 return None
 
         elif exist is None:
-            logging.info("Deletion of entry failed due to previous errors")
+            logging.info(msg="Deletion of entry failed due to previous errors")
             return None
         else:
-            logging.info("Deletion of entry failed (does entry exist ?)")
+            logging.info(msg="Deletion of entry failed (does entry exist ?)")
             return False
 
     def add_entry(self, answer: str, domain: str):
@@ -192,7 +191,7 @@ class ApiConnector:
         :return: True if entry was added successful, False if entry wasn't added (for ex. entry exist)
                  None if other error (such as connection error) occurs
         """
-        logging.info(("Processing entry (add) " + domain + " " + answer))
+        logging.info(msg=f"Processing entry (add) {domain} {answer}")
         exist = self.entry_exist(answer=answer, domain=domain)
 
         if not exist:
@@ -203,18 +202,18 @@ class ApiConnector:
             }
             response = requests.post(url=url, json=data, auth=self.auth, timeout=self.timeout)
             if response.status_code == 200:
-                logging.info("Adding of entry successful")
+                logging.info(msg="Adding of entry successful")
                 return True
             else:
-                logging.info("Adding of entry failed, server status code: " + str(response.status_code))
+                logging.info(msg=f"Adding of entry failed, server status code: {response.status_code}")
                 return None
 
         elif exist is None:
-            logging.info("Adding of entry failed due to previous errors")
+            logging.info(msg="Adding of entry failed due to previous errors")
             return None
 
         else:
-            logging.info("Adding of entry failed (does entry exist ?)")
+            logging.info(msg="Adding of entry failed (does entry exist ?)")
             return False
 
     def change_entry_answer(self, new_answer: str, old_answer: str, domain: str):
@@ -226,7 +225,7 @@ class ApiConnector:
         :return: True if change was successful , False if change wasn't successful
                  None if other error (such ad invalid passwd or network connection error) occurs
         """
-        logging.info(("Processing entry (change) " + domain + " from " + str(old_answer) + " to " + str(new_answer)))
+        logging.info(msg=f"Processing entry (change) {domain} from {old_answer} to {new_answer}")
 
         status = self.entry_exist(answer=old_answer, domain=domain)
         if status is not True:

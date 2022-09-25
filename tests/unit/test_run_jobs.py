@@ -1,7 +1,7 @@
 import unittest
 
-from src.TestHosts import TestHosts
-from src.api.ApiConnector import ApiConnector
+from app.run_jobs import TestHosts
+from app.api.connector import ApiConnector
 
 
 class TestHost(unittest.TestCase):
