@@ -79,23 +79,29 @@ class JobHttp(DNS, IterationEngine):
     __interval = []
     __status_code = []
     __proto = []
+    __timeout = []
+    __port = []
 
-    def append(self, interval: int, status_code: int, proto: str, domain: str, answers: list):
+    def append(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: int, port: int) -> None:
         """
         Add new set of config data for http job
 
-        :param interval:
-        :param status_code:
-        :param proto:
-        :param domain:
-        :param answers:
-        :return:
+        :param interval: seconds between requests
+        :param status_code: http response status code treated as correct
+        :param proto: http transport protocol (http or https)
+        :param domain: dns domain
+        :param answers: dns answers (first answer is primary)
+        :param timeout: request timeout, if timeout is exceeded host request is treated as failed
+        :param port: request port
+        :return: None
         """
         self.__interval.append(interval)
         self.__status_code.append(status_code)
         self.__proto.append(proto)
         self.__domain.append(domain)
         self.__answers.append(answers)
+        self.__timeout.append(timeout)
+        self.__port.append(port)
 
         self.__count += 1
 
