@@ -74,7 +74,7 @@ class DNS(IterationEngine):
 
 class JobHttp(DNS, IterationEngine):
     """
-    Stores configuration for http job
+    Stores configurations for http jobs
     """
     __interval = []
     __status_code = []
@@ -139,14 +139,53 @@ class JobHttp(DNS, IterationEngine):
             return False
         return self.__proto[idx]
 
+    def get_timeout(self, idx: int) -> Union[str, bool]:
+        """
+        Get timeout of specific http job
+
+        :param idx: job id
+        :return: job interval or False in case of failure (idx is not valid)
+        """
+
+        if self._check_idx(idx=idx) is True:
+            return False
+        return self.__timeout[idx]
+
+    def get_port(self, idx: int) -> Union[str, bool]:
+        """
+        Get port of specific http job
+
+        :param idx: job id
+        :return: job interval or False in case of failure (idx is not valid)
+        """
+
+        if self._check_idx(idx=idx) is True:
+            return False
+        return self.__port[idx]
+
 
 class JobPing(DNS, IterationEngine):
+    """
+    Stores configurations for ping jobs
+    """
     __interval = []
     __count = []
     __timeout = []
     __privileged = []
 
-    def append(self, interval: int, count: int, timeout: int, domain: str, answers: list, privileged : bool):
+    def append(self, interval: int, count: int, timeout: int, domain: str, answers: list, privileged: bool) -> None:
+        """
+        Add new set of config data for http job
+
+        :param interval: seconds between requests
+        :param count: number of packages send by each request
+        :param timeout: request timeout, if timeout is exceeded host request is treated as failed
+        :param domain: dns domain
+        :param answers: dns answers (first answer is primary)
+        :param privileged: set True to run in privileged mode, see icmplib documentation for more
+        :return: None
+        """
+
         self.__interval.append(interval)
         self.__count.append(count)
         self.__timeout.append(timeout)
@@ -158,7 +197,7 @@ class JobPing(DNS, IterationEngine):
 
     def get_interval(self, idx: int) -> Union[int, bool]:
         """
-        Get interval of specific http job
+        Get interval of specific ping job
 
         :param idx: job id
         :return: job interval or False in case of failure (idx is not valid)
@@ -169,7 +208,7 @@ class JobPing(DNS, IterationEngine):
 
     def get_count(self, idx: int) -> Union[int, bool]:
         """
-        Get package count of specific http job
+        Get package count of specific ping job
 
         :param idx: job id
         :return: job interval or False in case of failure (idx is not valid)
@@ -180,7 +219,7 @@ class JobPing(DNS, IterationEngine):
 
     def get_timeout(self, idx: int) -> Union[int, bool]:
         """
-        Get timeout of specific http job
+        Get timeout of specific ping job
 
         :param idx: job id
         :return: job interval or False in case of failure (idx is not valid)
@@ -191,7 +230,7 @@ class JobPing(DNS, IterationEngine):
 
     def get_privileged(self, idx: int) -> Union[int, bool]:
         """
-        Get state of privileged run of specific http job
+        Get state of privileged run of specific ping job
 
         :param idx: job id
         :return: job interval or False in case of failure (idx is not valid)
@@ -199,3 +238,5 @@ class JobPing(DNS, IterationEngine):
         if self._check_idx(idx=idx) is True:
             return False
         return self.__privileged[idx]
+
+    
