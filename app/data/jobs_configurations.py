@@ -239,4 +239,34 @@ class JobPing(DNS, IterationEngine):
             return False
         return self.__privileged[idx]
 
-    
+
+class StaticEntryJob(DNS, IterationEngine):
+    """
+    Stores configuration for static entry job
+    """
+    __interval = []
+
+    def append(self, interval: int, domain: str, answers: list) -> None:
+        """
+        Add new set of config data for static entry
+
+        :param interval: seconds between requests
+        :param domain: dns domain
+        :param answers: dns answers (first answer is primary)
+
+        """
+        self.__interval.append(interval)
+        self.__domain.append(domain)
+        self.__answers.append(answers)
+
+    def get_interval(self, idx: int):
+        """
+        Get interval of specific static entry job 
+
+        :param idx: job id
+        :return: job interval or False in case of failure (idx is not valid)
+        """
+
+        if self._check_idx(idx=idx) is True:
+            return False
+        return self.__interval[idx]
