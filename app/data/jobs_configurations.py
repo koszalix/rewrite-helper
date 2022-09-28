@@ -111,6 +111,18 @@ class JobPing(DNS):
         self.__domain = domain
         self.__answers = answers
 
+    def interval(self):
+        return self._interval
+
+    def count(self):
+        return self._count
+
+    def timeout(self):
+        return self._timeout
+
+    def privileged(self):
+        return self._privileged
+
 
 class JobsPing(IterationEngine):
     """
@@ -144,6 +156,9 @@ class JobStaticEntry(DNS):
         self.__interval = interval
         self.__domain = domain
         self.__answers = [answer]
+
+    def interval(self):
+        return self.__interval
 
 
 class JobsStaticEntry(DNS, IterationEngine):
