@@ -193,6 +193,6 @@ class JobsStaticEntry:
 
 
 class JobsConfs:
-    JobHttp = JobsHttp()
-    JobPing = JobsPing()
-    JobStaticEntry = JobsStaticEntry()
+    JobsHttp = JobsHttp()
+    JobsPing = JobsPing()
+    JobsStaticEntry = JobsStaticEntry()
