@@ -12,6 +12,7 @@ from app.data.validator import validate_ip, validate_domain, validate_network_po
     validate_dns_rewrite, validate_ips
 from app.data.jobs_configurations import JobsConfs
 from app.data.api_configuration import ApiConfiguration
+from app.data.config import Config
 
 
 class ConfigParser:
@@ -19,14 +20,14 @@ class ConfigParser:
     Read and parse config file. Run .parse() to run all parses.
     """
 
-    def __init__(self, file: str, jobs_confs: JobsConfs, api_confs: ApiConfiguration):
+    def __init__(self, file: str, jobs_confs: JobsConfs, api_confs: ApiConfiguration, confs: Config):
         """
         :param file: path to config file
         """
         self.config_file = file
         self.JobConfs = jobs_confs
         self.ApiConfs = api_confs
-        self.config_config = {}
+        self.Confs = confs
 
     def find_any_yml(self):
         """
@@ -236,29 +237,21 @@ class ConfigParser:
         """
         try:
             if 'config' in self.file_content:
-                self.config_config['wait'] = parse_value_with_default(
+                wait = parse_value_with_default(
                     content=self.file_content['config'], key='wait', default_value=default.Config.wait)
                 log_level = parse_value_with_default(
                     content=self.file_content['config'], key="log_level", default_value="N/A")
 
-                self.config_config['log_level'] = parse_logging_level(logging_str=log_level)
+                log_level = parse_logging_level(logging_str=log_level)
 
-                self.config_config['log_file'] = parse_value_with_default(
+                log_file = parse_value_with_default(
                     content=self.file_content['config'], key='log_file', default_value=default.Config.log_file)
 
-                self.config_config['entry_exist'] = parse_value_with_default(content=self.file_content['config'],
+                entry_exist = parse_value_with_default(content=self.file_content['config'],
                                                                              key='entry_exist',
                                                                              default_value=default.Config.entry_exist)
-            else:
-                self.config_config['wait'] = default.Config.wait
-                self.config_config['log_level'] = default.Config.log_level
-                self.config_config['log_file'] = default.Config.log_file
-                self.config_config['entry_exist'] = default.Config.entry_exist
 
-            logging.debug(msg=f"config-wait {self.config_config['wait']}")
-            logging.debug(msg=f"config-log_level {self.config_config['log_level']}")
-            logging.debug(msg=f"config-log_file {self.config_config['log_file']}")
-            logging.debug(msg=f"config-entry_exist {self.config_config['entry_exist']}")
+                self.Confs.set(wait=wait, log_level=log_level, log_file=log_file, entry_exist=entry_exist)
 
         except KeyError:
             logging.error("Config file error / Config / KeyError")
