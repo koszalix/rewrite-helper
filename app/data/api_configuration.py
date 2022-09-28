@@ -2,13 +2,13 @@ class ApiConfiguration:
     """
     Store configuration for Api Connector
     """
-    host = ""
-    username = ""
-    passwd = ""
-    proto = ""
-    port = ""
-    timeout = ""
-    startup_enable = ""
+    __host = ""
+    __username = ""
+    __passwd = ""
+    __proto = ""
+    __port = ""
+    __timeout = ""
+    __startup_enable = ""
 
     def set(self, host: str, username: str, passwd: str, proto: str, port: int, timeout: int, startup_enable: bool):
         """
@@ -24,10 +24,32 @@ class ApiConfiguration:
         :return:
         """
 
-        self.host = host
-        self.username = username
-        self.passwd = passwd
-        self.proto = proto
-        self.port = port
-        self.timeout = timeout
-        self.startup_enable = startup_enable
+        self.__host = host
+        self.__username = username
+        self.__passwd = passwd
+        self.__proto = proto
+        self.__port = port
+        self.__timeout = timeout
+        self.__startup_enable = startup_enable
+
+    def host(self):
+        return self.__host
+
+    def username(self):
+        return self.__username
+
+    def passwd(self):
+        return self.__passwd
+
+    def proto(self):
+        return self.__proto
+
+    def port(self):
+        return self.__port
+
+    def timeout(self):
+        return self.__timeout
+
+    def startup_enable(self):
+        return self.__startup_enable
+
