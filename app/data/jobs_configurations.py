@@ -13,7 +13,7 @@ class DNS:
 
 
 class JobHttp(DNS):
-    def __init__(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: int,
+    def __init__(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: float,
                  port: int):
         self._interval = interval
         self._status_code = status_code
@@ -47,7 +47,7 @@ class JobsHttp:
     __count = 0
     __http_objs = []
 
-    def append(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: int,
+    def append(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: float,
                port: int) -> None:
         """
         Add new set of config data for http job
@@ -84,7 +84,7 @@ class JobsHttp:
 
 
 class JobPing(DNS):
-    def __init__(self, interval: int, count: int, timeout: int, domain: str, answers: list, privileged: bool):
+    def __init__(self, interval: int, count: int, timeout: float, domain: str, answers: list, privileged: bool):
         self._interval = interval
         self._count = count
         self._timeout = timeout
@@ -112,7 +112,7 @@ class JobsPing:
     __count = 0
     __ping_objs = []
 
-    def append(self, interval: int, count: int, timeout: int, domain: str, answers: list, privileged: bool) -> None:
+    def append(self, interval: int, count: int, timeout: float, domain: str, answers: list, privileged: bool) -> None:
         """
         Add new set of config data for http job
 
