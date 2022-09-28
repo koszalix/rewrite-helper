@@ -128,8 +128,8 @@ class ConfigParser:
             data_valid = validate_domain(domain=domain) and validate_ips(ips=answers) and validate_network_port(
                 port=port) and validate_http_response_code(code=status_code)
             if data_valid:
-                self.JobConfs.JobHttp.append(interval=interval, status_code=status_code, proto=proto, domain=domain,
-                                             answers=answers, timeout=timeout, port=port)
+                self.JobConfs.JobsHttp.append(interval=interval, status_code=status_code, proto=proto, domain=domain,
+                                              answers=answers, timeout=timeout, port=port)
             else:
                 logging.info(f"Job for domain: {domain} not added, due to invalid parameters")
 
@@ -170,8 +170,8 @@ class ConfigParser:
                                               failover_answers=dns_failover)
 
             if data_valid:
-                self.JobConfs.JobPing.append(interval=interval, count=count, timeout=timeout, domain=domain,
-                                             answers=answers, privileged=privileged)
+                self.JobConfs.JobsPing.append(interval=interval, count=count, timeout=timeout, domain=domain,
+                                              answers=answers, privileged=privileged)
 
             else:
                 logging.info(f"Job for domain: {domain} not added, due to invalid parameters")
@@ -193,7 +193,7 @@ class ConfigParser:
             data_valid = validate_dns_rewrite(domain=domain, primary_answer=answer, failover_answers=[])
 
             if data_valid:
-                self.JobConfs.JobStaticEntry.append(interval=interval, domain=domain, answers=answer)
+                self.JobConfs.JobsStaticEntry.append(interval=interval, domain=domain, answers=answer)
 
             else:
                 logging.info(msg=f"Job for domain: {domain} not added, due to invalid parameters")
