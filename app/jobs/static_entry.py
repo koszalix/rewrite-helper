@@ -22,7 +22,7 @@ class Test(threading.Thread):
         Check if entry exist
         :return: True if entry exist false if not
         """
-        return self.api_connect.entry_exist(answer=self.answer, domain=self.domain)
+        return self.api_connect.entry_exist(answer=self.answer[0], domain=self.domain)
 
     def run(self):
         while True:
