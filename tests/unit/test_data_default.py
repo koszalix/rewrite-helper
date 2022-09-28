@@ -17,16 +17,7 @@ class TestData(unittest.TestCase):
         self.assertEqual(default.Api.port, 80)
 
     def test_api_startup_test(self):
-        self.assertEqual(default.Api.Startup.test, True)
-
-    def test_api_startup_timeout(self):
-        self.assertEqual(default.Api.Startup.timeout, 10)
-
-    def test_api_startup_exit_on_false(self):
-        self.assertEqual(default.Api.Startup.exit_on_false, False)
-
-    def test_api_startup_retry_after(self):
-        self.assertEqual(default.Api.Startup.retry_after, 10)
+        self.assertEqual(default.Api.startup, True)
 
     def test_config_wait(self):
         self.assertEqual(default.Config.wait, 0)
