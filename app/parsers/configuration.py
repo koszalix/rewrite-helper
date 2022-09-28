@@ -160,7 +160,7 @@ class ConfigParser:
                 count = parse_value_with_default(content=job, key='count',
                                                  default_value=default.PingJob.count)
 
-                privileged = parse_value_with_default(content=job, key='privileged', default_value=default)
+                privileged = parse_value_with_default(content=job, key='privileged', default_value=default.PingJob.privileged)
 
             except KeyError:
                 logging.error("Error in config file, ping_jobs KeyError")
