@@ -1,11 +1,6 @@
 from typing import Union
 
 
-class JobDescriptor:
-    job_id = 0
-    job_type = ""
-
-
 class IterationEngine:
 
     # number of jobs
@@ -240,28 +235,28 @@ class JobPing(DNS, IterationEngine):
         return self.__privileged[idx]
 
 
-class StaticEntryJob(DNS, IterationEngine):
+class JobStaticEntry(DNS, IterationEngine):
     """
     Stores configuration for static entry job
     """
     __interval = []
 
-    def append(self, interval: int, domain: str, answers: list) -> None:
+    def append(self, interval: int, domain: str, answer: str) -> None:
         """
         Add new set of config data for static entry
 
         :param interval: seconds between requests
         :param domain: dns domain
-        :param answers: dns answers (first answer is primary)
+        :param answer: dns answers
 
         """
         self.__interval.append(interval)
         self.__domain.append(domain)
-        self.__answers.append(answers)
+        self.__answers.append(answer)
 
     def get_interval(self, idx: int):
         """
-        Get interval of specific static entry job 
+        Get interval of specific static entry job
 
         :param idx: job id
         :return: job interval or False in case of failure (idx is not valid)
@@ -270,3 +265,9 @@ class StaticEntryJob(DNS, IterationEngine):
         if self._check_idx(idx=idx) is True:
             return False
         return self.__interval[idx]
+
+
+class JobsConfs:
+    JobHttp = JobHttp()
+    JobPing = JobPing()
+    JobStaticEntry = JobStaticEntry()

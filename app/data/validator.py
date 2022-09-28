@@ -20,6 +20,19 @@ def validate_ip(ip: str) -> bool:
             return False
 
 
+def validate_ips(ips: list) -> bool:
+    """
+    Check if provided ip addresses are valid
+    :param ips:
+    :return: True if address are valid, False if not
+    """
+    for adr in ips:
+        if validate_ip(ip=adr) is False:
+            return False
+    else:
+        return True
+
+
 def validate_domain(domain: str) -> bool:
     """
     Check if domain is valid:

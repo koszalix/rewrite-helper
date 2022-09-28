@@ -7,12 +7,7 @@ class Api:
     proto = "http"
     port = 80
     timeout = 10
-
-    class Startup:
-        test = True
-        timeout = 10
-        exit_on_false = False
-        retry_after = 10
+    startup = True
 
 
 class Config:
@@ -26,6 +21,7 @@ class PingJob:
     interval = 60
     count = 2
     timeout = 2
+    privileged = False
 
 
 class HttpJob:
