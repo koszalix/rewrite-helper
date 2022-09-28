@@ -1,29 +1,3 @@
-from typing import Union
-
-
-class IterationEngine:
-
-    # number of jobs
-    __count = 0
-
-    # index used by iterator
-    __index = 0
-
-    def _check_idx(self, idx) -> bool:
-        """
-        Check if idx (job id) is valid
-
-        Idx must be greater or equal to zero and lower than self.__count
-        :param idx:
-        :return: True
-        """
-        if 0 <= idx < self.__count:
-            return True
-        return False
-
-
-
-
 class DNS:
     """
     Stores DNS answer and domain, answer[0] is primary answer
@@ -39,7 +13,8 @@ class DNS:
 
 
 class JobHttp(DNS):
-    def __init__(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: int, port: int):
+    def __init__(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: int,
+                 port: int):
         self._interval = interval
         self._status_code = status_code
         self._proto = proto
@@ -70,9 +45,10 @@ class JobsHttp:
     """
 
     __count = 0
-    http_objs = []
+    __http_objs = []
 
-    def append(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: int, port: int) -> None:
+    def append(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: int,
+               port: int) -> None:
         """
         Add new set of config data for http job
 
@@ -85,12 +61,13 @@ class JobsHttp:
         :param port: request port
         :return: None
         """
-        self.http_objs.append(JobHttp(interval=interval, status_code=status_code, proto=proto, domain=domain, answers=answers, timeout=timeout, port=port))
+        self.__http_objs.append(JobHttp(interval=interval, status_code=status_code, proto=proto, domain=domain,
+                                        answers=answers, timeout=timeout, port=port))
 
         self.__count += 1
 
     def __getitem__(self, item):
-        return self.http_objs[item]
+        return self.__http_objs[item]
 
     def __iter__(self):
         self.__index = 0
@@ -103,7 +80,7 @@ class JobsHttp:
         temporary_index = self.__index
         self.__index += 1
 
-        return self.http_objs[temporary_index]
+        return self.__http_objs[temporary_index]
 
 
 class JobPing(DNS):
@@ -133,7 +110,7 @@ class JobsPing:
     Stores configurations for ping jobs
     """
     __count = 0
-    ping_objs = []
+    __ping_objs = []
 
     def append(self, interval: int, count: int, timeout: int, domain: str, answers: list, privileged: bool) -> None:
         """
@@ -148,12 +125,13 @@ class JobsPing:
         :return: None
         """
 
-        self.ping_objs.append(JobPing(interval=interval, count=count, timeout=timeout, domain=domain, answers=answers, privileged=privileged))
+        self.__ping_objs.append(JobPing(interval=interval, count=count, timeout=timeout, domain=domain,
+                                        answers=answers, privileged=privileged))
 
         self.__count += 1
 
     def __getitem__(self, item):
-        return self.ping_objs[item]
+        return self.__ping_objs[item]
 
     def __iter__(self):
         self.__index = 0
@@ -166,7 +144,7 @@ class JobsPing:
         temporary_index = self.__index
         self.__index += 1
 
-        return self.ping_objs[temporary_index]
+        return self.__ping_objs[temporary_index]
 
 
 class JobStaticEntry(DNS):
@@ -179,11 +157,12 @@ class JobStaticEntry(DNS):
         return self.__interval
 
 
-class JobsStaticEntry(DNS, IterationEngine):
+class JobsStaticEntry:
     """
     Stores configuration for static entry job
     """
-    se_objs = []
+    __count = 0
+    __se_objs = []
 
     def append(self, interval: int, domain: str, answer: str) -> None:
         """
@@ -194,10 +173,10 @@ class JobsStaticEntry(DNS, IterationEngine):
         :param answer: dns answers
         """
 
-        self.se_objs.append(JobStaticEntry(interval=interval, domain=domain, answer=answer))
+        self.__se_objs.append(JobStaticEntry(interval=interval, domain=domain, answer=answer))
 
     def __getitem__(self, item):
-        return self.se_objs[item]
+        return self.__se_objs[item]
 
     def __iter__(self):
         self.__index = 0
@@ -210,7 +189,7 @@ class JobsStaticEntry(DNS, IterationEngine):
         temporary_index = self.__index
         self.__index += 1
 
-        return self.se_objs[temporary_index]
+        return self.__se_objs[temporary_index]
 
 
 class JobsConfs:
