@@ -1,4 +1,7 @@
 class ApiConfiguration:
+    """
+    Store configuration for Api Connector
+    """
     host = ""
     username = ""
     passwd = ""
@@ -6,7 +9,6 @@ class ApiConfiguration:
     port = ""
     timeout = ""
     startup_enable = ""
-
 
     def set(self, host: str, username: str, passwd: str, proto: str, port: int, timeout: int, startup_enable: bool):
         """
