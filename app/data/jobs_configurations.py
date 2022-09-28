@@ -21,18 +21,7 @@ class IterationEngine:
             return True
         return False
 
-    def __iter__(self):
-        self.__index = 0
-        return self
 
-    def __next__(self):
-        if self.__index >= self.__count:
-            raise StopIteration
-
-        temporary_index = self.__index
-        self.__index += 1
-
-        return temporary_index
 
 
 class DNS:
@@ -75,10 +64,12 @@ class JobHttp(DNS):
         return self._port
 
 
-class JobsHttp(DNS, IterationEngine):
+class JobsHttp:
     """
     Stores configurations for http jobs
     """
+
+    __count = 0
     http_objs = []
 
     def append(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: int, port: int) -> None:
@@ -100,6 +91,19 @@ class JobsHttp(DNS, IterationEngine):
 
     def __getitem__(self, item):
         return self.http_objs[item]
+
+    def __iter__(self):
+        self.__index = 0
+        return self
+
+    def __next__(self):
+        if self.__index >= self.__count:
+            raise StopIteration
+
+        temporary_index = self.__index
+        self.__index += 1
+
+        return self.http_objs[temporary_index]
 
 
 class JobPing(DNS):
@@ -124,10 +128,11 @@ class JobPing(DNS):
         return self._privileged
 
 
-class JobsPing(IterationEngine):
+class JobsPing:
     """
     Stores configurations for ping jobs
     """
+    __count = 0
     ping_objs = []
 
     def append(self, interval: int, count: int, timeout: int, domain: str, answers: list, privileged: bool) -> None:
@@ -149,6 +154,19 @@ class JobsPing(IterationEngine):
 
     def __getitem__(self, item):
         return self.ping_objs[item]
+
+    def __iter__(self):
+        self.__index = 0
+        return self
+
+    def __next__(self):
+        if self.__index >= self.__count:
+            raise StopIteration
+
+        temporary_index = self.__index
+        self.__index += 1
+
+        return self.ping_objs[temporary_index]
 
 
 class JobStaticEntry(DNS):
@@ -180,6 +198,19 @@ class JobsStaticEntry(DNS, IterationEngine):
 
     def __getitem__(self, item):
         return self.se_objs[item]
+
+    def __iter__(self):
+        self.__index = 0
+        return self
+
+    def __next__(self):
+        if self.__index >= self.__count:
+            raise StopIteration
+
+        temporary_index = self.__index
+        self.__index += 1
+
+        return self.se_objs[temporary_index]
 
 
 class JobsConfs:
