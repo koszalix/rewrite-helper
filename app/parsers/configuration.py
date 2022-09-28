@@ -145,14 +145,6 @@ class ConfigParser:
                 domain = job['domain']
                 answers = job['answers']
 
-                if 'failover' in job['answers']:
-                    if job['answers']['failover'] is None:
-                        dns_failover = []
-                    else:
-                        dns_failover = job['answers']['failover']
-                else:
-                    dns_failover = []
-
                 interval = parse_value_with_default(content=job, key='interval',
                                                     default_value=default.PingJob.interval)
                 timeout = parse_value_with_default(content=job, key='timeout',
