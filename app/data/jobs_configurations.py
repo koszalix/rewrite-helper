@@ -35,47 +35,51 @@ class IterationEngine:
         return temporary_index
 
 
-class DNS(IterationEngine):
+class DNS:
     """
     Stores DNS answer and domain, answer[0] is primary answer
     """
-    __domain = []
+    __domain = ""
     __answers = []
 
-    def get_domain(self, idx: int) -> Union[str, bool]:
-        """
-        Get domain of specific http job
+    def domain(self):
+        return self.__domain
 
-        :param idx: job id
-        :return: job interval or False in case of failure (idx is not valid)
-        """
-
-        if self._check_idx(idx=idx) is True:
-            return False
-        return self.__domain[idx]
-
-    def get_answers(self, idx: int) -> Union[list, bool]:
-        """
-        Get answers (ip addressed) of specific http job
-
-        :param idx: job id
-        :return: job interval or False in case of failure (idx is not valid)
-        """
-
-        if self._check_idx(idx=idx) is True:
-            return False
-        return self.__answers[idx]
+    def answers(self):
+        return self.__answers
 
 
-class JobHttp(DNS, IterationEngine):
+class JobHttp(DNS):
+    def __init__(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: int, port: int):
+        self._interval = interval
+        self._status_code = status_code
+        self._proto = proto
+        self._timeout = timeout
+        self._port = port
+        self._domain = domain
+        self._answers = answers
+
+    def interval(self):
+        return self._interval
+
+    def status_code(self):
+        return self._status_code
+
+    def proto(self):
+        return self._proto
+
+    def timeout(self):
+        return self._timeout
+
+    def port(self):
+        return self._port
+
+
+class JobsHttp(DNS, IterationEngine):
     """
     Stores configurations for http jobs
     """
-    __interval = []
-    __status_code = []
-    __proto = []
-    __timeout = []
-    __port = []
+    http_objs = []
 
     def append(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: int, port: int) -> None:
         """
@@ -90,83 +94,29 @@ class JobHttp(DNS, IterationEngine):
         :param port: request port
         :return: None
         """
-        self.__interval.append(interval)
-        self.__status_code.append(status_code)
-        self.__proto.append(proto)
-        self.__domain.append(domain)
-        self.__answers.append(answers)
-        self.__timeout.append(timeout)
-        self.__port.append(port)
+        self.http_objs.append(JobHttp(interval=interval, status_code=status_code, proto=proto, domain=domain, answers=answers, timeout=timeout, port=port))
 
         self.__count += 1
 
-    def get_interval(self, idx: int) -> Union[int, bool]:
-        """
-        Get interval of specific http job
-
-        :param idx: job id
-        :return: job interval or False in case of failure (idx is not valid)
-        """
-        if self._check_idx(idx=idx) is True:
-            return False
-        return self.__interval[idx]
-
-    def get_status_code(self, idx: int) -> Union[int, bool]:
-        """
-        Get status_code of specific http job
-
-        :param idx: job id
-        :return: job interval or False in case of failure (idx is not valid)
-        """
-        if self._check_idx(idx=idx) is True:
-            return False
-        return self.__status_code[idx]
-
-    def get_proto(self, idx: int) -> Union[str, bool]:
-        """
-        Get protocol of specific http job
-
-        :param idx: job id
-        :return: job interval or False in case of failure (idx is not valid)
-        """
-
-        if self._check_idx(idx=idx) is True:
-            return False
-        return self.__proto[idx]
-
-    def get_timeout(self, idx: int) -> Union[str, bool]:
-        """
-        Get timeout of specific http job
-
-        :param idx: job id
-        :return: job interval or False in case of failure (idx is not valid)
-        """
-
-        if self._check_idx(idx=idx) is True:
-            return False
-        return self.__timeout[idx]
-
-    def get_port(self, idx: int) -> Union[str, bool]:
-        """
-        Get port of specific http job
-
-        :param idx: job id
-        :return: job interval or False in case of failure (idx is not valid)
-        """
-
-        if self._check_idx(idx=idx) is True:
-            return False
-        return self.__port[idx]
+    def __getitem__(self, item):
+        return self.http_objs[item]
 
 
-class JobPing(DNS, IterationEngine):
+class JobPing(DNS):
+    def __init__(self, interval: int, count: int, timeout: int, domain: str, answers: list, privileged: bool):
+        self._interval = interval
+        self._count = count
+        self._timeout = timeout
+        self._privileged = privileged
+        self.__domain = domain
+        self.__answers = answers
+
+
+class JobsPing(IterationEngine):
     """
     Stores configurations for ping jobs
     """
-    __interval = []
-    __count = []
-    __timeout = []
-    __privileged = []
+    ping_objs = []
 
     def append(self, interval: int, count: int, timeout: int, domain: str, answers: list, privileged: bool) -> None:
         """
@@ -181,65 +131,26 @@ class JobPing(DNS, IterationEngine):
         :return: None
         """
 
-        self.__interval.append(interval)
-        self.__count.append(count)
-        self.__timeout.append(timeout)
-        self.__domain.append(domain)
-        self.__answers.append(answers)
-        self.__privileged.append(privileged)
+        self.ping_objs.append(JobPing(interval=interval, count=count, timeout=timeout, domain=domain, answers=answers, privileged=privileged))
 
         self.__count += 1
 
-    def get_interval(self, idx: int) -> Union[int, bool]:
-        """
-        Get interval of specific ping job
-
-        :param idx: job id
-        :return: job interval or False in case of failure (idx is not valid)
-        """
-        if self._check_idx(idx=idx) is True:
-            return False
-        return self.__interval[idx]
-
-    def get_count(self, idx: int) -> Union[int, bool]:
-        """
-        Get package count of specific ping job
-
-        :param idx: job id
-        :return: job interval or False in case of failure (idx is not valid)
-        """
-        if self._check_idx(idx=idx) is True:
-            return False
-        return self.__count[idx]
-
-    def get_timeout(self, idx: int) -> Union[int, bool]:
-        """
-        Get timeout of specific ping job
-
-        :param idx: job id
-        :return: job interval or False in case of failure (idx is not valid)
-        """
-        if self._check_idx(idx=idx) is True:
-            return False
-        return self.__timeout[idx]
-
-    def get_privileged(self, idx: int) -> Union[int, bool]:
-        """
-        Get state of privileged run of specific ping job
-
-        :param idx: job id
-        :return: job interval or False in case of failure (idx is not valid)
-        """
-        if self._check_idx(idx=idx) is True:
-            return False
-        return self.__privileged[idx]
+    def __getitem__(self, item):
+        return self.ping_objs[item]
 
 
-class JobStaticEntry(DNS, IterationEngine):
+class JobStaticEntry(DNS):
+    def __init__(self, interval, domain, answer):
+        self.__interval = interval
+        self.__domain = domain
+        self.__answers = [answer]
+
+
+class JobsStaticEntry(DNS, IterationEngine):
     """
     Stores configuration for static entry job
     """
-    __interval = []
+    se_objs = []
 
     def append(self, interval: int, domain: str, answer: str) -> None:
         """
@@ -248,26 +159,15 @@ class JobStaticEntry(DNS, IterationEngine):
         :param interval: seconds between requests
         :param domain: dns domain
         :param answer: dns answers
-
-        """
-        self.__interval.append(interval)
-        self.__domain.append(domain)
-        self.__answers.append(answer)
-
-    def get_interval(self, idx: int):
-        """
-        Get interval of specific static entry job
-
-        :param idx: job id
-        :return: job interval or False in case of failure (idx is not valid)
         """
 
-        if self._check_idx(idx=idx) is True:
-            return False
-        return self.__interval[idx]
+        self.se_objs.append(JobStaticEntry(interval=interval, domain=domain, answer=answer))
+
+    def __getitem__(self, item):
+        return self.se_objs[item]
 
 
 class JobsConfs:
-    JobHttp = JobHttp()
-    JobPing = JobPing()
-    JobStaticEntry = JobStaticEntry()
+    JobHttp = JobsHttp()
+    JobPing = JobsPing()
+    JobStaticEntry = JobsStaticEntry()
