@@ -40,6 +40,9 @@ class TestData(unittest.TestCase):
     def test_ping_job_timeout(self):
         self.assertEqual(default.PingJob.timeout, 2)
 
+    def test_ping_job_privileged(self):
+        self.assertEqual(default.PingJob.privileged, False)
+
     def test_http_job_timeout(self):
         self.assertEqual(default.HttpJob.timeout, 10)
 
