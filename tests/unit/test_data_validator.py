@@ -1,6 +1,6 @@
 import unittest
 
-from app.data.validator import validate_domain, validate_ip, validate_network_port, validate_http_response_code
+from app.data.validator import validate_domain, validate_ip, validate_ips, validate_network_port, validate_http_response_code
 
 
 class ValidateDomain(unittest.TestCase):
@@ -502,6 +502,23 @@ class ValidateHttpResponseCode(unittest.TestCase):
         :return:
         """
         self.assertEqual(validate_http_response_code(code=600), False)
+
+
+class ValidateIps(unittest.TestCase):
+    def test_list_of_ip(self):
+        self.assertEqual(validate_ips(ips=["10.2.3.12", "192.158.23.23"]), True)
+
+    def test_empty_list(self):
+        self.assertEqual(validate_ips(ips=[]), False)
+
+    def test_list_of_invalid_ip(self):
+        self.assertEqual(validate_ips(ips=["10.2.3.12", "192.q158.23.23"]), True)
+
+    def test_string(self):
+        self.assertEqual(validate_ips(ips="10.0.10.10"), True)
+
+    def test_string_invalid_ip(self):
+        self.assertEqual(validate_ips(ips="1q0.0.10.10"), True)
 
 
 if __name__ == "__main__":

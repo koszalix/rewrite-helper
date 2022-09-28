@@ -1,6 +1,7 @@
 import re
 from _socket import inet_pton
 from socket import AF_INET, AF_INET6
+from typing import Union
 
 
 def validate_ip(ip: str) -> bool:
@@ -20,12 +21,14 @@ def validate_ip(ip: str) -> bool:
             return False
 
 
-def validate_ips(ips: list) -> bool:
+def validate_ips(ips: Union[list, str]) -> bool:
     """
     Check if provided ip addresses are valid
     :param ips:
     :return: True if address are valid, False if not
     """
+    if type(ips) == str:
+        return validate_ip(ip=ips)
     for adr in ips:
         if validate_ip(ip=adr) is False:
             return False
