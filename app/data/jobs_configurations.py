@@ -23,7 +23,7 @@ class JobHttp(DNS):
         self._timeout = timeout
         self._port = port
         self._domain = domain
-        self._domain = answers
+        self._answers = answers
 
     def interval(self) -> int:
         return self._interval
