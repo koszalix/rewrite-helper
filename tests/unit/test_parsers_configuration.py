@@ -741,22 +741,22 @@ class TestConfig(unittest.TestCase):
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/config/"
         self.c_jobs = JobsConfs()
         self.c_api = ApiConfiguration()
-        self.c_conf = Config()
 
     def test_all_default(self):
         """
         Test behavior of method parse_config() when config file don't contain config section
         :return:
         """
+        c_conf = Config()
         parser = ConfigParser(file=self.working_directory + 'all_default.yml', jobs_confs=self.c_jobs,
-                              api_confs=self.c_api, confs=self.c_conf)
+                              api_confs=self.c_api, confs=c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_config()
-        self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 0")
-        self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level False")
-        self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file N/A")
-        self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist KEEP")
+        parser.parse_config()
+
+        self.assertEqual(c_conf.wait(), 0)
+        self.assertEqual(c_conf.log_level(), False)
+        self.assertEqual(c_conf.log_file(), "N/A")
+        self.assertEqual(c_conf.entry_exist(), "KEEP")
 
     def test_section_name_only(self):
         """
@@ -764,77 +764,82 @@ class TestConfig(unittest.TestCase):
         ( if config file is empty program-should raise another kind of exception)
         :return:
         """
+        c_conf = Config()
         parser = ConfigParser(file=self.working_directory + 'section_name_only.yml', jobs_confs=self.c_jobs,
-                              api_confs=self.c_api, confs=self.c_conf)
+                              api_confs=self.c_api, confs=c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_config()
-        self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 0")
-        self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level False")
-        self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file N/A")
-        self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist KEEP")
+        parser.parse_config()
+
+        self.assertEqual(c_conf.wait(), 0)
+        self.assertEqual(c_conf.log_level(), False)
+        self.assertEqual(c_conf.log_file(), "N/A")
+        self.assertEqual(c_conf.entry_exist(), "KEEP")
 
     def test_no_log_level(self):
         """
         Test behavior of method parse_config() when config file contain config section without log_level parameter
         :return:
         """
+        c_conf = Config()
         parser = ConfigParser(file=self.working_directory + 'no_log_level.yml', jobs_confs=self.c_jobs,
-                              api_confs=self.c_api, confs=self.c_conf)
+                              api_confs=self.c_api, confs=c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_config()
-        self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 77")
-        self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level False")
-        self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file /var/log/log.txt")
-        self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist DROP")
+        parser.parse_config()
+
+        self.assertEqual(c_conf.wait(), 77)
+        self.assertEqual(c_conf.log_level(), False)
+        self.assertEqual(c_conf.log_file(), "/var/log/log.txt")
+        self.assertEqual(c_conf.entry_exist(), "DROP")
 
     def test_no_log_file(self):
         """
         Test behavior of method parse_config() when config file contain config section without log_file parameter
         :return:
         """
+        c_conf = Config()
         parser = ConfigParser(file=self.working_directory + 'no_log_file.yml', jobs_confs=self.c_jobs,
-                              api_confs=self.c_api, confs=self.c_conf)
+                              api_confs=self.c_api, confs=c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_config()
-        self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 77")
-        self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level 10")
-        self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file N/A")
-        self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist DROP")
+        parser.parse_config()
+
+        self.assertEqual(c_conf.wait(), 77)
+        self.assertEqual(c_conf.log_level(), logging.DEBUG)
+        self.assertEqual(c_conf.log_file(), "N/A")
+        self.assertEqual(c_conf.entry_exist(), "DROP")
 
     def test_no_wait(self):
         """
         Test behavior of method parse_config() when config file contain config section without wait parameter
         :return:
         """
+        c_conf = Config()
         parser = ConfigParser(file=self.working_directory + 'no_wait.yml', jobs_confs=self.c_jobs,
-                              api_confs=self.c_api, confs=self.c_conf)
+                              api_confs=self.c_api, confs=c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_config()
-        self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 0")
-        self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level 10")
-        self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file /var/log/log.txt")
-        self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist DROP")
+        parser.parse_config()
+
+        self.assertEqual(c_conf.wait(), 0)
+        self.assertEqual(c_conf.log_level(), logging.DEBUG)
+        self.assertEqual(c_conf.log_file(), "/var/log/log.txt")
+        self.assertEqual(c_conf.entry_exist(), "DROP")
 
     def test_no_invalid_entry(self):
         """
         Test behavior of method parse_config() when config file contain config section without invalid_entry parameter
         :return:
         """
+        c_conf = Config()
         parser = ConfigParser(file=self.working_directory + 'no_invalid_entry.yml', jobs_confs=self.c_jobs,
-                              api_confs=self.c_api, confs=self.c_conf)
+                              api_confs=self.c_api, confs=c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_config()
-        self.assertEqual(captured_logs.records[0].getMessage(), "config-wait 77")
-        self.assertEqual(captured_logs.records[1].getMessage(), "config-log_level 10")
-        self.assertEqual(captured_logs.records[2].getMessage(), "config-log_file /var/log/log.txt")
-        self.assertEqual(captured_logs.records[3].getMessage(), "config-entry_exist KEEP")
+        parser.parse_config()
 
+        self.assertEqual(c_conf.wait(), 77)
+        self.assertEqual(c_conf.log_level(), logging.DEBUG)
+        self.assertEqual(c_conf.log_file(), "/var/log/log.txt")
+        self.assertEqual(c_conf.entry_exist(), "KEEP")
 
+        
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     unittest.main()
