@@ -6,7 +6,6 @@ http_jobs:
       proto: http
       timeout: 12
       answers:
-        primary: 1.1.1.1
-        failover:
-          - 2.2.2.2
-          - 3.3.3.3
+        - 1.1.1.1
+        - 2.2.2.2
+        - 3.3.3.3

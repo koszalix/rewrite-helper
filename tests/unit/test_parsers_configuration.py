@@ -3,20 +3,9 @@ import unittest
 import os
 
 from app.parsers.configuration import ConfigParser
-
-
-class TestInitVariable(unittest.TestCase):
-    def test_init(self):
-        """
-        check if variables are successfully passed from arguments to class
-        :return:
-        """
-        parser = ConfigParser("file_example")
-        self.assertEqual(parser.config_file, "file_example")
-        self.assertEqual(parser.file_content, {})
-        self.assertEqual(parser.http_configs, {})
-        self.assertEqual(parser.ping_configs, {})
-        self.assertEqual(parser.api_config, {})
+from app.data.jobs_configurations import JobsConfs
+from app.data.api_configuration import ApiConfiguration
+from app.data.config import Config
 
 
 class TestReadConfigFile(unittest.TestCase):
@@ -26,13 +15,17 @@ class TestReadConfigFile(unittest.TestCase):
         :return:
         """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/read_config_file/"
+        self.c_jobs = JobsConfs()
+        self.c_api = ApiConfiguration()
+        self.c_conf = Config()
 
     def test_no_permissions(self):
         """
         Test behavior of .read_config_file() when config file have invalid permissions
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + "no_permissions/config.yml")
+        parser = ConfigParser(file=self.working_directory + "no_permissions/config.yml", jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "no_permissions/config.yml")
         self.assertEqual(captured_logs.records[0].getMessage(),
@@ -44,7 +37,8 @@ class TestReadConfigFile(unittest.TestCase):
         Test behavior of .read_config_file() when config file can not be found
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + "this_file_does_not_exist.yml")
+        parser = ConfigParser(file=self.working_directory + "this_file_does_not_exist.yml", jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "this_file_does_not_exist.yml")
         self.assertEqual(captured_logs.records[0].getMessage(),
@@ -57,7 +51,8 @@ class TestReadConfigFile(unittest.TestCase):
         Test behavior of .read_config_file() when config file is a directory
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + "a_directory")
+        parser = ConfigParser(file=self.working_directory + "a_directory", jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "a_directory")
         self.assertEqual(captured_logs.records[0].getMessage(),
@@ -69,7 +64,8 @@ class TestReadConfigFile(unittest.TestCase):
         Test behavior of .read_config_file() when file exist, have correct permissions and syntax
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + "correct_syntax.yml")
+        parser = ConfigParser(file=self.working_directory + "correct_syntax.yml", jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "correct_syntax.yml")
         self.assertEqual(captured_logs.records[0].getMessage(), "Config file read successful")
@@ -80,7 +76,8 @@ class TestReadConfigFile(unittest.TestCase):
         Test behavior of .read_config_file() when file exist, have correct permissions but syntax is incorrect
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + "incorrect_syntax.yml")
+        parser = ConfigParser(file=self.working_directory + "incorrect_syntax.yml", jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.read_config_file(filename=self.working_directory + "incorrect_syntax.yml")
         self.assertEqual(captured_logs.records[0].getMessage(), "Error in config file, invalid syntax")
@@ -94,141 +91,116 @@ class TestApi(unittest.TestCase):
         :return:
         """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/api_only/"
+        self.c_jobs = JobsConfs()
+
+        self.c_conf = Config()
 
     def test_api_all_provided(self):
         """
         Test api configuration parser with all config provided
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'api_only_all.yml')
+        c_api = ApiConfiguration()
+        parser = ConfigParser(file=self.working_directory + 'api_only_all.yml', jobs_confs=self.c_jobs,
+                              api_confs=c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_api()
-        self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(),
-                         "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
-        self.assertEqual(captured_logs.records[3].getMessage(), "api-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "api-port 93")
-        self.assertEqual(captured_logs.records[5].getMessage(), "api-timeout 7")
-        self.assertEqual(captured_logs.records[6].getMessage(), "api-startup-test False")
-        self.assertEqual(captured_logs.records[7].getMessage(), "api-startup-timeout 11")
-        self.assertEqual(captured_logs.records[8].getMessage(), "api-startup-exit_on_fail True")
-        self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 7")
+
+        parser.parse_api()
+
+        self.assertEqual(c_api.host(), "adguard.example.com")
+        self.assertEqual(c_api.username(), "admin")
+        self.assertEqual(c_api.passwd(), "12345678")
+        self.assertEqual(c_api.proto(), "https")
+        self.assertEqual(c_api.port(), 93)
+        self.assertEqual(c_api.timeout(), 7)
+        self.assertEqual(c_api.startup_enable(), False)
 
     def test_api_port_default(self):
         """
         Test api configuration parser without port provided, port should be default port 80
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'api_only_no_port.yml')
+        c_api = ApiConfiguration()
+        parser = ConfigParser(file=self.working_directory + 'api_only_no_port.yml', jobs_confs=self.c_jobs,
+                              api_confs=c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_api()
-        self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(),
-                         "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
-        self.assertEqual(captured_logs.records[3].getMessage(), "api-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "api-port 80")
-        self.assertEqual(captured_logs.records[5].getMessage(), "api-timeout 7")
-        self.assertEqual(captured_logs.records[6].getMessage(), "api-startup-test False")
-        self.assertEqual(captured_logs.records[7].getMessage(), "api-startup-timeout 11")
-        self.assertEqual(captured_logs.records[8].getMessage(), "api-startup-exit_on_fail True")
-        self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 7")
+
+        parser.parse_api()
+        self.assertEqual(c_api.host(), "adguard.example.com")
+        self.assertEqual(c_api.username(), "admin")
+        self.assertEqual(c_api.passwd(), "12345678")
+        self.assertEqual(c_api.proto(), "https")
+        self.assertEqual(c_api.port(), 80)
+        self.assertEqual(c_api.timeout(), 7)
+        self.assertEqual(c_api.startup_enable(), False)
 
     def test_api_proto_default(self):
         """
         Test api configuration parser without port provided, proto should be default http
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'api_only_no_proto.yml')
+        c_api = ApiConfiguration()
+        parser = ConfigParser(file=self.working_directory + 'api_only_no_proto.yml', jobs_confs=self.c_jobs,
+                              api_confs=c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_api()
-        self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(),
-                         "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
-        self.assertEqual(captured_logs.records[3].getMessage(), "api-proto http")
-        self.assertEqual(captured_logs.records[4].getMessage(), "api-port 93")
-        self.assertEqual(captured_logs.records[5].getMessage(), "api-timeout 7")
-        self.assertEqual(captured_logs.records[6].getMessage(), "api-startup-test False")
-        self.assertEqual(captured_logs.records[7].getMessage(), "api-startup-timeout 11")
-        self.assertEqual(captured_logs.records[8].getMessage(), "api-startup-exit_on_fail True")
-        self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 7")
+
+        parser.parse_api()
+
+        self.assertEqual(c_api.host(), "adguard.example.com")
+        self.assertEqual(c_api.username(), "admin")
+        self.assertEqual(c_api.passwd(), "12345678")
+        self.assertEqual(c_api.proto(), "http")
+        self.assertEqual(c_api.port(), 93)
+        self.assertEqual(c_api.timeout(), 7)
+        self.assertEqual(c_api.startup_enable(), False)
 
     def test_api_all_default(self):
         """
         check if all default values all loaded correctly
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'api_only_all_default.yml')
+        c_api = ApiConfiguration()
+        parser = ConfigParser(file=self.working_directory + 'api_only_all_default.yml', jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_api()
-        self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(),
-                         "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
-        self.assertEqual(captured_logs.records[3].getMessage(), "api-proto http")
-        self.assertEqual(captured_logs.records[4].getMessage(), "api-port 80")
-        self.assertEqual(captured_logs.records[5].getMessage(), "api-timeout 10")
-        self.assertEqual(captured_logs.records[6].getMessage(), "api-startup-test True")
-        self.assertEqual(captured_logs.records[7].getMessage(), "api-startup-timeout 10")
-        self.assertEqual(captured_logs.records[8].getMessage(), "api-startup-exit_on_fail False")
-        self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 10")
+        parser.parse_api()
+
+        self.assertEqual(c_api.host(), "adguard.example.com")
+        self.assertEqual(c_api.username(), "admin")
+        self.assertEqual(c_api.passwd(), "12345678")
+        self.assertEqual(c_api.proto(), "http")
+        self.assertEqual(c_api.port(), 80)
+        self.assertEqual(c_api.timeout(), 10)
+        self.assertEqual(c_api.startup_enable(), True)
 
     def test_timeout_no_provided(self):
-        parser = ConfigParser(file=self.working_directory + 'api_only_no_timeout.yml')
+        c_api = ApiConfiguration()
+        parser = ConfigParser(file=self.working_directory + 'api_only_no_timeout.yml', jobs_confs=self.c_jobs,
+                              api_confs=c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_api()
-        self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(),
-                         "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
-        self.assertEqual(captured_logs.records[3].getMessage(), "api-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "api-port 93")
-        self.assertEqual(captured_logs.records[5].getMessage(), "api-timeout 10")
-        self.assertEqual(captured_logs.records[6].getMessage(), "api-startup-test False")
-        self.assertEqual(captured_logs.records[7].getMessage(), "api-startup-timeout 11")
-        self.assertEqual(captured_logs.records[8].getMessage(), "api-startup-exit_on_fail True")
-        self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 7")
 
-    def test_start_empty(self):
-        parser = ConfigParser(file=self.working_directory + 'api_only_startup_empty.yml')
-        parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_api()
-        self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(),
-                         "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
-        self.assertEqual(captured_logs.records[3].getMessage(), "api-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "api-port 93")
-        self.assertEqual(captured_logs.records[5].getMessage(), "api-timeout 7")
-        self.assertEqual(captured_logs.records[6].getMessage(), "api-startup-test True")
-        self.assertEqual(captured_logs.records[7].getMessage(), "api-startup-timeout 10")
-        self.assertEqual(captured_logs.records[8].getMessage(), "api-startup-exit_on_fail False")
-        self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 10")
+        parser.parse_api()
+        self.assertEqual(c_api.host(), "adguard.example.com")
+        self.assertEqual(c_api.username(), "admin")
+        self.assertEqual(c_api.passwd(), "12345678")
+        self.assertEqual(c_api.proto(), "https")
+        self.assertEqual(c_api.port(), 93)
+        self.assertEqual(c_api.timeout(), 10)
+        self.assertEqual(c_api.startup_enable(), False)
 
     def test_no_start_section(self):
-        parser = ConfigParser(file=self.working_directory + 'api_only_startup_empty.yml')
+        c_api = ApiConfiguration()
+        parser = ConfigParser(file=self.working_directory + 'api_only_startup_empty.yml', jobs_confs=self.c_jobs,
+                              api_confs=c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_api()
-        self.assertEqual(captured_logs.records[0].getMessage(), "api-host adguard.example.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "api-username admin")
-        self.assertEqual(captured_logs.records[2].getMessage(),
-                         "api-passwd 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")
-        self.assertEqual(captured_logs.records[3].getMessage(), "api-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "api-port 93")
-        self.assertEqual(captured_logs.records[5].getMessage(), "api-timeout 7")
-        self.assertEqual(captured_logs.records[6].getMessage(), "api-startup-test True")
-        self.assertEqual(captured_logs.records[7].getMessage(), "api-startup-timeout 10")
-        self.assertEqual(captured_logs.records[8].getMessage(), "api-startup-exit_on_fail False")
-        self.assertEqual(captured_logs.records[9].getMessage(), "api-startup-test-retry_after 10")
+        parser.parse_api()
+        self.assertEqual(c_api.host(), "adguard.example.com")
+        self.assertEqual(c_api.username(), "admin")
+        self.assertEqual(c_api.passwd(), "12345678")
+        self.assertEqual(c_api.proto(), "https")
+        self.assertEqual(c_api.port(), 93)
+        self.assertEqual(c_api.timeout(), 7)
+        self.assertEqual(c_api.startup_enable(), True)
 
 
 class TestHttpJobs(unittest.TestCase):
@@ -239,260 +211,217 @@ class TestHttpJobs(unittest.TestCase):
         :return:
         """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/http_job/"
+        self.c_api = ApiConfiguration()
+        self.c_conf = Config()
 
     def test_http_job_all_provided(self):
         """
         Test behavior of http job parser when all configuration all provided
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'http_job.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_job.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
+
+        parser.parse_http()
+
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
     def test_http_job_all_default(self):
         """
         Test behavior of http job parser when only necessary configuration options are provided
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'http_job_default_all.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_job_default_all.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 60")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 200")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto http")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 80")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 10")
+        parser.parse_http()
+
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 60)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 200)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "http")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 80)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 10)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
     def test_http_job_multiple_instances(self):
         """
         Test behavior of http job parser in case of multiple job configured
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'http_job_multiple_instances.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_job_multiple_instances.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 13")
-        self.assertEqual(captured_logs.records[8].getMessage(), "http-domain test-x.com")
-        self.assertEqual(captured_logs.records[9].getMessage(), "http-interval 32")
-        self.assertEqual(captured_logs.records[10].getMessage(), "http-status 202")
-        self.assertEqual(captured_logs.records[11].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[12].getMessage(), "http-port 8082")
-        self.assertEqual(captured_logs.records[13].getMessage(), "http-primary 1.1.2.1")
-        self.assertEqual(captured_logs.records[14].getMessage(), "http-failover 2.23.2.2")
-        self.assertEqual(captured_logs.records[15].getMessage(), "http-timeout 14")
+        parser.parse_http()
 
-    def test_http_job_no_failover(self):
-        """
-        Test behavior of http job parser when failover key don't exist in config file
-        :return:
-        """
-        parser = ConfigParser(file=self.working_directory + 'http_job_no_failover.yml')
-        parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover ")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 13)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
-    def test_http_job_no_failover_2(self):
-        """
-        Test behavior of http job parser when failover key is empty in config file
-        :return:
-        """
-        parser = ConfigParser(file=self.working_directory + 'http_job_no_failover-2.yml')
-        parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover ")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
-
-    def test_http_job_no_failover_single(self):
-        """
-        Test behavior of http job parser when failover key contains only single value
-        :return:
-        """
-        parser = ConfigParser(file=self.working_directory + 'http_job_failover-single.yml')
-        parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 3.3.3.3")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
+        self.assertEqual(c_jobs.JobsHttp[1].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[1].interval(), 32)
+        self.assertEqual(c_jobs.JobsHttp[1].status_code(), 202)
+        self.assertEqual(c_jobs.JobsHttp[1].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[1].port(), 8082)
+        self.assertEqual(c_jobs.JobsHttp[1].timeout(), 14)
+        self.assertEqual(c_jobs.JobsHttp[1].answers(), ["1.1.2.1", "2.23.2.2"])
 
     def test_http_job_no_interval(self):
         """
         Test behavior of http job parser when there is no interval specified
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'http_job_no_interval.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_job_no_interval.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 60")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
+
+        parser.parse_http()
+
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 60)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
     def test_http_job_no_port(self):
         """
         Test behavior of http job parser when there is no port specified
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'http_job_no_port.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_job_no_port.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 443")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
+        parser.parse_http()
+
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 443)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
     def test_http_job_no_proto(self):
         """
         Test behavior of http job parser when there is no protocol specified
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'http_job_no_proto.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_job_no_proto.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto http")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
+        parser.parse_http()
 
-    def test_http_job_no_status(self):
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "http")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
+
+    def test_http_job_no_status_code(self):
         """
         Test behavior of http job parser when there is no status code specified
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'http_job_no_status.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_job_no_status.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 200")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
+        parser.parse_http()
+
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 200)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
     def test_http_job_no_timeout(self):
-        parser = ConfigParser(file=self.working_directory + 'http_job_no_timeout.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_job_no_timeout.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 8080")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 10")
+        parser.parse_http()
+
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 10)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
     def test_http_job_auto_port_http(self):
-        parser = ConfigParser(file=self.working_directory + 'http_job_auto_port_http.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_job_auto_port_http.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto http")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 80")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
+        parser.parse_http()
+
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "http")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 80)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
     def test_http_job_auto_port_https(self):
-        parser = ConfigParser(file=self.working_directory + 'http_job_auto_port_https.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_job_auto_port_https.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(), "http-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "http-interval 30")
-        self.assertEqual(captured_logs.records[2].getMessage(), "http-status 201")
-        self.assertEqual(captured_logs.records[3].getMessage(), "http-proto https")
-        self.assertEqual(captured_logs.records[4].getMessage(), "http-port 443")
-        self.assertEqual(captured_logs.records[5].getMessage(), "http-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[6].getMessage(), "http-failover 2.2.2.2 3.3.3.3")
-        self.assertEqual(captured_logs.records[7].getMessage(), "http-timeout 12")
+
+        parser.parse_http()
+
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 443)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
     def test_http_job_invalid_domain_answer(self):
-        parser = ConfigParser(file=self.working_directory + 'http_invalid_domain.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_invalid_domain.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_http()
         self.assertEqual(captured_logs.records[0].getMessage(),
                          "Job for domain: .test.com not added, due to invalid parameters")
 
-    def test_http_job_invalid_answer_primary(self):
-        parser = ConfigParser(file=self.working_directory + 'http_invalid_answer_primary.yml')
+    def test_http_job_invalid_answer(self):
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_invalid_answer.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_http()
         self.assertEqual(captured_logs.records[0].getMessage(),
                          "Job for domain: test.com not added, due to invalid parameters")
-
-    def test_http_job_invalid_answer_failover(self):
-        parser = ConfigParser(file=self.working_directory + 'http_invalid_answer_failover.yml')
-        parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_http()
-        self.assertEqual(captured_logs.records[0].getMessage(),
-                         "Job for domain: test-example.com not added, due to invalid parameters")
 
 
 class TestPingJobs(unittest.TestCase):
@@ -502,13 +431,17 @@ class TestPingJobs(unittest.TestCase):
         :return:
         """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/ping_job/"
+        self.c_api = ApiConfiguration()
+        self.c_conf = Config()
 
     def test_ping_job_all_provided(self):
         """
         Test behavior of ping job parser when all configuration all provided
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'ping_job.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'ping_job.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
@@ -524,7 +457,9 @@ class TestPingJobs(unittest.TestCase):
         Test behavior of ping job parser when only necessary configuration options are provided
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'ping_job_default.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'ping_job_default.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
@@ -540,7 +475,9 @@ class TestPingJobs(unittest.TestCase):
         Test behavior of ping job parser in case of multiple job configured
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'ping_job_multiple_instances.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'ping_job_multiple_instances.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
@@ -562,7 +499,9 @@ class TestPingJobs(unittest.TestCase):
         Test behavior of ping job parser when failover key don't exist in config file
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'ping_job_no_failover.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'ping_job_no_failover.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
@@ -578,7 +517,9 @@ class TestPingJobs(unittest.TestCase):
         Test behavior of http job parser when failover key is empty in config file
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'ping_job_no_failover-2.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'ping_job_no_failover-2.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
@@ -594,7 +535,9 @@ class TestPingJobs(unittest.TestCase):
         Test behavior of ping job parser when failover key contains only single value
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'ping_job_failover-single.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'ping_job_failover-single.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
@@ -610,7 +553,9 @@ class TestPingJobs(unittest.TestCase):
         Test behavior of ping job parser when there is no interval specified
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'ping_job_no_interval.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'ping_job_no_interval.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
@@ -626,7 +571,9 @@ class TestPingJobs(unittest.TestCase):
         Test behavior of ping job parser when there is no timeout specified
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'ping_job_no_timeout.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'ping_job_no_timeout.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
@@ -642,7 +589,9 @@ class TestPingJobs(unittest.TestCase):
         Test behavior of ping job parser when there is no count specified
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'ping_job_no_count.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'ping_job_no_count.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
@@ -654,7 +603,9 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
 
     def test_ping_job_invalid_domain_answer(self):
-        parser = ConfigParser(file=self.working_directory + 'ping_invalid_domain.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'ping_invalid_domain.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
@@ -662,7 +613,9 @@ class TestPingJobs(unittest.TestCase):
                          "Job for domain: -test.com not added, due to invalid parameters")
 
     def test_ping_job_invalid_answer_primary(self):
-        parser = ConfigParser(file=self.working_directory + 'ping_invalid_answer_primary.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'ping_invalid_answer_primary.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
@@ -670,7 +623,9 @@ class TestPingJobs(unittest.TestCase):
                          "Job for domain: test.com not added, due to invalid parameters")
 
     def test_ping_job_invalid_answer_failover(self):
-        parser = ConfigParser(file=self.working_directory + 'ping_invalid_answer_failover.yml')
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'ping_invalid_answer_failover.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
@@ -685,9 +640,13 @@ class TestStaticEntry(unittest.TestCase):
         :return:
         """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/static_entry/"
+        self.c_jobs = JobsConfs()
+        self.c_api = ApiConfiguration()
+        self.c_conf = Config()
 
     def test_static_entry(self):
-        parser = ConfigParser(file=self.working_directory + 'static_entry.yml')
+        parser = ConfigParser(file=self.working_directory + 'static_entry.yml', jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parser_static_entry()
@@ -696,7 +655,8 @@ class TestStaticEntry(unittest.TestCase):
         self.assertEqual(captured_logs.records[2].getMessage(), "data-entry-interval 23")
 
     def test_static_entry_multiple_instances(self):
-        parser = ConfigParser(file=self.working_directory + 'static_entry_multiple_instances.yml')
+        parser = ConfigParser(file=self.working_directory + 'static_entry_multiple_instances.yml', jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parser_static_entry()
@@ -708,8 +668,8 @@ class TestStaticEntry(unittest.TestCase):
         self.assertEqual(captured_logs.records[5].getMessage(), "data-entry-interval 44")
 
     def test_static_entry_no_interval(self):
-        parser = ConfigParser(file=self.working_directory + 'static_entry_no_interval.yml')
-        parser.get_configs()
+        parser = ConfigParser(file=self.working_directory + 'static_entry_no_interval.yml', jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parser_static_entry()
         self.assertEqual(captured_logs.records[0].getMessage(), "data-entry-domain test.lan")
@@ -717,7 +677,8 @@ class TestStaticEntry(unittest.TestCase):
         self.assertEqual(captured_logs.records[2].getMessage(), "data-entry-interval 60")
 
     def test_static_entry_invalid_domain_answer(self):
-        parser = ConfigParser(file=self.working_directory + 'static_entry_invalid_domain.yml')
+        parser = ConfigParser(file=self.working_directory + 'static_entry_invalid_domain.yml', jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parser_static_entry()
@@ -725,7 +686,8 @@ class TestStaticEntry(unittest.TestCase):
                          "Job for domain: test.com- not added, due to invalid parameters")
 
     def test_static_entry_invalid_answer_primary(self):
-        parser = ConfigParser(file=self.working_directory + 'static_entry_invalid_answer.yml')
+        parser = ConfigParser(file=self.working_directory + 'static_entry_invalid_answer.yml', jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parser_static_entry()
@@ -741,13 +703,17 @@ class TestAnyYaml(unittest.TestCase):
         :return:
         """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/any_yaml/"
+        self.c_jobs = JobsConfs()
+        self.c_api = ApiConfiguration()
+        self.c_conf = Config()
 
     def test_cnf(self):
         """
         Test program behavior when specified config file doesn't exist but other .yml file exist
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + "cnf/config.yml")
+        parser = ConfigParser(file=self.working_directory + "cnf/config.yml", jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         self.assertEqual(parser.find_any_yml(), self.working_directory + "cnf/cnf.yml")
 
     def test_no_file(self):
@@ -755,7 +721,8 @@ class TestAnyYaml(unittest.TestCase):
         Test program behavior when specified config file doesn't exist
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + "no_file/config.yml")
+        parser = ConfigParser(file=self.working_directory + "no_file/config.yml", jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         self.assertEqual(parser.find_any_yml(), False)
 
     def test_capitalised(self):
@@ -763,7 +730,8 @@ class TestAnyYaml(unittest.TestCase):
         Test program behavior when specified config file doesn't exist, but the same file exist with capitalized name
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + "capitalised/config.yml")
+        parser = ConfigParser(file=self.working_directory + "capitalised/config.yml", jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         self.assertEqual(parser.find_any_yml(), self.working_directory + "capitalised/Config.yml")
 
     def test_all_correct(self):
@@ -771,7 +739,8 @@ class TestAnyYaml(unittest.TestCase):
         Test program behavior when config file exist and have valid syntax
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + "all_correct/config.yml")
+        parser = ConfigParser(file=self.working_directory + "all_correct/config.yml", jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         self.assertEqual(parser.find_any_yml(), self.working_directory + "all_correct/config.yml")
 
     def test_no_permission(self):
@@ -779,7 +748,8 @@ class TestAnyYaml(unittest.TestCase):
         Test program behavior when config file exist, but don't have valid syntax
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + "no_permissions/config.yml")
+        parser = ConfigParser(file=self.working_directory + "no_permissions/config.yml", jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         self.assertEqual(parser.find_any_yml(), False)
 
 
@@ -799,13 +769,17 @@ class TestConfig(unittest.TestCase):
         :return:
         """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/config/"
+        self.c_jobs = JobsConfs()
+        self.c_api = ApiConfiguration()
+        self.c_conf = Config()
 
     def test_all_default(self):
         """
         Test behavior of method parse_config() when config file don't contain config section
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'all_default.yml')
+        parser = ConfigParser(file=self.working_directory + 'all_default.yml', jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_config()
@@ -820,7 +794,8 @@ class TestConfig(unittest.TestCase):
         ( if config file is empty program-should raise another kind of exception)
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'section_name_only.yml')
+        parser = ConfigParser(file=self.working_directory + 'section_name_only.yml', jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_config()
@@ -834,7 +809,8 @@ class TestConfig(unittest.TestCase):
         Test behavior of method parse_config() when config file contain config section without log_level parameter
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'no_log_level.yml')
+        parser = ConfigParser(file=self.working_directory + 'no_log_level.yml', jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_config()
@@ -848,7 +824,8 @@ class TestConfig(unittest.TestCase):
         Test behavior of method parse_config() when config file contain config section without log_file parameter
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'no_log_file.yml')
+        parser = ConfigParser(file=self.working_directory + 'no_log_file.yml', jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_config()
@@ -862,7 +839,8 @@ class TestConfig(unittest.TestCase):
         Test behavior of method parse_config() when config file contain config section without wait parameter
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'no_wait.yml')
+        parser = ConfigParser(file=self.working_directory + 'no_wait.yml', jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_config()
@@ -876,7 +854,8 @@ class TestConfig(unittest.TestCase):
         Test behavior of method parse_config() when config file contain config section without invalid_entry parameter
         :return:
         """
-        parser = ConfigParser(file=self.working_directory + 'no_invalid_entry.yml')
+        parser = ConfigParser(file=self.working_directory + 'no_invalid_entry.yml', jobs_confs=self.c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_config()

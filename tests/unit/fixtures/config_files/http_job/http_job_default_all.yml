@@ -3,7 +3,7 @@ http_jobs:
   - job:
       domain: test.com
       answers:
-        primary: 1.1.1.1
-        failover:
+        answers:
+          - 1.1.1.1
           - 2.2.2.2
           - 3.3.3.3

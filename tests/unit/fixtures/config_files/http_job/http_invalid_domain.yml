@@ -8,7 +8,6 @@ http_jobs:
       port: 8080
       timeout: 12
       answers:
-        primary: 1.1.1.1
-        failover:
-          - 2.2.2.2
-          - 3.4.5.6
+        - 1.1.1.1
+        - 2.2.2.2
+        - 3.4.5.6
