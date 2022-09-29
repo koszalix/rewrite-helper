@@ -4,8 +4,9 @@ class DNS:
     """
     Stores DNS answer and domain, answer[0] is primary answer
     """
-    _domain = ""
-    _answers = []
+    def __init__(self):
+        self._domain = ""
+        self._answers = []
 
     def domain(self) -> str:
         return self._domain
@@ -45,9 +46,9 @@ class JobsHttp:
     """
     Stores configurations for http jobs
     """
-
-    __count = 0
-    __http_objs = []
+    def __init__(self):
+        self._count = 0
+        self._http_objs = []
 
     def append(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: float,
                port: int) -> None:
@@ -63,26 +64,26 @@ class JobsHttp:
         :param port: request port
         :return: None
         """
-        self.__http_objs.append(JobHttp(interval=interval, status_code=status_code, proto=proto, domain=domain,
-                                        answers=answers, timeout=timeout, port=port))
+        self._http_objs.append(JobHttp(interval=interval, status_code=status_code, proto=proto, domain=domain,
+                                       answers=answers, timeout=timeout, port=port))
 
-        self.__count += 1
+        self._count += 1
 
     def __getitem__(self, item) -> JobHttp:
-        return self.__http_objs[item]
+        return self._http_objs[item]
 
     def __iter__(self):
         self.__index = 0
         return self
 
     def __next__(self) -> JobHttp:
-        if self.__index >= self.__count:
+        if self.__index >= self._count:
             raise StopIteration
 
         temporary_index = self.__index
         self.__index += 1
 
-        return self.__http_objs[temporary_index]
+        return self._http_objs[temporary_index]
 
 
 class JobPing(DNS):
@@ -111,8 +112,9 @@ class JobsPing:
     """
     Stores configurations for ping jobs
     """
-    __count = 0
-    __ping_objs = []
+    def __init__(self):
+        self._count = 0
+        self._ping_objs = []
 
     def append(self, interval: int, count: int, timeout: float, domain: str, answers: list, privileged: bool) -> None:
         """
@@ -127,44 +129,45 @@ class JobsPing:
         :return: None
         """
 
-        self.__ping_objs.append(JobPing(interval=interval, count=count, timeout=timeout, domain=domain,
+        self._ping_objs.append(JobPing(interval=interval, count=count, timeout=timeout, domain=domain,
                                         answers=answers, privileged=privileged))
 
-        self.__count += 1
+        self._count += 1
 
     def __getitem__(self, item) -> JobPing:
-        return self.__ping_objs[item]
+        return self._ping_objs[item]
 
     def __iter__(self):
-        self.__index = 0
+        self._index = 0
         return self
 
     def __next__(self) -> JobPing:
-        if self.__index >= self.__count:
+        if self._index >= self._count:
             raise StopIteration
 
-        temporary_index = self.__index
-        self.__index += 1
+        temporary_index = self._index
+        self._index += 1
 
-        return self.__ping_objs[temporary_index]
+        return self._ping_objs[temporary_index]
 
 
 class JobStaticEntry(DNS):
     def __init__(self, interval: int, domain: str, answer: str):
-        self.__interval = interval
-        self.__domain = domain
-        self.__answers = [answer]
+        self._interval = interval
+        self._domain = domain
+        self._answers = [answer]
 
     def interval(self) -> int:
-        return self.__interval
+        return self._interval
 
 
 class JobsStaticEntry:
     """
     Stores configuration for static entry job
     """
-    __count = 0
-    __se_objs = []
+    def __init__(self):
+        self._count = 0
+        self._se_objs = []
 
     def append(self, interval: int, domain: str, answer: str) -> None:
         """
@@ -175,26 +178,27 @@ class JobsStaticEntry:
         :param answer: dns answers
         """
 
-        self.__se_objs.append(JobStaticEntry(interval=interval, domain=domain, answer=answer))
+        self._se_objs.append(JobStaticEntry(interval=interval, domain=domain, answer=answer))
 
     def __getitem__(self, item) -> JobStaticEntry:
-        return self.__se_objs[item]
+        return self._se_objs[item]
 
     def __iter__(self):
         self.__index = 0
         return self
 
     def __next__(self) -> JobStaticEntry:
-        if self.__index >= self.__count:
+        if self.__index >= self._count:
             raise StopIteration
 
         temporary_index = self.__index
         self.__index += 1
 
-        return self.__se_objs[temporary_index]
+        return self._se_objs[temporary_index]
 
 
 class JobsConfs:
-    JobsHttp = JobsHttp()
-    JobsPing = JobsPing()
-    JobsStaticEntry = JobsStaticEntry()
+    def __init__(self):
+        self.JobsHttp = JobsHttp()
+        self.JobsPing = JobsPing()
+        self.JobsStaticEntry = JobsStaticEntry()
