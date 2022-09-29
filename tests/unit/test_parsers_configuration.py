@@ -638,7 +638,7 @@ class TestStaticEntry(unittest.TestCase):
         c_jobs = JobsConfs()
         parser = ConfigParser(file=self.working_directory + 'static_entry_no_interval.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
-
+        parser.get_configs()
         parser.parser_static_entry()
         self.assertEqual(c_jobs.JobsStaticEntry[0].domain(), "test.lan")
         self.assertEqual(c_jobs.JobsStaticEntry[0].answers(), ["1.1.1.1"])
