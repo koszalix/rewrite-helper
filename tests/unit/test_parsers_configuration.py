@@ -161,7 +161,7 @@ class TestApi(unittest.TestCase):
         """
         c_api = ApiConfiguration()
         parser = ConfigParser(file=self.working_directory + 'api_only_all_default.yml', jobs_confs=self.c_jobs,
-                              api_confs=self.c_api, confs=self.c_conf)
+                              api_confs=c_api, confs=self.c_conf)
         parser.get_configs()
         parser.parse_api()
 
@@ -452,7 +452,6 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsPing[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
         self.assertEqual(c_jobs.JobsPing[0].privileged(), False)
 
-
     def test_ping_job_all_default(self):
         """
         Test behavior of ping job parser when only necessary configuration options are provided
@@ -471,7 +470,6 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsPing[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
         self.assertEqual(c_jobs.JobsPing[0].privileged(), False)
 
-
     def test_ping_job_multiple_instances(self):
         """
         Test behavior of ping job parser in case of multiple job configured
@@ -481,8 +479,7 @@ class TestPingJobs(unittest.TestCase):
         parser = ConfigParser(file=self.working_directory + 'ping_job_multiple_instances.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_ping()
+        parser.parse_ping()
 
         self.assertEqual(c_jobs.JobsPing[0].domain(), "test.com")
         self.assertEqual(c_jobs.JobsPing[0].interval(), 44)
@@ -552,7 +549,6 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsPing[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
         self.assertEqual(c_jobs.JobsPing[0].privileged(), False)
 
-
     def test_ping_job_no_count(self):
         """
         Test behavior of ping job parser when there is no count specified
@@ -609,44 +605,48 @@ class TestStaticEntry(unittest.TestCase):
         :return:
         """
         self.working_directory = os.getcwd() + "/tests/unit/fixtures/config_files/static_entry/"
-        self.c_jobs = JobsConfs()
         self.c_api = ApiConfiguration()
         self.c_conf = Config()
 
     def test_static_entry(self):
-        parser = ConfigParser(file=self.working_directory + 'static_entry.yml', jobs_confs=self.c_jobs,
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'static_entry.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parser_static_entry()
-        self.assertEqual(captured_logs.records[0].getMessage(), "data-entry-domain test.lan")
-        self.assertEqual(captured_logs.records[1].getMessage(), "data-entry-answer 1.1.1.1")
-        self.assertEqual(captured_logs.records[2].getMessage(), "data-entry-interval 23")
+        parser.parser_static_entry()
+
+        self.assertEqual(c_jobs.JobsStaticEntry[0].domain(), "test.lan")
+        self.assertEqual(c_jobs.JobsStaticEntry[0].answers(), ["1.1.1.1"])
+        self.assertEqual(c_jobs.JobsStaticEntry[0].interval(), 23)
 
     def test_static_entry_multiple_instances(self):
-        parser = ConfigParser(file=self.working_directory + 'static_entry_multiple_instances.yml', jobs_confs=self.c_jobs,
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'static_entry_multiple_instances.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parser_static_entry()
-        self.assertEqual(captured_logs.records[0].getMessage(), "data-entry-domain test.lan")
-        self.assertEqual(captured_logs.records[1].getMessage(), "data-entry-answer 1.1.1.1")
-        self.assertEqual(captured_logs.records[2].getMessage(), "data-entry-interval 23")
-        self.assertEqual(captured_logs.records[3].getMessage(), "data-entry-domain xsv.lan")
-        self.assertEqual(captured_logs.records[4].getMessage(), "data-entry-answer 1.2.3.4")
-        self.assertEqual(captured_logs.records[5].getMessage(), "data-entry-interval 44")
+        parser.parser_static_entry()
+
+        self.assertEqual(c_jobs.JobsStaticEntry[0].domain(), "test.lan")
+        self.assertEqual(c_jobs.JobsStaticEntry[0].answers(), ["1.1.1.1"])
+        self.assertEqual(c_jobs.JobsStaticEntry[0].interval(), 23)
+
+        self.assertEqual(c_jobs.JobsStaticEntry[1].domain(), "xsv.lan")
+        self.assertEqual(c_jobs.JobsStaticEntry[1].answers(), ["1.2.3.4"])
+        self.assertEqual(c_jobs.JobsStaticEntry[1].interval(), 44)
 
     def test_static_entry_no_interval(self):
-        parser = ConfigParser(file=self.working_directory + 'static_entry_no_interval.yml', jobs_confs=self.c_jobs,
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'static_entry_no_interval.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parser_static_entry()
-        self.assertEqual(captured_logs.records[0].getMessage(), "data-entry-domain test.lan")
-        self.assertEqual(captured_logs.records[1].getMessage(), "data-entry-answer 1.1.1.1")
-        self.assertEqual(captured_logs.records[2].getMessage(), "data-entry-interval 60")
+
+        parser.parser_static_entry()
+        self.assertEqual(c_jobs.JobsStaticEntry[0].domain(), "test.lan")
+        self.assertEqual(c_jobs.JobsStaticEntry[0].answers(), ["1.1.1.1"])
+        self.assertEqual(c_jobs.JobsStaticEntry[0].interval(), 60)
 
     def test_static_entry_invalid_domain_answer(self):
-        parser = ConfigParser(file=self.working_directory + 'static_entry_invalid_domain.yml', jobs_confs=self.c_jobs,
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'static_entry_invalid_domain.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -655,7 +655,8 @@ class TestStaticEntry(unittest.TestCase):
                          "Job for domain: test.com- not added, due to invalid parameters")
 
     def test_static_entry_invalid_answer_primary(self):
-        parser = ConfigParser(file=self.working_directory + 'static_entry_invalid_answer.yml', jobs_confs=self.c_jobs,
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'static_entry_invalid_answer.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
