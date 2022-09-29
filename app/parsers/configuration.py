@@ -199,8 +199,8 @@ class ConfigParser:
             api = self.file_content['api']
             host = api['host']
             username = api['username']
-            passwd = api['passwd']
-
+            passwd = str(api['passwd'])
+            
             proto = parse_value_with_default(content=api, key='proto',
                                              default_value=default.Api.proto)
             port = parse_value_with_default(content=api, key='port',
