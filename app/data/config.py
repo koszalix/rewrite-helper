@@ -23,13 +23,13 @@ class Config:
         self.__log_file = log_file
         self.__log_level = log_level
 
-    def wait(self):
+    def wait(self) -> int:
         return self.__wait
 
-    def entry_exist(self):
+    def entry_exist(self) -> str:
         return self.__entry_exist
 
-    def log_file(self):
+    def log_file(self) -> str:
         return self.__log_file
 
     def log_level(self):

@@ -5,10 +5,10 @@ class DNS:
     __domain = ""
     __answers = []
 
-    def domain(self):
+    def domain(self) -> str:
         return self.__domain
 
-    def answers(self):
+    def answers(self) -> list:
         return self.__answers
 
 
@@ -23,19 +23,19 @@ class JobHttp(DNS):
         self._domain = domain
         self._answers = answers
 
-    def interval(self):
+    def interval(self) -> int:
         return self._interval
 
-    def status_code(self):
+    def status_code(self) -> int:
         return self._status_code
 
-    def proto(self):
+    def proto(self) -> str:
         return self._proto
 
-    def timeout(self):
+    def timeout(self) -> float:
         return self._timeout
 
-    def port(self):
+    def port(self) -> int:
         return self._port
 
 
@@ -66,14 +66,14 @@ class JobsHttp:
 
         self.__count += 1
 
-    def __getitem__(self, item):
+    def __getitem__(self, item) -> JobHttp:
         return self.__http_objs[item]
 
     def __iter__(self):
         self.__index = 0
         return self
 
-    def __next__(self):
+    def __next__(self) -> JobHttp:
         if self.__index >= self.__count:
             raise StopIteration
 
@@ -92,16 +92,16 @@ class JobPing(DNS):
         self.__domain = domain
         self.__answers = answers
 
-    def interval(self):
+    def interval(self) -> int:
         return self._interval
 
-    def count(self):
+    def count(self) -> int:
         return self._count
 
-    def timeout(self):
+    def timeout(self) -> float:
         return self._timeout
 
-    def privileged(self):
+    def privileged(self) -> bool:
         return self._privileged
 
 
@@ -130,14 +130,14 @@ class JobsPing:
 
         self.__count += 1
 
-    def __getitem__(self, item):
+    def __getitem__(self, item) -> JobPing:
         return self.__ping_objs[item]
 
     def __iter__(self):
         self.__index = 0
         return self
 
-    def __next__(self):
+    def __next__(self) -> JobPing:
         if self.__index >= self.__count:
             raise StopIteration
 
@@ -148,12 +148,12 @@ class JobsPing:
 
 
 class JobStaticEntry(DNS):
-    def __init__(self, interval, domain, answer):
+    def __init__(self, interval: int, domain: str, answer: str):
         self.__interval = interval
         self.__domain = domain
         self.__answers = [answer]
 
-    def interval(self):
+    def interval(self) -> int:
         return self.__interval
 
 
@@ -175,14 +175,14 @@ class JobsStaticEntry:
 
         self.__se_objs.append(JobStaticEntry(interval=interval, domain=domain, answer=answer))
 
-    def __getitem__(self, item):
+    def __getitem__(self, item) -> JobStaticEntry:
         return self.__se_objs[item]
 
     def __iter__(self):
         self.__index = 0
         return self
 
-    def __next__(self):
+    def __next__(self) -> JobStaticEntry:
         if self.__index >= self.__count:
             raise StopIteration
 

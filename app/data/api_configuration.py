@@ -10,7 +10,7 @@ class ApiConfiguration:
     __timeout = ""
     __startup_enable = ""
 
-    def set(self, host: str, username: str, passwd: str, proto: str, port: int, timeout: int, startup_enable: bool):
+    def set(self, host: str, username: str, passwd: str, proto: str, port: int, timeout: float, startup_enable: bool):
         """
         Set configuration for api
 
@@ -32,24 +32,24 @@ class ApiConfiguration:
         self.__timeout = timeout
         self.__startup_enable = startup_enable
 
-    def host(self):
+    def host(self) -> str:
         return self.__host
 
-    def username(self):
+    def username(self) -> str:
         return self.__username
 
-    def passwd(self):
+    def passwd(self) -> str:
         return self.__passwd
 
-    def proto(self):
+    def proto(self) -> str:
         return self.__proto
 
-    def port(self):
+    def port(self) -> int:
         return self.__port
 
-    def timeout(self):
+    def timeout(self) -> float:
         return self.__timeout
 
-    def startup_enable(self):
+    def startup_enable(self) -> bool:
         return self.__startup_enable
 
