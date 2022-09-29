@@ -1,4 +1,4 @@
 api:
   host: adguard.example.com
   username: admin
-  passwd: admin
+  passwd: 12345678
