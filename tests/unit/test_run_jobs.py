@@ -9,10 +9,12 @@ from app.data.config import Config
 
 class TestHost(unittest.TestCase):
     def setUp(self):
-        api_configs_correct = ApiConfiguration.set(host='192.168.56.103', port=80, proto='http', username='admin',
+        api_configs_correct = ApiConfiguration()
+        api_configs_correct.set(host='192.168.56.103', port=80, proto='http', username='admin',
                                                    passwd='12345678', timeout=10, startup_enable=False)
 
-        api_configs_wrong_auth = ApiConfiguration.set(host='192.168.56.103', port=80, proto='http', username='admin',
+        api_configs_wrong_auth = ApiConfiguration()
+        api_configs_wrong_auth.set(host='192.168.56.103', port=80, proto='http', username='admin',
                                                       passwd='12343235678', timeout=10, startup_enable=False)
 
         self.api_correct = ApiConnector(config=api_configs_correct)
