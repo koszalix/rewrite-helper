@@ -11,7 +11,8 @@ class Config:
     __log_file = ""
     __log_level = ""
 
-    def set(self, wait: int, entry_exist: str, log_file: str, log_level: Union[DEBUG, INFO, WARNING, ERROR, CRITICAL]) -> None:
+    def set(self, wait: int, entry_exist: str, log_file: str,
+            log_level: Union[DEBUG, INFO, WARNING, ERROR, CRITICAL, bool]) -> None:
         """
         Set miscellaneous program configurations
 
@@ -36,5 +37,5 @@ class Config:
     def log_file(self) -> str:
         return self.__log_file
 
-    def log_level(self) -> Union[DEBUG, INFO, WARNING, ERROR, CRITICAL]:
+    def log_level(self) -> Union[DEBUG, INFO, WARNING, ERROR, CRITICAL, bool]:
         return self.__log_level
