@@ -45,19 +45,22 @@ def check_protocol_slashed(proto=""):
         return proto + "://"
 
 
-def parse_value_with_default(content, key, default_value):
+def parse_value_with_default(content, key, default_value, cast_type=True):
     """
     Try to find a value assigned to key in dictionary, if key wasn't found return default value
     :param content: dict: a content to search in
     :param key: str: key to find
     :param default_value: default value in key wasn't found
+    :param cast_type: change type of returned variable to type of default value
     :return: value assigned to key, or default value, type of returned value is the same as type of default value
     """
     if content is None:
         return default_value
     if key in content:
-        if content[key] is not None:
+        if content[key] is not None and cast_type:
             return (type(default_value))(content[key])
+        elif content[key] is not None:
+            return content[key]
         else:
             return default_value
     else:
