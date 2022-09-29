@@ -1,3 +1,7 @@
+from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
+from typing import Union
+
+
 class Config:
     """
     Store miscellaneous program configurations
@@ -7,7 +11,7 @@ class Config:
     __log_file = ""
     __log_level = ""
 
-    def set(self, wait: int, entry_exist: str, log_file: str, log_level) -> None:
+    def set(self, wait: int, entry_exist: str, log_file: str, log_level: Union[DEBUG, INFO, WARNING, ERROR, CRITICAL]) -> None:
         """
         Set miscellaneous program configurations
 
@@ -32,5 +36,5 @@ class Config:
     def log_file(self) -> str:
         return self.__log_file
 
-    def log_level(self):
+    def log_level(self) -> Union[DEBUG, INFO, WARNING, ERROR, CRITICAL]:
         return self.__log_level
