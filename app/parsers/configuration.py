@@ -1,7 +1,7 @@
 import logging
 import glob
 import os
-import hashlib
+
 
 import yaml
 from yaml.loader import SafeLoader
@@ -152,14 +152,14 @@ class ConfigParser:
                 count = parse_value_with_default(content=job, key='count',
                                                  default_value=default.PingJob.count)
 
-                privileged = parse_value_with_default(content=job, key='privileged', default_value=default.PingJob.privileged)
+                privileged = parse_value_with_default(content=job, key='privileged',
+                                                      default_value=default.PingJob.privileged)
 
             except KeyError:
                 logging.error("Error in config file, ping_jobs KeyError")
                 break
 
-            data_valid = validate_dns_rewrite(domain=domain, primary_answer=answers,
-                                              failover_answers=dns_failover)
+            data_valid = validate_domain(domain=domain) and validate_ips(ips=answers)
 
             if data_valid:
                 self.JobConfs.JobsPing.append(interval=interval, count=count, timeout=timeout, domain=domain,
@@ -214,7 +214,8 @@ class ConfigParser:
             data_valid = validate_ip(ip=host) or validate_domain(domain=host)
             data_valid = data_valid and validate_network_port(port=port)
             if data_valid:
-                self.ApiConfs.set(host=host, username=username, passwd=passwd, proto=proto, timeout=timeout, startup_enable=startup)
+                self.ApiConfs.set(host=host, username=username, passwd=passwd, proto=proto, timeout=timeout, port=port,
+                                  startup_enable=startup)
             else:
                 logging.info("Api configuration error")
 
@@ -240,8 +241,8 @@ class ConfigParser:
                     content=self.file_content['config'], key='log_file', default_value=default.Config.log_file)
 
                 entry_exist = parse_value_with_default(content=self.file_content['config'],
-                                                                             key='entry_exist',
-                                                                             default_value=default.Config.entry_exist)
+                                                       key='entry_exist',
+                                                       default_value=default.Config.entry_exist)
 
                 self.Confs.set(wait=wait, log_level=log_level, log_file=log_file, entry_exist=entry_exist)
 
