@@ -6,10 +6,11 @@ class Config:
     """
     Store miscellaneous program configurations
     """
-    __wait = 0
-    __entry_exist = ""
-    __log_file = ""
-    __log_level = ""
+    def __init__(self):
+        self.__wait = 0
+        self.__entry_exist = ""
+        self.__log_file = ""
+        self.__log_level = int
 
     def set(self, wait: int, entry_exist: str, log_file: str, log_level: Union[int, bool]) -> None:
         """
