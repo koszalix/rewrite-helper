@@ -5,7 +5,6 @@ ping_jobs:
       count: 5
       timeout: 3
       answers:
-        primary: 999.999.999
-        failover:
-          - 2.2.2.2
-          - 3.3.3.3
+        - 999.999.999
+        - 2.2.2.2
+        - 3.3.3.3

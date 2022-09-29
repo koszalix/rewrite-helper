@@ -443,14 +443,15 @@ class TestPingJobs(unittest.TestCase):
         parser = ConfigParser(file=self.working_directory + 'ping_job.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
-        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
-        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
-        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
+        parser.parse_ping()
+
+        self.assertEqual(c_jobs.JobsPing[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsPing[0].interval(), 44)
+        self.assertEqual(c_jobs.JobsPing[0].count(), 5)
+        self.assertEqual(c_jobs.JobsPing[0].timeout(), 3)
+        self.assertEqual(c_jobs.JobsPing[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
+        self.assertEqual(c_jobs.JobsPing[0].privileged(), False)
+
 
     def test_ping_job_all_default(self):
         """
@@ -461,14 +462,15 @@ class TestPingJobs(unittest.TestCase):
         parser = ConfigParser(file=self.working_directory + 'ping_job_default.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 60")
-        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 2")
-        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 2")
-        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
+        parser.parse_ping()
+
+        self.assertEqual(c_jobs.JobsPing[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsPing[0].interval(), 60)
+        self.assertEqual(c_jobs.JobsPing[0].count(), 2)
+        self.assertEqual(c_jobs.JobsPing[0].timeout(), 2)
+        self.assertEqual(c_jobs.JobsPing[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
+        self.assertEqual(c_jobs.JobsPing[0].privileged(), False)
+
 
     def test_ping_job_multiple_instances(self):
         """
@@ -481,72 +483,38 @@ class TestPingJobs(unittest.TestCase):
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
-        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
-        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
-        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
-        self.assertEqual(captured_logs.records[6].getMessage(), "ping-domain test-x.com")
-        self.assertEqual(captured_logs.records[7].getMessage(), "ping-interval 34")
-        self.assertEqual(captured_logs.records[8].getMessage(), "ping-count 3")
-        self.assertEqual(captured_logs.records[9].getMessage(), "ping-timeout 7")
-        self.assertEqual(captured_logs.records[10].getMessage(), "ping-primary 1.2.1.1")
-        self.assertEqual(captured_logs.records[11].getMessage(), "ping-failover 2.5.2.2 3.5.3.3")
 
-    def test_ping_job_no_failover(self):
-        """
-        Test behavior of ping job parser when failover key don't exist in config file
-        :return:
-        """
-        c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'ping_job_no_failover.yml', jobs_confs=c_jobs,
-                              api_confs=self.c_api, confs=self.c_conf)
-        parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
-        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
-        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
-        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover ")
+        self.assertEqual(c_jobs.JobsPing[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsPing[0].interval(), 44)
+        self.assertEqual(c_jobs.JobsPing[0].count(), 5)
+        self.assertEqual(c_jobs.JobsPing[0].timeout(), 3)
+        self.assertEqual(c_jobs.JobsPing[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
+        self.assertEqual(c_jobs.JobsPing[0].privileged(), False)
 
-    def test_ping_job_no_failover_2(self):
-        """
-        Test behavior of http job parser when failover key is empty in config file
-        :return:
-        """
-        c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'ping_job_no_failover-2.yml', jobs_confs=c_jobs,
-                              api_confs=self.c_api, confs=self.c_conf)
-        parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
-        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
-        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
-        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover ")
+        self.assertEqual(c_jobs.JobsPing[1].domain(), "test-x.com")
+        self.assertEqual(c_jobs.JobsPing[1].interval(), 34)
+        self.assertEqual(c_jobs.JobsPing[1].count(), 3)
+        self.assertEqual(c_jobs.JobsPing[1].timeout(), 7)
+        self.assertEqual(c_jobs.JobsPing[1].answers(), ["1.2.1.1", "2.5.2.2", "3.5.3.3"])
+        self.assertEqual(c_jobs.JobsPing[1].privileged(), True)
 
-    def test_ping_job_failover_single(self):
+    def test_ping_job_single_answer(self):
         """
         Test behavior of ping job parser when failover key contains only single value
         :return:
         """
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'ping_job_failover-single.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'ping_job_single_answer.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
-        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
-        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
-        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.13.1.1")
-        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.3.2.2")
+        parser.parse_ping()
+
+        self.assertEqual(c_jobs.JobsPing[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsPing[0].interval(), 44)
+        self.assertEqual(c_jobs.JobsPing[0].count(), 5)
+        self.assertEqual(c_jobs.JobsPing[0].timeout(), 3)
+        self.assertEqual(c_jobs.JobsPing[0].answers(), ["1.13.1.1"])
+        self.assertEqual(c_jobs.JobsPing[0].privileged(), False)
 
     def test_ping_job_no_interval(self):
         """
@@ -557,14 +525,14 @@ class TestPingJobs(unittest.TestCase):
         parser = ConfigParser(file=self.working_directory + 'ping_job_no_interval.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 60")
-        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
-        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
-        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
+        parser.parse_ping()
+
+        self.assertEqual(c_jobs.JobsPing[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsPing[0].interval(), 60)
+        self.assertEqual(c_jobs.JobsPing[0].count(), 5)
+        self.assertEqual(c_jobs.JobsPing[0].timeout(), 3)
+        self.assertEqual(c_jobs.JobsPing[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
+        self.assertEqual(c_jobs.JobsPing[0].privileged(), False)
 
     def test_ping_job_no_timeout(self):
         """
@@ -575,14 +543,15 @@ class TestPingJobs(unittest.TestCase):
         parser = ConfigParser(file=self.working_directory + 'ping_job_no_timeout.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
-        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 5")
-        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 2")
-        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
+        parser.parse_ping()
+
+        self.assertEqual(c_jobs.JobsPing[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsPing[0].interval(), 44)
+        self.assertEqual(c_jobs.JobsPing[0].count(), 5)
+        self.assertEqual(c_jobs.JobsPing[0].timeout(), 2)
+        self.assertEqual(c_jobs.JobsPing[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
+        self.assertEqual(c_jobs.JobsPing[0].privileged(), False)
+
 
     def test_ping_job_no_count(self):
         """
@@ -593,14 +562,14 @@ class TestPingJobs(unittest.TestCase):
         parser = ConfigParser(file=self.working_directory + 'ping_job_no_count.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(), "ping-domain test.com")
-        self.assertEqual(captured_logs.records[1].getMessage(), "ping-interval 44")
-        self.assertEqual(captured_logs.records[2].getMessage(), "ping-count 2")
-        self.assertEqual(captured_logs.records[3].getMessage(), "ping-timeout 3")
-        self.assertEqual(captured_logs.records[4].getMessage(), "ping-primary 1.1.1.1")
-        self.assertEqual(captured_logs.records[5].getMessage(), "ping-failover 2.2.2.2 3.3.3.3")
+        parser.parse_ping()
+
+        self.assertEqual(c_jobs.JobsPing[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsPing[0].interval(), 44)
+        self.assertEqual(c_jobs.JobsPing[0].count(), 2)
+        self.assertEqual(c_jobs.JobsPing[0].timeout(), 3)
+        self.assertEqual(c_jobs.JobsPing[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
+        self.assertEqual(c_jobs.JobsPing[0].privileged(), False)
 
     def test_ping_job_invalid_domain_answer(self):
         c_jobs = JobsConfs()
