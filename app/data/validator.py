@@ -29,6 +29,8 @@ def validate_ips(ips: Union[list, str]) -> bool:
     """
     if type(ips) == str:
         return validate_ip(ip=ips)
+    if len(ips) <= 0:
+        return False
     for adr in ips:
         if validate_ip(ip=adr) is False:
             return False
