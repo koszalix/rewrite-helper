@@ -839,7 +839,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(c_conf.log_file(), "/var/log/log.txt")
         self.assertEqual(c_conf.entry_exist(), "KEEP")
 
-        
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     unittest.main()
