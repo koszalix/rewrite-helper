@@ -4,14 +4,14 @@ class DNS:
     """
     Stores DNS answer and domain, answer[0] is primary answer
     """
-    __domain = ""
-    __answers = []
+    _domain = ""
+    _answers = []
 
     def domain(self) -> str:
-        return self.__domain
+        return self._domain
 
     def answers(self) -> list:
-        return self.__answers
+        return self._answers
 
 
 class JobHttp(DNS):
@@ -23,7 +23,7 @@ class JobHttp(DNS):
         self._timeout = timeout
         self._port = port
         self._domain = domain
-        self._answers = answers
+        self._domain = answers
 
     def interval(self) -> int:
         return self._interval
@@ -91,8 +91,8 @@ class JobPing(DNS):
         self._count = count
         self._timeout = timeout
         self._privileged = privileged
-        self.__domain = domain
-        self.__answers = answers
+        self._domain = domain
+        self._answers = answers
 
     def interval(self) -> int:
         return self._interval
