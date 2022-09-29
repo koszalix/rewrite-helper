@@ -233,18 +233,23 @@ class ConfigParser:
                 wait = parse_value_with_default(
                     content=self.file_content['config'], key='wait', default_value=default.Config.wait)
                 log_level = parse_value_with_default(
-                    content=self.file_content['config'], key="log_level", default_value="N/A")
+                    content=self.file_content['config'], key="log_level", default_value=default.Config.log_level,
+                    cast_type=False)
 
                 log_level = parse_logging_level(logging_str=log_level)
-
                 log_file = parse_value_with_default(
                     content=self.file_content['config'], key='log_file', default_value=default.Config.log_file)
 
                 entry_exist = parse_value_with_default(content=self.file_content['config'],
                                                        key='entry_exist',
                                                        default_value=default.Config.entry_exist)
+            else:
+                wait = default.Config.wait
+                log_level = default.Config.log_level
+                log_file = default.Config.log_file
+                entry_exist = default.Config.entry_exist
 
-                self.Confs.set(wait=wait, log_level=log_level, log_file=log_file, entry_exist=entry_exist)
+            self.Confs.set(wait=wait, log_level=log_level, log_file=log_file, entry_exist=entry_exist)
 
         except KeyError:
             logging.error("Config file error / Config / KeyError")
