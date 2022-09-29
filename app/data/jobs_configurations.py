@@ -1,3 +1,5 @@
+from app.utils import check_protocol_slashed
+
 class DNS:
     """
     Stores DNS answer and domain, answer[0] is primary answer
@@ -30,7 +32,7 @@ class JobHttp(DNS):
         return self._status_code
 
     def proto(self) -> str:
-        return self._proto
+        return check_protocol_slashed(proto=self._proto)
 
     def timeout(self) -> float:
         return self._timeout
