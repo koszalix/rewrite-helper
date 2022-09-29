@@ -5,4 +5,4 @@ api:
   username: admin
   passwd: 12345678
   timeout: 7
-  startup: False
+  startup:

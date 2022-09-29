@@ -188,7 +188,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(c_api.timeout(), 10)
         self.assertEqual(c_api.startup_enable(), False)
 
-    def test_no_start_section(self):
+    def test_no_startup_empty(self):
         c_api = ApiConfiguration()
         parser = ConfigParser(file=self.working_directory + 'api_only_startup_empty.yml', jobs_confs=self.c_jobs,
                               api_confs=c_api, confs=self.c_conf)
@@ -214,45 +214,6 @@ class TestHttpJobs(unittest.TestCase):
         self.c_api = ApiConfiguration()
         self.c_conf = Config()
 
-    def test_http_job_all_provided(self):
-        """
-        Test behavior of http job parser when all configuration all provided
-        :return:
-        """
-        c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'http_job.yml', jobs_confs=c_jobs,
-                              api_confs=self.c_api, confs=self.c_conf)
-        parser.get_configs()
-
-        parser.parse_http()
-
-        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
-        self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
-        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
-        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
-        self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
-        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
-        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
-
-    def test_http_job_all_default(self):
-        """
-        Test behavior of http job parser when only necessary configuration options are provided
-        :return:
-        """
-        c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'http_job_default_all.yml', jobs_confs=c_jobs,
-                              api_confs=self.c_api, confs=self.c_conf)
-        parser.get_configs()
-        parser.parse_http()
-
-        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
-        self.assertEqual(c_jobs.JobsHttp[0].interval(), 60)
-        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 200)
-        self.assertEqual(c_jobs.JobsHttp[0].proto(), "http")
-        self.assertEqual(c_jobs.JobsHttp[0].port(), 80)
-        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 10)
-        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
-
     def test_http_job_multiple_instances(self):
         """
         Test behavior of http job parser in case of multiple job configured
@@ -267,15 +228,15 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
         self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
         self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
-        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https://")
         self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
         self.assertEqual(c_jobs.JobsHttp[0].timeout(), 13)
         self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
-        self.assertEqual(c_jobs.JobsHttp[1].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[1].domain(), "test-x.com")
         self.assertEqual(c_jobs.JobsHttp[1].interval(), 32)
         self.assertEqual(c_jobs.JobsHttp[1].status_code(), 202)
-        self.assertEqual(c_jobs.JobsHttp[1].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[1].proto(), "https://")
         self.assertEqual(c_jobs.JobsHttp[1].port(), 8082)
         self.assertEqual(c_jobs.JobsHttp[1].timeout(), 14)
         self.assertEqual(c_jobs.JobsHttp[1].answers(), ["1.1.2.1", "2.23.2.2"])
@@ -295,7 +256,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
         self.assertEqual(c_jobs.JobsHttp[0].interval(), 60)
         self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
-        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https://")
         self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
         self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
         self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
@@ -314,7 +275,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
         self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
         self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
-        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https://")
         self.assertEqual(c_jobs.JobsHttp[0].port(), 443)
         self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
         self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
@@ -333,7 +294,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
         self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
         self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
-        self.assertEqual(c_jobs.JobsHttp[0].proto(), "http")
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "http://")
         self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
         self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
         self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
@@ -352,7 +313,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
         self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
         self.assertEqual(c_jobs.JobsHttp[0].status_code(), 200)
-        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https://")
         self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
         self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
         self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
@@ -367,7 +328,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
         self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
         self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
-        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https://")
         self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
         self.assertEqual(c_jobs.JobsHttp[0].timeout(), 10)
         self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
@@ -382,7 +343,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
         self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
         self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
-        self.assertEqual(c_jobs.JobsHttp[0].proto(), "http")
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "http://")
         self.assertEqual(c_jobs.JobsHttp[0].port(), 80)
         self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
         self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
@@ -398,7 +359,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
         self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
         self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
-        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https")
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https://")
         self.assertEqual(c_jobs.JobsHttp[0].port(), 443)
         self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
         self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
@@ -423,6 +384,47 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(),
                          "Job for domain: test.com not added, due to invalid parameters")
 
+    def test_http_job_all_provided(self):
+        """
+        Test behavior of http job parser when all configuration all provided
+        :return:
+        """
+
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_job.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+
+        parser.get_configs()
+
+        parser.parse_http()
+        print(c_jobs.JobsHttp[0].interval())
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https://")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
+
+    def test_http_job_all_default(self):
+        """
+        Test behavior of http job parser when only necessary configuration options are provided
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'http_job_default_all.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+
+        parser.get_configs()
+        parser.parse_http()
+
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 60)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 200)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "http://")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 80)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 10)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
 class TestPingJobs(unittest.TestCase):
     def setUp(self):
@@ -579,23 +581,13 @@ class TestPingJobs(unittest.TestCase):
 
     def test_ping_job_invalid_answer_primary(self):
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'ping_invalid_answer_primary.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'ping_invalid_answer.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
         self.assertEqual(captured_logs.records[0].getMessage(),
                          "Job for domain: test.com not added, due to invalid parameters")
-
-    def test_ping_job_invalid_answer_failover(self):
-        c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'ping_invalid_answer_failover.yml', jobs_confs=c_jobs,
-                              api_confs=self.c_api, confs=self.c_conf)
-        parser.get_configs()
-        with self.assertLogs(level=logging.DEBUG) as captured_logs:
-            parser.parse_ping()
-        self.assertEqual(captured_logs.records[0].getMessage(),
-                         "Job for domain: test-example.com not added, due to invalid parameters")
 
 
 class TestStaticEntry(unittest.TestCase):
