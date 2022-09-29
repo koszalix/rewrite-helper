@@ -512,13 +512,13 @@ class ValidateIps(unittest.TestCase):
         self.assertEqual(validate_ips(ips=[]), False)
 
     def test_list_of_invalid_ip(self):
-        self.assertEqual(validate_ips(ips=["10.2.3.12", "192.q158.23.23"]), True)
+        self.assertEqual(validate_ips(ips=["10.2.3.12", "192.q158.23.23"]), False)
 
     def test_string(self):
         self.assertEqual(validate_ips(ips="10.0.10.10"), True)
 
     def test_string_invalid_ip(self):
-        self.assertEqual(validate_ips(ips="1q0.0.10.10"), True)
+        self.assertEqual(validate_ips(ips="1q0.0.10.10"), False)
 
 
 if __name__ == "__main__":
