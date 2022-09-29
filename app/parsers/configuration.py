@@ -185,7 +185,7 @@ class ConfigParser:
             data_valid = validate_dns_rewrite(domain=domain, primary_answer=answer, failover_answers=[])
 
             if data_valid:
-                self.JobConfs.JobsStaticEntry.append(interval=interval, domain=domain, answers=answer)
+                self.JobConfs.JobsStaticEntry.append(interval=interval, domain=domain, answer=answer)
 
             else:
                 logging.info(msg=f"Job for domain: {domain} not added, due to invalid parameters")
