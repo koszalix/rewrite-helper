@@ -9,8 +9,8 @@ from app.data.jobs_configurations import JobStaticEntry
 
 class Test(threading.Thread):
     def __init__(self, config: JobStaticEntry, api_connect: Union[ApiConnector, None]):
-        if api_connect is not None:
-            threading.Thread.__init__(self)
+      #  if api_connect is not None:
+       #     threading.Thread.__init__(self)
 
         self.domain = config.domain()
         self.answer = config.answers()

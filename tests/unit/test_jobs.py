@@ -1,39 +1,35 @@
 import logging
 import unittest
 
-from app.jobs import ping
-from app.jobs import http
-from app.jobs import static_entry
-from app.data import default
+from app.jobs import ping, http, static_entry
+from app.data.jobs_configurations import JobPing, JobHttp, JobStaticEntry
+
+class TestException(Exception):
+    """
+    Exception used to end infinite loop in job, raised by dummy_api_callback
+    """
+    pass
+
+
+def dummy_api_callback():
+    """
+    Function used to overwrite _common.api_callback(), when unit tests don't need to use api
+    :return:
+    """
+    raise TestException
 
 
 class TestPing(unittest.TestCase):
 
     def setUp(self):
-        self.ping = ping.Test(count=2, timeout=0.2, dns_domain="test.lan", api_connect=None,
-                              dns_answer="192.168.56.105", interval=10, dns_answer_failover=["192.168.56.22"])
 
-        self.ping_negative_count = ping.Test(count=2, timeout=0.2, dns_domain="test.lan", api_connect=None,
-                                             dns_answer="192.168.56.105", interval=10,
-                                             dns_answer_failover=["192.168.56.22"])
-        self.ping_zero_count = ping.Test(count=2, timeout=0.2, dns_domain="test.lan", api_connect=None,
-                                         dns_answer="192.168.56.105", interval=10,
-                                         dns_answer_failover=["192.168.56.22"])
+        c_ping = JobPing(interval=10, count=2, timeout=0.2, domain="test.lan",
+                         answers=["192.168.56.105", "192.168.56.22"], privileged=False)
 
-        self.ping_negative_timeout = ping.Test(count=2, timeout=-4, dns_domain="test.lan", api_connect=None,
-                                               dns_answer="192.168.56.105", interval=10,
-                                               dns_answer_failover=["192.168.56.22"])
-        self.ping_zero_timeout = ping.Test(count=2, timeout=-4, dns_domain="test.lan", api_connect=None,
-                                           dns_answer="192.168.56.105", interval=10,
-                                           dns_answer_failover=["192.168.56.22"])
+        self.ping = ping.Test(config=c_ping, api_connect=None)
+        self.ping.api_callback = dummy_api_callback
 
-        self.ping_negative_interval = ping.Test(count=2, timeout=1, dns_domain="test.lan", api_connect=None,
-                                                dns_answer="192.168.56.105", interval=-10,
-                                                dns_answer_failover=["192.168.56.22"])
-        self.ping_zero_interval = ping.Test(count=2, timeout=1, dns_domain="test.lan", api_connect=None,
-                                            dns_answer="192.168.56.105", interval=0,
-                                            dns_answer_failover=["192.168.56.22"])
-
+    # test job requests
     def test_host_up(self):
         """
         Test ping job behavior when host is up
@@ -56,89 +52,30 @@ class TestPing(unittest.TestCase):
         self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: 192.168.56.220")
         self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: 192.168.56.220 host dead")
 
-    def test_count_negative_value(self):
+    def test_host_statuses(self):
         """
-        Test ping job behavior when count is negative
+        Test if host statuses are correctly added to status list
         :return:
         """
-        self.assertEqual(self.ping_negative_count.job_request(host="192.168.56.105"), True)
-        with self.assertLogs(level=logging.INFO) as captured_logs:
-            self.ping_negative_count.job_request(host="192.168.56.105")
-        self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: 192.168.56.105")
-        self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: 192.168.56.105 ok")
-
-    def test_zero_count(self):
-        """
-        Test ping job behavior when count is zero
-        :return:
-        """
-        self.assertEqual(self.ping_zero_count.job_request(host="192.168.56.105"), True)
-        with self.assertLogs(level=logging.INFO) as captured_logs:
-            self.ping_zero_count.job_request(host="192.168.56.105")
-        self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: 192.168.56.105")
-        self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: 192.168.56.105 ok")
-
-    def test_timeout_negative_value(self):
-        """
-        Test ping job behavior when timeout is negative
-        :return:
-        """
-        self.assertEqual(self.ping_zero_timeout.timeout, default.PingJob.timeout)
-        self.assertEqual(self.ping_negative_timeout.job_request(host="192.168.56.105"), True)
-        with self.assertLogs(level=logging.INFO) as captured_logs:
-            self.ping_negative_timeout.job_request(host="192.168.56.105")
-        self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: 192.168.56.105")
-        self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: 192.168.56.105 ok")
-
-    def test_timeout_zero_value(self):
-        """
-        Test ping job behavior when timeout is zero
-        :return:
-        """
-        self.assertEqual(self.ping_zero_timeout.job_request(host="192.168.56.105"), True)
-        self.assertEqual(self.ping_zero_timeout.timeout, default.PingJob.timeout)
-        with self.assertLogs(level=logging.INFO) as captured_logs:
-            self.ping_negative_timeout.job_request(host="192.168.56.105")
-        self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: 192.168.56.105")
-        self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: 192.168.56.105 ok")
-
-    def test_interval_negative(self):
-        self.assertEqual(self.ping_negative_interval.interval, default.PingJob.interval)
-
-    def test_interval_zero(self):
-        self.assertEqual(self.ping_zero_interval.interval, default.PingJob.interval)
+        self.ping.run()
+        self.assertEqual(self.ping.hosts_statuses, [True, False])
 
 
 class TestHttp(unittest.TestCase):
 
     def setUp(self):
-        self.http = http.Test(correct_status_code=200, interval=60, port=80, proto="http", timeout=1,
-                              dns_domain="test.lan", api_connect=None,
-                              dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
+        c_http = JobHttp(interval=60, status_code=200, proto="http", domain="test.lan", answers=["192.168.56.105", "192.168.56.22"], timeout=1, port=80)
+        c_http_wrong_code = JobHttp(interval=60, status_code=404, proto="http", domain="test.lan", answers=["192.168.56.105", "192.168.56.22"], timeout=1, port=80)
+        c_http_invalid_schema = JobHttp(interval=60, status_code=404, proto="", domain="test.lan", answers=["192.168.56.105", "192.168.56.22"], timeout=1, port=80)
 
-        self.http_wrong_code = http.Test(correct_status_code=404, interval=60, port=80, proto="http", timeout=1,
-                                         dns_domain="test.lan", api_connect=None,
-                                         dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
+        self.http = http.Test(config=c_http, api_connect=None)
+        self.http.api_callback = dummy_api_callback
 
-        self.http_invalid_schema = http.Test(correct_status_code=404, interval=60, port=80, proto="", timeout=1,
-                                             dns_domain="test.lan", api_connect=None,
-                                             dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
+        self.http_wrong_code = http.Test(config=c_http_wrong_code, api_connect=None)
+        self.http_wrong_code.api_callback = dummy_api_callback
 
-        self.http_negative_timeout = http.Test(correct_status_code=200, interval=60, port=80, proto="http", timeout=-10,
-                                               dns_domain="test.lan", api_connect=None,
-                                               dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
-
-        self.http_zero_timeout = http.Test(correct_status_code=200, interval=60, port=80, proto="http", timeout=0,
-                                           dns_domain="test.lan", api_connect=None,
-                                           dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
-
-        self.http_negative_interval = http.Test(correct_status_code=200, interval=-60, port=80, proto="http", timeout=1,
-                                                dns_domain="test.lan", api_connect=None,
-                                                dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
-
-        self.http_zero_interval = http.Test(correct_status_code=200, interval=0, port=80, proto="http", timeout=1,
-                                            dns_domain="test.lan", api_connect=None,
-                                            dns_answer="192.168.56.105", dns_answer_failover=["192.168.56.22"])
+        self.http_invalid_schema = http.Test(config=c_http_invalid_schema, api_connect=None)
+        self.http_invalid_schema.api_connector = dummy_api_callback
 
     def test_host_down(self):
         self.assertEqual(self.http.job_request(host="192.168.56.222"), False)
@@ -171,41 +108,20 @@ class TestHttp(unittest.TestCase):
         self.assertEqual(captured_logs.records[1].getMessage(),
                          "Test (status) of: 192.168.56.105:80 failed (Invalid schema)")
 
-    def test_interval_zero(self):
-        self.assertEqual(self.http_zero_interval.interval, default.HttpJob.interval)
-
-    def test_interval_negative(self):
-        self.assertEqual(self.http_negative_interval.interval, default.HttpJob.interval)
-
-    def test_timeout_negative(self):
-        self.assertEqual(self.http_negative_timeout.job_request(host="192.168.56.105"), True)
-        self.assertEqual(self.http_negative_timeout.timeout, default.HttpJob.timeout)
-        with self.assertLogs(level=logging.INFO) as captured_logs:
-            self.http_negative_timeout.job_request(host="192.168.56.105")
-        self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: http://192.168.56.105:80")
-        self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: http://192.168.56.105:80 ok")
-
-    def test_timeout_zero(self):
-        self.assertEqual(self.http_zero_timeout.job_request(host="192.168.56.105"), True)
-        self.assertEqual(self.http_zero_timeout.timeout, default.HttpJob.timeout)
-        with self.assertLogs(level=logging.INFO) as captured_logs:
-            self.http_zero_timeout.job_request(host="192.168.56.105")
-        self.assertEqual(captured_logs.records[0].getMessage(), "Test (start) of: http://192.168.56.105:80")
-        self.assertEqual(captured_logs.records[1].getMessage(), "Test (status) of: http://192.168.56.105:80 ok")
+    def test_host_statuses(self):
+        """
+        Test if host statuses are correctly added to status list
+        :return:
+        """
+        self.http.run()
+        self.assertEqual(self.http.hosts_statuses, [True, False])
 
 
-class TestStaticEntry(unittest.TestCase):
+class TestStaticJob(unittest.TestCase):
+    # TODO: tests for static entry
     def setUp(self):
-        self.static_entry_negative_interval = static_entry.Test(domain="test.lan", answer="1.1.1.1", interval=-10,
-                                                                api_connect=None)
-        self.static_entry_zero_interval = static_entry.Test(domain="test.lan", answer="1.1.1.1", interval=-10,
-                                                            api_connect=None)
-
-    def test_zero_interval(self):
-        self.assertEqual(self.static_entry_zero_interval.interval, default.StaticEntry.interval)
-
-    def test_negative_interval(self):
-        self.assertEqual(self.static_entry_zero_interval.interval, default.StaticEntry.interval)
+        c_static_entry = JobStaticEntry(interval=10, domain="test.lan", answer="192.168.56.105")
+        self.staticEntry = static_entry.Test(config=c_static_entry, api_connect=None)
 
 
 if __name__ == "__main__":

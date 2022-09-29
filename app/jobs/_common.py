@@ -2,7 +2,6 @@ from app.api.connector import ApiConnector
 
 import logging
 
-
 class Common:
     """
     Common method for other classes

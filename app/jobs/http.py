@@ -7,8 +7,6 @@ import requests
 
 from app.api.connector import ApiConnector
 from ._common import Common
-from app.utils import check_protocol_slashed
-from app.data import default
 from app.data.jobs_configurations import JobHttp
 
 
@@ -21,13 +19,10 @@ class Test(Common, threading.Thread):
         """
         Create configuration variables
 
-        :param api_connect: configured ApiConnector class
+        :param api_connect: configured ApiConnector class, may be set to None by unittests
         """
-
-        # on unittest set api connect to None (avoid no necessary api object creating)
-        if api_connect is not None:
-            threading.Thread.__init__(self)
-            super().__init__(domain=config.domain(), answers=config.answers(), api_connect=api_connect)
+    #    threading.Thread.__init__(self)
+        super().__init__(domain=config.domain(), answers=config.answers(), api_connect=api_connect)
 
         self.conf = config
 

@@ -20,16 +20,15 @@ class Test(Common, threading.Thread):
     def __init__(self, config: JobPing, api_connect: Union[ApiConnector, None]):
         """
         Create configuration variables
-        :param config: Configruation storage class for ping job
-        :param api_connect: configured ApiConnector class (on unittest set to None)
+
+        :param config: Configuration storage class for ping job
+        :param api_connect: configured ApiConnector clas, may be set to None by unittests
 
          """
 
-        # on unittest set api connect to None (avoid no necessary api object creating)
-        if api_connect is not None:
-            super().__init__(domain=config.domain(), answers=config.answers(), api_connect=api_connect)
+        super().__init__(domain=config.domain(), answers=config.answers(), api_connect=api_connect)
 
-            threading.Thread.__init__(self)
+       #     threading.Thread.__init__(self)
 
         self.conf = config
 
@@ -57,6 +56,5 @@ class Test(Common, threading.Thread):
             logging.info("Test start for domain:" + self.conf.domain())
             self.hosts_statuses = [self.job_request(host=host) for host in self.conf.answers()]
             logging.info("Test stop for domain:" + self.conf.domain())
-
             self.api_callback()
             time.sleep(self.conf.interval())
