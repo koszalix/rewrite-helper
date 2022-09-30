@@ -19,6 +19,7 @@ def validate_ip(ip: str) -> bool:
             inet_pton(AF_INET6, ip)
             return True
         except OSError:
+            logging.warning(msg="IP address is not valid (not ipv4 or ipv6)")
             return False
 
 
@@ -52,18 +53,23 @@ def validate_domain(domain: str) -> bool:
     """
     # contain only numbers, letters, hyphens or dot
     if re.search(r"[^a-zA-Z\d.-]", domain) is not None:
+        logging.warning(msg="Domain is not valid (not allowed chars)")
         return False
     # start with dot or hyphen
     if re.search(r"^[.-]|[.-]$", domain) is not None:
+        logging.warning(msg="Domain is not valid (start with dot or hyphen)")
         return False
     # length of domain extension
     if len(domain.split(".")[-1]) > 4:
+        logging.warning(msg="Domain is not valid (length of domain extension)")
         return False
     # dots occur next to each others, (only inside, if domain starts or end with dot previous if will cath catch)
     if ('..' in domain) is True:
+        logging.warning(msg="Domain is not valid (dots occur next to each others)")
         return False
     # length of domain
     if len(domain) > 63:
+        logging.warning(msg="Domain is not valid (domain to long)")
         return False
 
     return True
@@ -76,6 +82,7 @@ def validate_network_port(port: int) -> bool:
     :return: True if port is in range, False if not
     """
     if 0 <= port <= 65535:
+        logging.warning(msg="Port is not valid (out of range)")
         return True
     else:
         return False
@@ -88,27 +95,9 @@ def validate_http_response_code(code: int) -> bool:
     :return: True if code is valid http response code range, False if not
     """
     if 100 <= code < 600:
+        logging.warning(msg="Http response code is not valid (out of range)")
         return True
     return False
-
-
-def validate_dns_rewrite(domain: str, primary_answer: str, failover_answers: list) -> bool:
-    """
-    Check if dns rewrite entry is valid.
-    :param domain:
-    :param primary_answer:
-    :param failover_answers:
-    :return: True if all everything is valid, False if not
-    """
-    if validate_domain(domain=domain) is False:
-        return False
-    elif validate_ip(ip=primary_answer) is False:
-        return False
-    else:
-        for host in failover_answers:
-            if validate_ip(host) is False:
-                return False
-        return True
 
 
 def validate_timeout(timeout: Union[int, float], gt=0.01) -> bool:
@@ -119,6 +108,7 @@ def validate_timeout(timeout: Union[int, float], gt=0.01) -> bool:
     :return: True if timeout is valid, False if not
     """
     if timeout < gt:
+        logging.warning(msg="Timeout is not valid (value to low)")
         return False
     else:
         return True
@@ -131,6 +121,7 @@ def validate_ping_count(count: int) -> bool:
     :return: True if correct, False if not
     """
     if count <= 0:
+        logging.warning(msg="Ping count is not valid (value to low)")
         return False
     else:
         return True
@@ -143,7 +134,7 @@ def validate_interval(interval: int) -> bool:
     :return: True if interval is correct False if not
     """
     if interval < 1:
-        logging.warning(msg="Interval must be greater or equal to one")
+        logging.warning(msg="Interval is not valid (interval must be greater or equal to one)")
         return False
     else:
         return True
@@ -156,8 +147,10 @@ def validate_proto(proto: str) -> bool:
     :return:
     """
     if re.search(r"[^a-zA-Z/:]", proto):
+        logging.warning(msg="Proto is not valid (not allowed chars)")
         return False
     elif proto == "":
+        logging.warning(msg="Domain is not valid (empty)")
         return False
     else:
         return True
