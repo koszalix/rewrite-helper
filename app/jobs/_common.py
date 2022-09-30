@@ -1,6 +1,5 @@
 from app.api.connector import ApiConnector
 
-import logging
 
 class Common:
     """

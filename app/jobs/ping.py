@@ -23,12 +23,10 @@ class Test(Common, threading.Thread):
 
         :param config: Configuration storage class for ping job
         :param api_connect: configured ApiConnector clas, may be set to None by unittests
-
          """
-
+        if api_connect is not None:
+            threading.Thread.__init__(self)
         super().__init__(domain=config.domain(), answers=config.answers(), api_connect=api_connect)
-
-       #     threading.Thread.__init__(self)
 
         self.conf = config
 

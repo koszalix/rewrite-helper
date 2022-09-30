@@ -21,7 +21,8 @@ class Test(Common, threading.Thread):
 
         :param api_connect: configured ApiConnector class, may be set to None by unittests
         """
-    #    threading.Thread.__init__(self)
+        if api_connect is not None:
+            threading.Thread.__init__(self)
         super().__init__(domain=config.domain(), answers=config.answers(), api_connect=api_connect)
 
         self.conf = config
