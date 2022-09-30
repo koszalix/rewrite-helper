@@ -52,7 +52,7 @@ def validate_domain(domain: str) -> bool:
     :return: True if domain is valid, False if not
     """
     # contain only numbers, letters, hyphens or dot
-    if re.search(r"[^a-zA-Z\d.-]", domain) is not None:
+    if type(domain) is not str or re.search(r"[^a-zA-Z\d.-]", domain) is not None:
         logging.warning(msg="Domain is not valid (not allowed chars)")
         return False
     # start with dot or hyphen
@@ -81,7 +81,7 @@ def validate_network_port(port: int) -> bool:
     :param port:
     :return: True if port is in range, False if not
     """
-    if 0 <= port <= 65535:
+    if type(port) is not int or 0 <= port <= 65535:
         logging.warning(msg="Port is not valid (out of range)")
         return True
     else:
@@ -94,7 +94,7 @@ def validate_http_response_code(code: int) -> bool:
     :param code:
     :return: True if code is valid http response code range, False if not
     """
-    if 100 <= code < 600:
+    if type(code) is not int or 100 <= code < 600:
         logging.warning(msg="Http response code is not valid (out of range)")
         return True
     return False
@@ -107,7 +107,7 @@ def validate_timeout(timeout: Union[int, float], gt=0.01) -> bool:
     :param gt: if timeout is lower than that value -> timeout is not valid
     :return: True if timeout is valid, False if not
     """
-    if timeout < gt:
+    if (type(timeout) is not int and type(timeout) is not float) or timeout < gt:
         logging.warning(msg="Timeout is not valid (value to low)")
         return False
     else:
@@ -120,7 +120,7 @@ def validate_ping_count(count: int) -> bool:
     :param count: number of request send by icmp ping
     :return: True if correct, False if not
     """
-    if count <= 0:
+    if type(count) is not int or count <= 0:
         logging.warning(msg="Ping count is not valid (value to low)")
         return False
     else:
@@ -133,7 +133,7 @@ def validate_interval(interval: int) -> bool:
     :param interval: job interval
     :return: True if interval is correct False if not
     """
-    if interval < 1:
+    if type(interval) is not int or interval < 1:
         logging.warning(msg="Interval is not valid (interval must be greater or equal to one)")
         return False
     else:
@@ -146,7 +146,7 @@ def validate_proto(proto: str) -> bool:
     :param proto:
     :return:
     """
-    if re.search(r"[^a-zA-Z/:]", proto):
+    if type(proto) is not str or re.search(r"[^a-zA-Z/:]", proto):
         logging.warning(msg="Proto is not valid (not allowed chars)")
         return False
     elif proto == "":
