@@ -66,9 +66,12 @@ class TestPing(unittest.TestCase):
 class TestHttp(unittest.TestCase):
 
     def setUp(self):
-        c_http = JobHttp(interval=60, status_code=200, proto="http", domain="test.lan", answers=["192.168.56.105", "192.168.56.22"], timeout=1, port=80)
-        c_http_wrong_code = JobHttp(interval=60, status_code=404, proto="http", domain="test.lan", answers=["192.168.56.105", "192.168.56.22"], timeout=1, port=80)
-        c_http_invalid_schema = JobHttp(interval=60, status_code=404, proto="", domain="test.lan", answers=["192.168.56.105", "192.168.56.22"], timeout=1, port=80)
+        c_http = JobHttp(interval=60, status_code=200, proto="http", domain="test.lan",
+                         answers=["192.168.56.105", "192.168.56.22"], timeout=1, port=80)
+        c_http_wrong_code = JobHttp(interval=60, status_code=404, proto="http", domain="test.lan",
+                                    answers=["192.168.56.105", "192.168.56.22"], timeout=1, port=80)
+        c_http_invalid_schema = JobHttp(interval=60, status_code=404, proto="", domain="test.lan",
+                                        answers=["192.168.56.105", "192.168.56.22"], timeout=1, port=80)
 
         self.http = http.Test(config=c_http, api_connect=None)
         self.http.api_callback = dummy_api_callback

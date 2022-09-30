@@ -16,8 +16,8 @@ class Config:
         Set miscellaneous program configurations
 
         :param wait: specify time to wait before jobs
-        :param entry_exist: set what to do when domain is registered in AdGuardHome but answer don't match to any of answers
-                            from config file.
+        :param entry_exist: set what to do when domain is registered in AdGuardHome but answer don't match to
+                            any of answers from config file.
         :param log_file: log file
         :param log_level: log level
         :return:

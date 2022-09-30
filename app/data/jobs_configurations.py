@@ -1,5 +1,6 @@
 from app.utils import check_protocol_slashed
 
+
 class DNS:
     """
     Stores DNS answer and domain, answer[0] is primary answer
@@ -132,7 +133,7 @@ class JobsPing:
         """
 
         self._ping_objs.append(JobPing(interval=interval, count=count, timeout=timeout, domain=domain,
-                                        answers=answers, privileged=privileged))
+                                       answers=answers, privileged=privileged))
 
         self._count += 1
 

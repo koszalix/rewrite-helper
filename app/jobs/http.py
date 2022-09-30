@@ -35,21 +35,24 @@ class Test(Common, threading.Thread):
         """
         try:
             logging.info("Test (start) of: " + self.conf.proto() + host + ":" + str(self.conf.port()))
-            response = requests.get(url=self.conf.proto() + host + ":" + str(self.conf.port()), timeout=self.conf.timeout())
+            response = requests.get(url=self.conf.proto() + host + ":" + str(self.conf.port()),
+                                    timeout=self.conf.timeout())
             if response.status_code == self.conf.status_code():
                 logging.info("Test (status) of: " + self.conf.proto() + host + ":" + str(self.conf.port()) + " ok")
                 return True
             else:
                 logging.info(
-                    "Test (status) of: " + self.conf.proto() + host + ":" + str(self.conf.port()) + " failed (status code " + str(
-                        response.status_code) + ")")
+                    "Test (status) of: " + self.conf.proto() + host + ":" + str(self.conf.port()) +
+                    " failed (status code " + str(response.status_code) + ")")
                 return False
         except requests.exceptions.InvalidSchema as e:
-            logging.info("Test (status) of: " + self.conf.proto() + host + ":" + str(self.conf.port()) + " failed (Invalid schema)")
+            logging.info("Test (status) of: " + self.conf.proto() + host + ":" + str(self.conf.port()) +
+                         " failed (Invalid schema)")
             logging.warning(str(e))
             return False
         except requests.ConnectionError:
-            logging.info("Test (status) of: " + self.conf.proto() + host + ":" + str(self.conf.port()) + " failed (Connection error)")
+            logging.info("Test (status) of: " + self.conf.proto() + host + ":" + str(self.conf.port()) +
+                         " failed (Connection error)")
             return False
 
     def run(self):

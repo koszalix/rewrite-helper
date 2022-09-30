@@ -1,6 +1,7 @@
 import unittest
 
-from app.data.validator import validate_domain, validate_ip, validate_ips, validate_network_port, validate_http_response_code
+from app.data.validator import validate_domain, validate_ip, validate_ips, validate_network_port, \
+                               validate_http_response_code
 
 
 class ValidateDomain(unittest.TestCase):

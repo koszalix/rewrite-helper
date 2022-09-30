@@ -426,6 +426,7 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsHttp[0].timeout(), 10)
         self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
+
 class TestPingJobs(unittest.TestCase):
     def setUp(self):
         """
