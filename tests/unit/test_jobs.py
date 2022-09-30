@@ -4,6 +4,7 @@ import unittest
 from app.jobs import ping, http, static_entry
 from app.data.jobs_configurations import JobPing, JobHttp, JobStaticEntry
 
+
 class TestException(Exception):
     """
     Exception used to end infinite loop in job, raised by dummy_api_callback
@@ -57,7 +58,8 @@ class TestPing(unittest.TestCase):
         Test if host statuses are correctly added to status list
         :return:
         """
-        self.ping.run()
+        with self.assertRaises(TestException):
+            self.ping.run()
         self.assertEqual(self.ping.hosts_statuses, [True, False])
 
 
@@ -113,7 +115,8 @@ class TestHttp(unittest.TestCase):
         Test if host statuses are correctly added to status list
         :return:
         """
-        self.http.run()
+        with self.assertRaises(TestException):
+            self.http.run()
         self.assertEqual(self.http.hosts_statuses, [True, False])
 
 
