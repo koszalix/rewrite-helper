@@ -670,7 +670,86 @@ class TestHttpJobs(unittest.TestCase):
                          "Timeout is not valid (value to low)")
         self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: test.com not added, due to invalid parameters")
-        
+
+    def test_proto_slashes(self):
+        """
+        Test behavior of parser when protocol have slashes at the end
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'proto/added_slashes.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+
+        parser.get_configs()
+
+        parser.parse_http()
+        print(c_jobs.JobsHttp[0].interval())
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "http://")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
+
+        parser.parse_http()
+        print(c_jobs.JobsHttp[1].interval())
+        self.assertEqual(c_jobs.JobsHttp[1].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[1].interval(), 30)
+        self.assertEqual(c_jobs.JobsHttp[1].status_code(), 201)
+        self.assertEqual(c_jobs.JobsHttp[1].proto(), "https://")
+        self.assertEqual(c_jobs.JobsHttp[1].port(), 8080)
+        self.assertEqual(c_jobs.JobsHttp[1].timeout(), 12)
+        self.assertEqual(c_jobs.JobsHttp[1].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
+
+    def test_proto_contain_numbers(self):
+        """
+        Test behavior of parser when protocol contain numbers
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'proto/contain_numbers.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Proto is not valid (not allowed chars)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_proto_contain_spec_chars(self):
+        """
+        Test behavior of parser when protocol contains special characters
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'proto/contain_spec_chars.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Proto is not valid (not allowed chars)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_proto_contain_is_a_number(self):
+        """
+        Test behavior of parser when protocol contains special characters
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'proto/is_a_number.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Proto is not valid (not allowed chars)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
 
 class TestPingJobs(unittest.TestCase):
     def setUp(self):

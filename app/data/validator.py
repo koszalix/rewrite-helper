@@ -150,7 +150,7 @@ def validate_proto(proto: str) -> bool:
         logging.warning(msg="Proto is not valid (not allowed chars)")
         return False
     elif proto == "":
-        logging.warning(msg="Domain is not valid (empty)")
+        logging.warning(msg="Proto is not valid (empty)")
         return False
     else:
         return True
