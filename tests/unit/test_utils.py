@@ -89,7 +89,6 @@ class ParseValueWithDefault(unittest.TestCase):
                          , str)
 
 
-
 class CheckLinuxPermissions(unittest.TestCase):
     def test_equal(self):
         self.assertEqual(check_linux_permissions("444", "444"), True)

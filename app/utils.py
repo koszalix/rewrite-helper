@@ -45,7 +45,7 @@ def check_protocol_slashed(proto=""):
         return proto + "://"
 
 
-def parse_value_with_default(content: Union[str, int, float, bool], key: Union[str, int, float, bool],
+def parse_value_with_default(content: Union[list, dict], key: Union[str, int, float, bool],
                              default_value: Union[str, int, float, bool], cast_type=True):
     """
     Try to find a value assigned to key in dictionary, if key wasn't found return default value
