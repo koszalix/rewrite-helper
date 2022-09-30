@@ -828,7 +828,7 @@ class TestPingJobs(unittest.TestCase):
         :return:
         """
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'ping_job_single_answer.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'answers/single_answer.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         parser.parse_ping()
@@ -846,7 +846,7 @@ class TestPingJobs(unittest.TestCase):
         :return:
         """
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'ping_job_no_interval.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'interval/no_interval.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         parser.parse_ping()
@@ -864,7 +864,7 @@ class TestPingJobs(unittest.TestCase):
         :return:
         """
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'ping_job_no_timeout.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'timeout/no_timeout.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         parser.parse_ping()
@@ -882,7 +882,7 @@ class TestPingJobs(unittest.TestCase):
         :return:
         """
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'ping_job_no_count.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'count/no_count.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         parser.parse_ping()
@@ -896,7 +896,7 @@ class TestPingJobs(unittest.TestCase):
 
     def test_ping_job_invalid_domain_answer(self):
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'ping_invalid_domain.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'domain/invalid_domain.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -908,7 +908,7 @@ class TestPingJobs(unittest.TestCase):
 
     def test_ping_job_invalid_answer_primary(self):
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'ping_invalid_answer.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'answers/invalid_answer.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -917,7 +917,6 @@ class TestPingJobs(unittest.TestCase):
                          "IP address is not valid (not ipv4 or ipv6)")
         self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: test.com not added, due to invalid parameters")
-
 
 class TestStaticEntry(unittest.TestCase):
     def setUp(self):
