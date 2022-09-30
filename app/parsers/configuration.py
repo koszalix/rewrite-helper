@@ -2,14 +2,13 @@ import logging
 import glob
 import os
 
-
 import yaml
 from yaml.loader import SafeLoader
 
 from app.utils import parse_value_with_default, check_linux_permissions, parse_logging_level, match_port_to_protocol
 from app.data import default
 from app.data.validator import validate_ip, validate_domain, validate_network_port, validate_http_response_code, \
-    validate_dns_rewrite, validate_ips
+    validate_dns_rewrite, validate_ips, validate_ping_count, validate_interval, validate_timeout, validate_proto
 from app.data.jobs_configurations import JobsConfs
 from app.data.api_configuration import ApiConfiguration
 from app.data.config import Config
@@ -125,8 +124,11 @@ class ConfigParser:
                 logging.error("Error in config file, http_jobs KeyError")
                 break
 
-            data_valid = validate_domain(domain=domain) and validate_ips(ips=answers) and validate_network_port(
-                port=port) and validate_http_response_code(code=status_code)
+            data_valid = validate_domain(domain=domain) and validate_ips(ips=answers) and \
+                         validate_network_port(port=port) and validate_http_response_code(code=status_code) and \
+                         validate_timeout(timeout=timeout) and validate_interval(interval=interval) and \
+                         validate_proto(proto=proto)
+
             if data_valid:
                 self.JobConfs.JobsHttp.append(interval=interval, status_code=status_code, proto=proto, domain=domain,
                                               answers=answers, timeout=timeout, port=port)
@@ -159,7 +161,9 @@ class ConfigParser:
                 logging.error("Error in config file, ping_jobs KeyError")
                 break
 
-            data_valid = validate_domain(domain=domain) and validate_ips(ips=answers)
+            data_valid = validate_domain(domain=domain) and validate_ips(ips=answers) and \
+                         validate_ping_count(count=count) and validate_interval(interval=interval) and \
+                         validate_timeout(timeout=timeout)
 
             if data_valid:
                 self.JobConfs.JobsPing.append(interval=interval, count=count, timeout=timeout, domain=domain,
@@ -182,7 +186,8 @@ class ConfigParser:
                 logging.error("Error in config file, static_entry KeyError")
                 break
 
-            data_valid = validate_dns_rewrite(domain=domain, primary_answer=answer, failover_answers=[])
+            data_valid = validate_domain(domain=domain) and validate_ips(ips=answer) \
+                         and validate_interval(interval=interval)
 
             if data_valid:
                 self.JobConfs.JobsStaticEntry.append(interval=interval, domain=domain, answer=answer)

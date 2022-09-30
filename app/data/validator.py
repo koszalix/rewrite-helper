@@ -1,3 +1,4 @@
+import logging
 import re
 from _socket import inet_pton
 from socket import AF_INET, AF_INET6
@@ -107,4 +108,56 @@ def validate_dns_rewrite(domain: str, primary_answer: str, failover_answers: lis
         for host in failover_answers:
             if validate_ip(host) is False:
                 return False
+        return True
+
+
+def validate_timeout(timeout: Union[int, float], gt=0.01) -> bool:
+    """
+    Check if request timeout is valid (>= 0)
+    :param timeout: timeout to check
+    :param gt: if timeout is lower than that value -> timeout is not valid
+    :return: True if timeout is valid, False if not
+    """
+    if timeout < gt:
+        return False
+    else:
+        return True
+
+
+def validate_ping_count(count: int) -> bool:
+    """
+    Check if number of request made by icmp ping is correct
+    :param count: number of request send by icmp ping
+    :return: True if correct, False if not
+    """
+    if count <= 0:
+        return False
+    else:
+        return True
+
+
+def validate_interval(interval: int) -> bool:
+    """
+    Check if job interval have a correct value
+    :param interval: job interval
+    :return: True if interval is correct False if not
+    """
+    if interval < 1:
+        logging.warning(msg="Interval must be greater or equal to one")
+        return False
+    else:
+        return True
+
+
+def validate_proto(proto: str) -> bool:
+    """
+    Check if protocol is valid
+    :param proto:
+    :return:
+    """
+    if re.search(r"[^a-zA-Z/:]", proto):
+        return False
+    elif proto == "":
+        return False
+    else:
         return True
