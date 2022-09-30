@@ -2,7 +2,7 @@
 Miscellaneous method and classes used by other parts of program
 """
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
-
+from typing import Union
 
 def parse_logging_level(logging_str):
     """
@@ -45,7 +45,8 @@ def check_protocol_slashed(proto=""):
         return proto + "://"
 
 
-def parse_value_with_default(content, key, default_value, cast_type=True):
+def parse_value_with_default(content: Union[str, int, float, bool], key: Union[str, int, float, bool],
+                             default_value: Union[str, int, float, bool], cast_type=True):
     """
     Try to find a value assigned to key in dictionary, if key wasn't found return default value
     :param content: dict: a content to search in
@@ -57,10 +58,14 @@ def parse_value_with_default(content, key, default_value, cast_type=True):
     if content is None:
         return default_value
     if key in content:
-        if content[key] is not None and cast_type:
-            return (type(default_value))(content[key])
-        elif content[key] is not None:
-            return content[key]
+        val = content[key]
+        if val is not None and cast_type:
+            try:
+                val = (type(default_value))(content[key])
+            finally:
+                return val
+        elif val is not None:
+            return val
         else:
             return default_value
     else:
