@@ -372,6 +372,8 @@ class TestHttpJobs(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_http()
         self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Domain is not valid (start with dot or hyphen)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: .test.com not added, due to invalid parameters")
 
     def test_http_job_invalid_answer(self):
@@ -382,6 +384,8 @@ class TestHttpJobs(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_http()
         self.assertEqual(captured_logs.records[0].getMessage(),
+                         "IP address is not valid (not ipv4 or ipv6)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: test.com not added, due to invalid parameters")
 
     def test_http_job_all_provided(self):
@@ -578,6 +582,8 @@ class TestPingJobs(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
         self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Domain is not valid (start with dot or hyphen)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: -test.com not added, due to invalid parameters")
 
     def test_ping_job_invalid_answer_primary(self):
@@ -588,6 +594,8 @@ class TestPingJobs(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parse_ping()
         self.assertEqual(captured_logs.records[0].getMessage(),
+                         "IP address is not valid (not ipv4 or ipv6)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: test.com not added, due to invalid parameters")
 
 
@@ -645,6 +653,8 @@ class TestStaticEntry(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parser_static_entry()
         self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Domain is not valid (start with dot or hyphen)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: test.com- not added, due to invalid parameters")
 
     def test_static_entry_invalid_answer_primary(self):
@@ -655,6 +665,8 @@ class TestStaticEntry(unittest.TestCase):
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
             parser.parser_static_entry()
         self.assertEqual(captured_logs.records[0].getMessage(),
+                         "IP address is not valid (not ipv4 or ipv6)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: test.com not added, due to invalid parameters")
 
 
