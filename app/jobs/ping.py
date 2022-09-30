@@ -7,9 +7,8 @@ from icmplib import NameLookupError as ICMPLookupError
 from icmplib import ping
 
 from app.api.connector import ApiConnector
-from ._common import Common
-from app.data import default
 from app.data.jobs_configurations import JobPing
+from ._common import Common
 
 
 class Test(Common, threading.Thread):
