@@ -1,7 +1,8 @@
 import unittest
 
 from app.data.validator import validate_domain, validate_ip, validate_ips, validate_network_port, \
-                               validate_http_response_code
+                               validate_http_response_code, validate_interval, validate_timeout, validate_ping_count, \
+                               validate_proto
 
 
 class ValidateDomain(unittest.TestCase):
@@ -520,6 +521,140 @@ class ValidateIps(unittest.TestCase):
 
     def test_string_invalid_ip(self):
         self.assertEqual(validate_ips(ips="1q0.0.10.10"), False)
+
+
+class ValidateTimeout(unittest.TestCase):
+    def test_int_zero(self):
+        """
+        Test behavior when timeout type is int and equal zero
+        """
+        self.assertEqual(validate_timeout(timeout=0), False)
+
+    def test_int_lower(self):
+        """
+        Test behavior when timeout type is int and lower than zero
+        """
+        self.assertEqual(validate_timeout(timeout=-1), False)
+
+    def test_int_equal_gt(self):
+        """
+        Test behavior when timeout type is int, and it is equal to gt parameter
+        """
+        self.assertEqual(validate_timeout(timeout=2), True)
+
+    def test_float_zero(self):
+        """
+        Test behavior when timeout type is float and equal zero
+        """
+        self.assertEqual(validate_timeout(timeout=0.0), False)
+
+    def test_float_lower(self):
+        """
+        Test behavior when timeout type is float and lower than zero
+        """
+        self.assertEqual(validate_timeout(timeout=0.001), False)
+
+    def test_float_equal_gt(self):
+        """
+        Test behavior when timeout type is float, and it is equal to gt parameter
+        """
+        self.assertEqual(validate_timeout(timeout=0.02), True)
+
+
+class ValidatePingCount(unittest.TestCase):
+    def test_zero(self):
+        """
+        Test behavior when ping count is zero
+        """
+        self.assertEqual(validate_ping_count(count=0), False)
+
+    def test_less_zero(self):
+        """
+        Test behavior when ping count is less than zero
+        """
+        self.assertEqual(validate_ping_count(count=-1), False)
+
+    def test_more_zero(self):
+        """
+        Test behavior when ping count is more than zero
+        """
+        self.assertEqual(validate_ping_count(count=2), True)
+
+
+class ValidateInterval(unittest.TestCase):
+    def test_zero(self):
+        """
+        Test behavior when interval is zero
+        """
+        self.assertEqual(validate_interval(interval=0), False)
+
+    def test_one(self):
+        """
+        Test behavior when interval is one
+        """
+        self.assertEqual(validate_interval(interval=1), True)
+
+    def test_less_zero(self):
+        """
+        Test behavior when interval is less than zero
+        """
+        self.assertEqual(validate_interval(interval=-1), False)
+
+    def test_more_one(self):
+        """
+        Test behavior when interval is more than one
+        """
+        self.assertEqual(validate_interval(interval=2), True)
+
+
+class ValidateProto(unittest.TestCase):
+    def test_correct_proto(self):
+        """
+        Test behavior when proto is not valid
+        """
+        self.assertEqual(validate_proto(proto="http"), True)
+        self.assertEqual(validate_proto(proto="http://"), True)
+
+    def test_numbers(self):
+        """
+        Test behavior when proto is not valid (numbers in protocol)
+        """
+        self.assertEqual(validate_proto(proto="htt2p"), False)
+        self.assertEqual(validate_proto(proto="ht3tp://"), False)
+
+    def test_empty(self):
+        """
+        Test behavior when proto is not valid (empty)
+        """
+        self.assertEqual(validate_proto(proto=""), False)
+        self.assertEqual(validate_proto(proto="   "), False)
+
+    def test_special_chars(self):
+        """
+        Test behavior when proto is not valid (special chars)
+        """
+        self.assertEqual(validate_proto(proto="htt!p"), False)
+        self.assertEqual(validate_proto(proto="http!://"), False)
+        self.assertEqual(validate_proto(proto="htt@p"), False)
+        self.assertEqual(validate_proto(proto="http@://"), False)
+        self.assertEqual(validate_proto(proto="htt#p"), False)
+        self.assertEqual(validate_proto(proto="http#://"), False)
+        self.assertEqual(validate_proto(proto="htt$p"), False)
+        self.assertEqual(validate_proto(proto="http$://"), False)
+        self.assertEqual(validate_proto(proto="htt%p"), False)
+        self.assertEqual(validate_proto(proto="http%://"), False)
+        self.assertEqual(validate_proto(proto="htt^p"), False)
+        self.assertEqual(validate_proto(proto="http^://"), False)
+        self.assertEqual(validate_proto(proto="htt&p"), False)
+        self.assertEqual(validate_proto(proto="http&://"), False)
+        self.assertEqual(validate_proto(proto="htt&p"), False)
+        self.assertEqual(validate_proto(proto="http&://"), False)
+        self.assertEqual(validate_proto(proto="htt*p"), False)
+        self.assertEqual(validate_proto(proto="http*://"), False)
+        self.assertEqual(validate_proto(proto="htt()p"), False)
+        self.assertEqual(validate_proto(proto="http()://"), False)
+        self.assertEqual(validate_proto(proto="htt-p"), False)
+        self.assertEqual(validate_proto(proto="http-://"), False)
 
 
 if __name__ == "__main__":
