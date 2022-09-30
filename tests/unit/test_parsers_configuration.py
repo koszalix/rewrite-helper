@@ -430,6 +430,56 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsHttp[0].timeout(), 10)
         self.assertEqual(c_jobs.JobsHttp[0].answers(), ["1.1.1.1", "2.2.2.2", "3.3.3.3"])
 
+    def test_interval_negative(self):
+        """
+        Test parser behavior when interval of http job is negative
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'interval/interval_negative.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Interval is not valid (interval must be greater or equal to one)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_interval_zero(self):
+        """
+        Test parser behavior when interval of http job is zero
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'interval/interval_zero.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Interval is not valid (interval must be greater or equal to one)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_interval_nan(self):
+        """
+        Test parser behavior when interval of http job is not a number
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'interval/interval_not_a_number.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Interval is not valid (interval must be greater or equal to one)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+
 
 class TestPingJobs(unittest.TestCase):
     def setUp(self):
