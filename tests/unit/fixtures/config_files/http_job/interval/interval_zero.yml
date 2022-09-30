@@ -1,8 +1,8 @@
 http_jobs:
-  # interval not a number
+  # interval zero
   - job:
       domain: test.com
-      interval: xd
+      interval: 0
       status: 202
       proto: https
       port: 8080
