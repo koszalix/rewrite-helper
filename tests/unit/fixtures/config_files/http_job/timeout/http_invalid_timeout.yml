@@ -1,0 +1,37 @@
+http_jobs:
+ # timeout zero
+  - job:
+      domain: test.com
+      interval: 30
+      status: 202
+      proto: https
+      port: 8080
+      timeout: 0
+      answers:
+        - 999.999.999.999
+        - 2.2.2.2
+        - 3.4.5.6
+  # timeout negative
+  - job:
+      domain: test.com
+      interval: -3
+      status: 202
+      proto: https
+      port: 8080
+      timeout: 0
+      answers:
+        - 999.999.999.999
+        - 2.2.2.2
+        - 3.4.5.6
+  # timeout not a number
+  - job:
+      domain: test.com
+      interval: 30
+      status: 202
+      proto: https
+      port: 8080
+      timeout: xd
+      answers:
+        - 999.999.999.999
+        - 2.2.2.2
+        - 3.4.5.6

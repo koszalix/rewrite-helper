@@ -247,7 +247,7 @@ class TestHttpJobs(unittest.TestCase):
         :return:
         """
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'http_job_no_interval.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'interval/http_job_no_interval.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
 
@@ -267,7 +267,7 @@ class TestHttpJobs(unittest.TestCase):
         :return:
         """
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'http_job_no_port.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'port/http_job_no_port.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         parser.parse_http()
@@ -286,7 +286,7 @@ class TestHttpJobs(unittest.TestCase):
         :return:
         """
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'http_job_no_proto.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'proto/http_job_no_proto.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         parser.parse_http()
@@ -305,7 +305,7 @@ class TestHttpJobs(unittest.TestCase):
         :return:
         """
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'http_job_no_status.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'status_code/http_job_no_status.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         parser.parse_http()
@@ -320,7 +320,7 @@ class TestHttpJobs(unittest.TestCase):
 
     def test_http_job_no_timeout(self):
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'http_job_no_timeout.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'timeout/http_job_no_timeout.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         parser.parse_http()
@@ -335,7 +335,7 @@ class TestHttpJobs(unittest.TestCase):
 
     def test_http_job_auto_port_http(self):
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'http_job_auto_port_http.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'port/http_job_auto_port_http.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         parser.parse_http()
@@ -350,7 +350,7 @@ class TestHttpJobs(unittest.TestCase):
 
     def test_http_job_auto_port_https(self):
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'http_job_auto_port_https.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'port/http_job_auto_port_https.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
 
@@ -366,7 +366,7 @@ class TestHttpJobs(unittest.TestCase):
 
     def test_http_job_invalid_domain_answer(self):
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'http_invalid_domain.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'domain/http_invalid_domain.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
@@ -378,7 +378,7 @@ class TestHttpJobs(unittest.TestCase):
 
     def test_http_job_invalid_answer(self):
         c_jobs = JobsConfs()
-        parser = ConfigParser(file=self.working_directory + 'http_invalid_answer.yml', jobs_confs=c_jobs,
+        parser = ConfigParser(file=self.working_directory + 'answers/http_invalid_answer.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
         parser.get_configs()
         with self.assertLogs(level=logging.DEBUG) as captured_logs:
