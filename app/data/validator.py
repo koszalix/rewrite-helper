@@ -81,11 +81,11 @@ def validate_network_port(port: int) -> bool:
     :param port:
     :return: True if port is in range, False if not
     """
-    if type(port) is not int or 0 <= port <= 65535:
+    if type(port) is not int or port < 0 or port > 65536:
         logging.warning(msg="Port is not valid (out of range)")
-        return True
-    else:
         return False
+
+    return True
 
 
 def validate_http_response_code(code: int) -> bool:
@@ -94,10 +94,10 @@ def validate_http_response_code(code: int) -> bool:
     :param code:
     :return: True if code is valid http response code range, False if not
     """
-    if type(code) is not int or 100 <= code < 600:
+    if type(code) is not int or code < 100 or code >= 600:
         logging.warning(msg="Http response code is not valid (out of range)")
-        return True
-    return False
+        return False
+    return True
 
 
 def validate_timeout(timeout: Union[int, float], gt=0.01) -> bool:
@@ -110,8 +110,8 @@ def validate_timeout(timeout: Union[int, float], gt=0.01) -> bool:
     if (type(timeout) is not int and type(timeout) is not float) or timeout < gt:
         logging.warning(msg="Timeout is not valid (value to low)")
         return False
-    else:
-        return True
+
+    return True
 
 
 def validate_ping_count(count: int) -> bool:
@@ -123,8 +123,8 @@ def validate_ping_count(count: int) -> bool:
     if type(count) is not int or count <= 0:
         logging.warning(msg="Ping count is not valid (value to low)")
         return False
-    else:
-        return True
+
+    return True
 
 
 def validate_interval(interval: int) -> bool:
