@@ -18,6 +18,7 @@ class DNS:
 class JobHttp(DNS):
     def __init__(self, interval: int, status_code: int, proto: str, domain: str, answers: list, timeout: float,
                  port: int):
+        super().__init__()
         self._interval = interval
         self._status_code = status_code
         self._proto = proto
@@ -88,6 +89,7 @@ class JobsHttp:
 
 class JobPing(DNS):
     def __init__(self, interval: int, count: int, timeout: float, domain: str, answers: list, privileged: bool):
+        super().__init__()
         self._interval = interval
         self._count = count
         self._timeout = timeout
@@ -153,6 +155,7 @@ class JobsPing:
 
 class JobStaticEntry(DNS):
     def __init__(self, interval: int, domain: str, answer: str):
+        super().__init__()
         self._interval = interval
         self._domain = domain
         self._answers = [answer]
