@@ -609,7 +609,7 @@ class TestHttpJobs(unittest.TestCase):
 
     def test_status_zero(self):
         """
-        Test parser behavior when status code of http job is too zero
+        Test parser behavior when status code of http job is zero
         :return:
         """
         c_jobs = JobsConfs()
@@ -623,6 +623,54 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: test.com not added, due to invalid parameters")
 
+    def test_timeout_negative(self):
+        """
+        Test parser behavior when timeout of http job is
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'timeout/negative.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Timeout is not valid (value to low)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_timeout_not_a_number(self):
+        """
+        Test parser behavior when timeout of http job is
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'timeout/not_a_number.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Timeout is not valid (value to low)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_timeout_zero(self):
+        """
+        Test parser behavior when timeout of http job is
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'timeout/zero.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Timeout is not valid (value to low)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+        
 
 class TestPingJobs(unittest.TestCase):
     def setUp(self):
