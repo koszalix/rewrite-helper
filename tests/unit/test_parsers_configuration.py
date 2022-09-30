@@ -479,6 +479,69 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: test.com not added, due to invalid parameters")
 
+    def test_port_negative(self):
+        """
+        Test parser behavior when port of http job is negative
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'port/port_negative.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Port is not valid (out of range)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_port_nan(self):
+        """
+        Test parser behavior when port of http job is not a number
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'port/port_not_a_number.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Port is not valid (out of range)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_port_too_big(self):
+        """
+        Test parser behavior when port of http job is too big
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'port/port_to_big.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Port is not valid (out of range)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_port_zero(self):
+        """
+        Test parser behavior when port of http job is zero
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'port/port_negative.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_http()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Port is not valid (out of range)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
 
 
 class TestPingJobs(unittest.TestCase):
