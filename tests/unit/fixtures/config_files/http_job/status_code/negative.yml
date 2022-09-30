@@ -1,0 +1,11 @@
+http_jobs:
+  - job:
+      domain: test.com
+      interval: 30
+      status: -33
+      proto: https
+      port: 8080
+      timeout: 12
+      answers:
+        - 2.2.2.2
+        - 3.4.5.6
