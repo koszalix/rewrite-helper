@@ -895,6 +895,10 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(c_jobs.JobsPing[0].privileged(), False)
 
     def test_ping_job_invalid_domain_answer(self):
+        """
+        Test behavior of ping job parser when domain is invalid
+        :return:
+        """
         c_jobs = JobsConfs()
         parser = ConfigParser(file=self.working_directory + 'domain/invalid_domain.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
@@ -906,7 +910,11 @@ class TestPingJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: -test.com not added, due to invalid parameters")
 
-    def test_ping_job_invalid_answer_primary(self):
+    def test_ping_job_invalid_answer(self):
+        """
+        Test behavior of ping job parser when answer is invalid
+        :return:
+        """
         c_jobs = JobsConfs()
         parser = ConfigParser(file=self.working_directory + 'answers/invalid_answer.yml', jobs_confs=c_jobs,
                               api_confs=self.c_api, confs=self.c_conf)
@@ -917,6 +925,152 @@ class TestPingJobs(unittest.TestCase):
                          "IP address is not valid (not ipv4 or ipv6)")
         self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_ping_job_count_negative(self):
+        """
+        Test behavior of ping job parser when count value is negative
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'count/negative.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Ping count is not valid (value to low)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_ping_job_count_zero(self):
+        """
+        Test behavior of ping job parser when count value is negative
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'count/zero.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Ping count is not valid (value to low)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_ping_job_count_not_a_number(self):
+        """
+        Test behavior of ping job parser when count value is not a number
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'count/not_a_number.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Ping count is not valid (value to low)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_timeout_negative(self):
+        """
+        Test parser behavior when timeout of http job is
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'timeout/negative.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Timeout is not valid (value to low)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_timeout_not_a_number(self):
+        """
+        Test parser behavior when timeout of http job is
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'timeout/not_a_number.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Timeout is not valid (value to low)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_timeout_zero(self):
+        """
+        Test parser behavior when timeout of http job is
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'timeout/zero.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Timeout is not valid (value to low)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_interval_negative(self):
+        """
+        Test parser behavior when interval of http job is negative
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'interval/negative.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Interval is not valid (interval must be greater or equal to one)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_interval_zero(self):
+        """
+        Test parser behavior when interval of http job is zero
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'interval/zero.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Interval is not valid (interval must be greater or equal to one)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
+    def test_interval_nan(self):
+        """
+        Test parser behavior when interval of http job is not a number
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'interval/not_a_number.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+        with self.assertLogs(level=logging.DEBUG) as captured_logs:
+            parser.parse_ping()
+        self.assertEqual(captured_logs.records[0].getMessage(),
+                         "Interval is not valid (interval must be greater or equal to one)")
+        self.assertEqual(captured_logs.records[1].getMessage(),
+                         "Job for domain: test.com not added, due to invalid parameters")
+
 
 class TestStaticEntry(unittest.TestCase):
     def setUp(self):
