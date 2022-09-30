@@ -8,7 +8,7 @@ from yaml.loader import SafeLoader
 from app.utils import parse_value_with_default, check_linux_permissions, parse_logging_level, match_port_to_protocol
 from app.data import default
 from app.data.validator import validate_ip, validate_domain, validate_network_port, validate_http_response_code, \
-    validate_dns_rewrite, validate_ips, validate_ping_count, validate_interval, validate_timeout, validate_proto
+    validate_ips, validate_ping_count, validate_interval, validate_timeout, validate_proto
 from app.data.jobs_configurations import JobsConfs
 from app.data.api_configuration import ApiConfiguration
 from app.data.config import Config
