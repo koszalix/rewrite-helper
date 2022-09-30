@@ -124,10 +124,10 @@ class ConfigParser:
                 logging.error("Error in config file, http_jobs KeyError")
                 break
 
-            data_valid = validate_domain(domain=domain) and validate_ips(ips=answers) and \
-                         validate_network_port(port=port) and validate_http_response_code(code=status_code) and \
-                         validate_timeout(timeout=timeout) and validate_interval(interval=interval) and \
-                         validate_proto(proto=proto)
+            data_valid = validate_domain(domain=domain) and validate_interval(interval=interval) and \
+                validate_ips(ips=answers) and validate_network_port(port=port) and \
+                validate_http_response_code(code=status_code) and validate_timeout(timeout=timeout) and \
+                validate_proto(proto=proto)
 
             if data_valid:
                 self.JobConfs.JobsHttp.append(interval=interval, status_code=status_code, proto=proto, domain=domain,
@@ -162,8 +162,8 @@ class ConfigParser:
                 break
 
             data_valid = validate_domain(domain=domain) and validate_ips(ips=answers) and \
-                         validate_ping_count(count=count) and validate_interval(interval=interval) and \
-                         validate_timeout(timeout=timeout)
+                validate_ping_count(count=count) and validate_interval(interval=interval) and \
+                validate_timeout(timeout=timeout)
 
             if data_valid:
                 self.JobConfs.JobsPing.append(interval=interval, count=count, timeout=timeout, domain=domain,
