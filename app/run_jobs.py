@@ -107,5 +107,6 @@ class TestHosts:
         loops are started only if configuration is provided and valid
         :return:
         """
+        self.prepare_tasks()
         for task in self.tasks:
             task.start()
