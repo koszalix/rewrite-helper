@@ -29,3 +29,7 @@ class TestApi(unittest.TestCase):
 
     def test_startup_enable(self):
         self.assertEqual(self.api_conf.startup_enable(), False)
+
+
+if __name__ == "__main":
+    unittest.main()
