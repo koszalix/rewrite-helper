@@ -281,7 +281,7 @@ class ConfigParser:
             self.parse_ping()
 
         if 'static_entry' in self.file_content:
-            logging.info(msg="data entry found")
+            logging.info(msg="static entry found")
             self.parser_static_entry()
 
         self.parse_api()
