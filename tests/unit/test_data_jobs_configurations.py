@@ -44,6 +44,7 @@ class TestJobsConfsHttp(unittest.TestCase):
         for job in self.confs.JobsHttp:
             self.assertIsInstance(job, JobHttp)
 
+
 class TestJobsConfsPing(unittest.TestCase):
     def setUp(self) -> None:
         self.confs = JobsConfs()
