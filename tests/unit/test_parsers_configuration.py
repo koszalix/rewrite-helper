@@ -750,6 +750,25 @@ class TestHttpJobs(unittest.TestCase):
         self.assertEqual(captured_logs.records[1].getMessage(),
                          "Job for domain: test.com not added, due to invalid parameters")
 
+    def test_http_job_single_answer(self):
+        """
+        Test parser behavior when there is only one answer in config file
+        :return:
+        """
+        c_jobs = JobsConfs()
+        parser = ConfigParser(file=self.working_directory + 'answers/single_answer.yml', jobs_confs=c_jobs,
+                              api_confs=self.c_api, confs=self.c_conf)
+        parser.get_configs()
+
+        parser.parse_http()
+
+        self.assertEqual(c_jobs.JobsHttp[0].domain(), "test.com")
+        self.assertEqual(c_jobs.JobsHttp[0].interval(), 30)
+        self.assertEqual(c_jobs.JobsHttp[0].status_code(), 201)
+        self.assertEqual(c_jobs.JobsHttp[0].proto(), "https://")
+        self.assertEqual(c_jobs.JobsHttp[0].port(), 8080)
+        self.assertEqual(c_jobs.JobsHttp[0].timeout(), 12)
+        self.assertEqual(c_jobs.JobsHttp[0].answers(), ["2.2.2.2"])
 
 class TestPingJobs(unittest.TestCase):
     def setUp(self):
