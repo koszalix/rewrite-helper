@@ -4,7 +4,6 @@
 0. Please read [#Test environment] section before.
 1. Run `AdGuardVM`
 2. Run `DummyHost_1` vm
-3. Ensure if ip address of vm is correct (see [Notes about virtual machines](#Notes about virtual machines) )
 4. Type following command
 ```bash
 python3 -m unittest discover -t .
@@ -21,16 +20,17 @@ python3 -m unittest discover -t .
 ```bash
 python3 ./main.py tests/manual/config.yml
 ```
-4. Wait at least 2 minutes and check answers for domains dummy.ping, dummy.http, single.http, single.ping all domains
- should answer with 192.168.56.105.
+4. Wait at least 2 minutes and check answers for domains `dummy.ping`, `dummy.http`, `single.http`, `single.ping`
+all domains should answer with 192.168.56.105.
 5. Save `DummyHost_1`.
 6. Wait a minute.
-7. Check if answers of domain, for dummy.ping and dummy.http are 192.168.56.107 and answers for domains single.ping and 
-   single.http is 192.168.56.107.
+7. Check if answers of domain, for `dummy.ping` and `dummy.http` are 192.168.56.107 and answers for domains `single.ping` 
+and `single.http` is 192.168.56.107.
 8. Run `DummyHost_1` again and wait at least 2 minutes
-9. Check answers for domains dummy.ping, dummy.http, single.http, single.ping all domains should answer with 192.168.56.105.
-10. Check if answer for domain static.lan is 192.168.56.1.
-11. Delete entry static.lan and wait at least 2 minutes.
+9. Check answers for domains `dummy.ping`, `dummy.http`, `single.http`, `single.ping` all domains should answer with 
+192.168.56.105.
+10. Check if answer for domain `static.lan` is 192.168.56.1.
+11. Delete entry `static.lan` and wait at least 2 minutes.
 12. Check if entry mentioned in point 9 was added again.
 13. Relaunch rewrite-helper and check if there aren't duplicated domains.
 14. Shutdown rewrite-helper.
