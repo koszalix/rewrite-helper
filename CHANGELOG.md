@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+## [Unreleased] - 2022-09-30
+### Deprecated
+- Installation using install script (only docker install will be available in future versions)
+
+### Added
+- Full data validation for jobs configurations 
+
+### Changed 
+- Configuration data are stored in class instead of dictionary  
+
+### Removed
+- `Startup` configuration for api
+
 ## [0.5.0] - 2022-09-05
 ### Added
 - Domain name and answer auto validation

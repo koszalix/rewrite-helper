@@ -3,6 +3,6 @@ api:
   port: 93
   proto: https
   username: admin
-  passwd: admin
+  passwd: 12345678
   timeout: 7
   startup:

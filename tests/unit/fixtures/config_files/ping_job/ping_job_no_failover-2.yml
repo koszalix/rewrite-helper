@@ -1,9 +1,0 @@
-ping_jobs:
-  - job:
-      domain: test.com
-      interval: 44
-      count: 5
-      timeout: 3
-      answers:
-        primary: 1.1.1.1
-        failover:

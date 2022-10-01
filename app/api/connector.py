@@ -4,6 +4,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 from app.utils import check_protocol_slashed
+from app.data.api_configuration import ApiConfiguration
 
 
 class ApiConnector:
@@ -11,45 +12,19 @@ class ApiConnector:
     Realize connection between script and adguardhome, add, remove or change dns rewrite entries
     """
 
-    def __init__(self, config: dict):
+    def __init__(self, config: ApiConfiguration):
         """
-        :param config: dictionary contains all configuration needed to communicate with adguard api.
-                       Syntax:
-                        {
-                            'host': # adguard ip
-                            'port': # connection port (default 80)
-                            'proto': # api protocol http or https (default http)
-                            'username': # admin user name
-                            'passwd': # admin password
-                            'timeout': # connection timeout, if any request will exceed this value will be treated as
-                                        # a failure
-                            'startup':{
-                                'test': # set True to test connection to api on start (default True)
-                                'timeout': # Timeout of test connection (default 10)
-                                'exit_on_fail': # Exit when test connection fail, if set to False test connection
-                                                # will run in loop until success (default False)
-                                'retry_after': # time to repeat next test connection if previous test fails (default 10)
-                                }
 
-                        }
+        :param config:
         """
-        self.host = check_protocol_slashed(config['proto']) + config['host'] + ":" + str(config['port'])
-        self.auth = HTTPBasicAuth(config['username'], config['passwd'])
+        self.config = config
+        self.host = check_protocol_slashed(config.proto()) + config.host() + ":" + str(config.port())
+        self.auth = HTTPBasicAuth(config.username(), config.passwd())
 
-        self.timeout = config['timeout']
-
-        test_connection = config['startup']['test']
-        exit_on_fail = config['startup']['exit_on_fail']
-        retry_after = config['startup']['retry_after']
-        self.test_timeout = config['startup']['timeout']
-
-        if test_connection:
-            if exit_on_fail:
-                if self.test_connection() is False:
-                    exit(-1)
-
+        if self.config.startup_enable():
             while self.test_connection() is False:
-                time.sleep(retry_after)
+                logging.info(msg="Can't connect do server, retry in 10s")
+                time.sleep(10)
 
     def test_connection(self):
         """
@@ -58,7 +33,7 @@ class ApiConnector:
         """
         url = self.host + "/control/status"
         try:
-            response = requests.get(url=url, auth=self.auth, timeout=self.timeout)
+            response = requests.get(url=url, auth=self.auth, timeout=self.config.timeout())
 
             if response.status_code != 200:
                 logging.error(msg=f"Api test fail status code: {response.status_code}")
@@ -80,7 +55,7 @@ class ApiConnector:
         """
         url = self.host + "/control/rewrite/list"
         try:
-            response = requests.get(url=url, auth=self.auth, timeout=self.timeout)
+            response = requests.get(url=url, auth=self.auth, timeout=self.config.timeout())
 
             if response.status_code == 200:
                 for entry in response.json():
@@ -106,7 +81,7 @@ class ApiConnector:
         """
         url = self.host + "/control/rewrite/list"
         try:
-            response = requests.get(url=url, auth=self.auth, timeout=self.timeout)
+            response = requests.get(url=url, auth=self.auth, timeout=self.config.timeout())
 
             if response.status_code == 200:
                 for entry in response.json():
@@ -133,7 +108,7 @@ class ApiConnector:
         """
         url = self.host + "/control/rewrite/list"
         try:
-            response = requests.get(url=url, auth=self.auth, timeout=self.timeout)
+            response = requests.get(url=url, auth=self.auth, timeout=self.config.timeout())
 
             if response.status_code == 200:
                 for entry in response.json():
@@ -168,7 +143,7 @@ class ApiConnector:
                 "domain": domain,
                 "answer": answer
             }
-            response = requests.post(url=url, json=data, auth=self.auth, timeout=self.timeout)
+            response = requests.post(url=url, json=data, auth=self.auth, timeout=self.config.timeout())
             if response.status_code == 200:
                 logging.info(msg="Deletion of entry successful")
                 return True
@@ -200,7 +175,7 @@ class ApiConnector:
                 "domain": domain,
                 "answer": answer
             }
-            response = requests.post(url=url, json=data, auth=self.auth, timeout=self.timeout)
+            response = requests.post(url=url, json=data, auth=self.auth, timeout=self.config.timeout())
             if response.status_code == 200:
                 logging.info(msg="Adding of entry successful")
                 return True

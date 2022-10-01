@@ -3,11 +3,13 @@ import sys
 import time
 import logging
 
-
 from app.api.connector import ApiConnector
 from app.run_jobs import TestHosts
 from app.parsers.configuration import ConfigParser
 from app.parsers.cli import CliParser
+from app.data.config import Config as ConfigStorageConfig
+from app.data.jobs_configurations import JobsConfs as ConfigStorageJobs
+from app.data.api_configuration import ApiConfiguration as ConfigStorageApi
 
 
 def set_log_file(filename: str):
@@ -24,34 +26,33 @@ if __name__ == '__main__':
     # need to set to info to inform users about state of config file
     logging.basicConfig(level=logging.INFO)
 
+    ConfigStorageConfig = ConfigStorageConfig()
+    ConfigStorageJobs = ConfigStorageJobs()
+    ConfigStorageApi = ConfigStorageApi()
+
     CliParser = CliParser(sys.argv)
     CliParser.find_args()
 
-    ConfigParser = ConfigParser(file=CliParser.config_file)
+    ConfigParser = ConfigParser(file=CliParser.config_file, confs=ConfigStorageConfig, jobs_confs=ConfigStorageJobs,
+                                api_confs=ConfigStorageApi)
     ConfigParser.parse()
 
-    if ConfigParser.config_config['log_level'] is not False:
-        log_level = ConfigParser.config_config['log_level']
+    if ConfigStorageConfig.log_level() is not False:
+        log_level = ConfigStorageConfig.log_level()
     else:
         log_level = CliParser.log_level
 
-    if ConfigParser.config_config['log_file'] != "N/A":
-        log_file = ConfigParser.config_config['log_file']
+    if ConfigStorageConfig.log_file() != "N/A":
+        log_file = ConfigStorageConfig.log_file()
     else:
         log_file = CliParser.log_file
     if log_file != "":
-        print("l[", log_file)
         set_log_file(filename=log_file)
 
     logging.getLogger().setLevel(level=log_level)
 
-    time.sleep(ConfigParser.config_config['wait'])
-    ApiConnector = ApiConnector(config=ConfigParser.api_config)
-    TestHosts = TestHosts(api_connector=ApiConnector,
-                          http_configs=ConfigParser.http_configs,
-                          ping_configs=ConfigParser.ping_configs,
-                          static_entry_configs=ConfigParser.static_entry_configs,
-                          config_configs=ConfigParser.config_config,
-                          privileged=CliParser.run_privileged)
+    time.sleep(ConfigStorageConfig.wait())
+    ApiConnector = ApiConnector(config=ConfigStorageApi)
+    TestHosts = TestHosts(api_connector=ApiConnector, jobs_confs=ConfigStorageJobs, config_configs=ConfigStorageConfig)
 
     TestHosts.start()

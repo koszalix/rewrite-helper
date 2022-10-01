@@ -8,10 +8,9 @@ http_jobs:
       port: 8080
       timeout: 13
       answers:
-        primary: 1.1.1.1
-        failover:
-          - 2.2.2.2
-          - 3.3.3.3
+        - 1.1.1.1
+        - 2.2.2.2
+        - 3.3.3.3
 
   - job:
       domain: test-x.com
@@ -21,6 +20,5 @@ http_jobs:
       port: 8082
       timeout: 14
       answers:
-        primary: 1.1.2.1
-        failover:
-          - 2.23.2.2
+        - 1.1.2.1
+        - 2.23.2.2

@@ -7,17 +7,12 @@ class Api:
     proto = "http"
     port = 80
     timeout = 10
-
-    class Startup:
-        test = True
-        timeout = 10
-        exit_on_false = False
-        retry_after = 10
+    startup = True
 
 
 class Config:
     wait = 0
-    log_level = False
+    log_level = False  # default False allow to set log level from coman line arguments
     log_file = "N/A"
     entry_exist = 'KEEP'
 
@@ -26,6 +21,7 @@ class PingJob:
     interval = 60
     count = 2
     timeout = 2
+    privileged = False
 
 
 class HttpJob:

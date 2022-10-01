@@ -1,0 +1,12 @@
+# This config file is for test use only.
+http_jobs:
+  - job:
+      domain: test.com
+      interval: 30
+      proto: https
+      timeout: 12
+      port: 8080
+      answers:
+        - 1.1.1.1
+        - 2.2.2.2
+        - 3.3.3.3

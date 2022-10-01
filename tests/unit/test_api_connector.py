@@ -1,6 +1,7 @@
 import unittest
 
 from app.api.connector import ApiConnector
+from app.data.api_configuration import ApiConfiguration
 
 
 class TestApi(unittest.TestCase):
@@ -12,36 +13,14 @@ class TestApi(unittest.TestCase):
         Create ApiConnector objects with variety of config parameters
         :return:
         """
-        # Change, depends on your system
-        api_configs_correct = {
-            'host': '192.168.56.103',
-            'port': 80,
-            'proto': 'http',
-            'username': 'admin',
-            'passwd': '12345678',
-            'timeout': 10,
-            'startup': {
-                'test': False,
-                'timeout': 5,
-                'exit_on_fail': True,
-                'retry_after': 10
-            }
-        }
+        api_configs_correct = ApiConfiguration()
+        api_configs_correct.set(host='192.168.56.103', username='admin', port=80, passwd='12345678', proto='http',
+                                timeout=10, startup_enable=False)
 
-        api_configs_wrong_auth = {
-            'host': '192.168.56.103',
-            'port': 80,
-            'proto': 'http',
-            'username': 'admin',
-            'passwd': '123456232',
-            'timeout': 10,
-            'startup': {
-                'test':  False,
-                'timeout':  5,
-                'exit_on_fail':  True,
-                'retry_after': 10
-            }
-        }
+        api_configs_wrong_auth = ApiConfiguration()
+        api_configs_wrong_auth.set(host='192.168.56.103', username='admin', port=80, passwd='123456ds78', proto='http',
+                                   timeout=10, startup_enable=False)
+
         self.api_correct = ApiConnector(config=api_configs_correct)
         self.api_wrong_auth = ApiConnector(config=api_configs_wrong_auth)
 
@@ -234,4 +213,3 @@ class TestApi(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

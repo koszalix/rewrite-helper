@@ -51,30 +51,23 @@ another '.yml' file, but it's highly recommended to keep settings in config.yml
 Edit section named api:
 ```yaml
 api:
-  host: adguard.example.com
-  port: 80
-  proto: http
-  username: admin
-  passwd: admin
-  timeout: 10
+  host: 
+  port: 
+  proto: 
+  username: 
+  passwd: 
+  timeout: 
   startup:
-    test: True
-    timeout: 10
-    exit_on_fail: True
-    retry_after: 10
-
 ```
 `host` - ip or domain of adguardhome  
-`proto` - communication protocol http or https  
+`proto` - communication protocol http or https (default http)
 `username` - admin username  
 `passwd` - admin password  
-`port` - connection port  
-`timeout` - maximum time to response, if api request exceeded this time request wil be treated as fail   
-`startup` - specify behavior on app start  
-`startup/test` - test connection to api   
-`startup/timeout` - timeout for api connection test  
-`startup/exit_on_fail` - exit when test connection fails, when set to False program will try to connect to api until success
-`startup/retry_after` - time between next test connection to api if previous connection fails  
+`port` - connection port (default 80)
+`timeout` - maximum time to response, if api request exceeded this time request wil be treated as fail (default 10)
+`startup` - if set to `True` program don't start until connection can be established (connection will be tested every 10
+            seconds) (default True)
+
 ## Configure miscellaneous software options
 Add following section to config file
 ```yaml
@@ -85,14 +78,15 @@ config:
   entry_exist:
 ```
 `wait` - time in seconds to wait before programs start, setting this value may be helpful on system startup when 
-         rewrite-helper starts faster than AdGuardHome  
-`log_level` - set log level, available levels DEBUG, INFO, WARNING, ERROR, CRITICAL  
+         rewrite-helper starts faster than AdGuardHome (default 0)
+`log_level` - set log level, available levels DEBUG, INFO, WARNING, ERROR, CRITICAL (INFO)  (default INFO)
 `log_file` - set log output file (full path)  
 `entry_exist` - set what to do when domain is registered in AdGuardHome but answer don't match to any of answers 
-                  from config file. Available options: 
+                  from config file. Available options default (KEEP): 
                         KEEP - keep actual domain and add new, 
                         DROP - treat job as if it didn't exist
                         DELETE - delete existing domain, if for some reason domain wasn't deleted job will not be started
+                
 If log_level or log_file is no specified or value is incorrect program will read those parameters from cli.  
 ## Configuring jobs
 Job is set of hosts IP addresses within one domain. When host to which IP address domain is pointing is down, then dns
@@ -103,22 +97,21 @@ section to config file to set up ping job.
 ```yaml
 ping_jobs:
   - job:
-      domain: 
+      domain:  
       interval: 
       count: 
       timeout: 
+      privileged:
       answers:
-        primary: 
-        failover:
-          - <failover ip>
-          - <failover ip>
+        - <ip address>
+        - <ip address>
 ```
 `domain` - dns rewrite domain, for ex.: server.lan  
-`interval` - seconds between tests.  
-`count` - numer of packages send to host on each test.    
-`timeout` - test timeout, if host is not responding after that time it will be treated as dead.   
-`primary` - primary dns answer, this answer has the highest priority,  
-`failover` - list of IP addresses to switch dns answer when primary host is down  
+`interval` - seconds between tests (default 60)
+`count` - numer of packages send to host on each test (default 2)  
+`timeout` - test timeout, if host is not responding after that time it will be treated as inaccessible (default 2)
+`priviledeg` - run ping request as superuser (default False)
+`answers` - list of ip address with will be used as dns answers, first item from this list is prioritized see [Answers priority]
 
 ### Configuring http job
 Http job gets status code of webpage, if received code is the same as configured host will be treated as live. 
@@ -133,27 +126,23 @@ http_jobs:
       port:
       timeout:
       answers:
-        primary: 
-        failover:
-          - <failover ip>
-          - <failover ip>
+          - <ip address>
+          - <ip address>
 ```
 `domain` - dns rewrite domain, for ex.: server.lan  
-`interval` - seconds between tests.  
-`status` - http response status code; if code received from host is the same as code provided in this settings host will be treated as live.  
-`proto` - communication protocol (http or https)  
-`port` - connection port  
-`timeout` - test timeout, if host is not responding after that time it will be treated as dead.  
-`primary` - primary dns answer, this answer has the highest priority,  
-`failover` - list of IP addresses to switch dns answer when primary host is down  
-#### Default ports
-When there is no port configured but protocol is set to http default port will be 80, 
-if protocol is set to https default will be 443
+`interval` - seconds between tests (default 60).
+`status` - http response status code; if code received from host is the same as code provided in this settings host 
+           will be treated as inactive (default 200).  
+`proto` - communication protocol (http or https)  (default http)
+`port` - connection port  (default 80)
+`timeout` - test timeout, if host is not responding after that time it will be treated as inaccessible. (default 10)
+`answers` - list of ip address with will be used as dns answers, first item from this list is prioritized see [Answers priority]
+
 
 ## Configuring static entry
-In opposition to jobs, static entry do not test host accessibility. Static entry only test if dns rewrite exist in 
-AdGuardHome, it not guaranties any kind of redundancy but may be usefully for devices like network printers, 
-routers etc. To Configure static entry add following lines to configurations file.
+In opposition to previous jobs, static entry do not test host accessibility instead static entry only check if dns 
+rewrite exist in AdGuardHome, it not guaranties any kind of redundancy but may be usefully for devices like network 
+printers, routers etc. To Configure static entry add following lines to configurations file.
 ```yaml
 static_entry:
   - job:
@@ -163,36 +152,25 @@ static_entry:
 ```
 `domain` - dns rewrite domain  
 `answer` - ip address assigned to domain  
-`interval` - seconds between checks  
-## Default values  
-To make configuration easier some config option have assigned default values. To use default values of specific option
-do not put this option to config file.
+`interval` - seconds between checks  (default 60)
 
-| Section     | Option       | Value | Section   | Option   | Value  |
-|-------------|--------------|-------|-----------|----------|--------|
-| api         | proto        | http  | http_jobs | interval | 60     |
-| api         | port         | 80    | http_jobs | status   | 200    |
-| api/startup | test         | True  | http_jobs | proto    | http   |
-| api/startup | timeout      | 10    | http_jobs | port     | 80/443 |
-| api/startup | exit_on_fail | False | ping_jobs | interval | 60     |
-| api/startup | retry_after  | 10    | ping_jobs | timeout  | 2      |
-| http_jobs   | timeout      | 10    | ping_jobs | count    | 2      |
+## Other information about configurations
+
+### Answers priority 
+All answers all prioritized, this mean if first host from list is accessible, dns answer will be set to this host 
+(regardless of state of other hosts), if firs host is inaccessible but second host is accessible dns answer will be set 
+to second hosts and so on.
+
+#### Default ports
+When there is no port configured but protocol is set to http default port will be 80, 
+if protocol is set to https default will be 443
+
  
 ## Auto correctness check
 On start rewrite helper checks correctness of job parameters if correctness check fails job will not be added. 
-### Checks common for all jobs types
-Regardless of job type rewrite-helper will always check:
-1. Domain is correct 
-2. IP addresses are valid ipv4 or ipv6 addresses
-### Check specific for http jobs
-1. Port is from range 0 to 65535
-2. Response status code is valid according to [RFC7231](https://datatracker.ietf.org/doc/html/rfc7231)
 
-## Work without failover
-In case when failover is no needed or there is no failover host now, leave failover empty or delete failover parameter.
+## [See example config file](https://github.com/koszalix/rewrite-helper/blob/main/docs/templates/example_config.yml)
 
-## [See example config file](https://github.com/koszalix/rewrite-helper/blob/main/templates/example_config.yml)
-## [Empty config file](https://github.com/koszalix/rewrite-helper/blob/main/templates/config_clear.yml)
 
 
 

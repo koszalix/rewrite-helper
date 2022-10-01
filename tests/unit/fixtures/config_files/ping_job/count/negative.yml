@@ -1,0 +1,10 @@
+ping_jobs:
+  - job:
+      domain: test.com
+      interval: 44
+      timeout: 3
+      count: -3
+      answers:
+        - 1.1.1.1
+        - 2.2.2.2
+        - 3.3.3.3
