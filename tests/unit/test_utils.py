@@ -80,13 +80,13 @@ class ParseValueWithDefault(unittest.TestCase):
 
     def test_type_cast_off(self):
         content = {'key-a': '32', 'key-B': '33', 'key-c': 'key-B'}
-        self.assertEqual(type(parse_value_with_default(content=content, key='key-B', default_value=80, cast_type=False))
-                         , str)
+        self.assertEqual(type(parse_value_with_default(content=content, key='key-B', default_value=80,
+                                                       cast_type=False)), str)
 
     def test_type_cast_off_same_types(self):
         content = {'key-a': '32', 'key-B': '33', 'key-c': 'key-B'}
-        self.assertEqual(type(parse_value_with_default(content=content, key='key-B', default_value='80', cast_type=False))
-                         , str)
+        self.assertEqual(type(parse_value_with_default(content=content, key='key-B', default_value='80',
+                                                       cast_type=False)), str)
 
 
 class CheckLinuxPermissions(unittest.TestCase):
