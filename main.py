@@ -42,12 +42,11 @@ if __name__ == '__main__':
     else:
         log_level = CliParser.log_level
 
-    if ConfigStorageConfig.log_file != "N/A":
-        log_file = ConfigStorageConfig.log_file
+    if ConfigStorageConfig.log_file() != "N/A":
+        log_file = ConfigStorageConfig.log_file()
     else:
         log_file = CliParser.log_file
     if log_file != "":
-        print("l[", log_file)
         set_log_file(filename=log_file)
 
     logging.getLogger().setLevel(level=log_level)
