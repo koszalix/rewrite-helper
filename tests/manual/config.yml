@@ -40,13 +40,13 @@ http_jobs:
         - 192.168.56.107
 
   - job:
-    domain: single.http
-    interval: 30
-    count: 2
-    timeout: 2
-    privileged: False
-    answers:
-      - 192.168.56.105
+      domain: single.http
+      interval: 30
+      count: 2
+      timeout: 2
+      privileged: False
+      answers:
+        - 192.168.56.105
 
 static_entry:
   - job:
