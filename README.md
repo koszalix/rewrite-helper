@@ -179,8 +179,8 @@ do not put this option to config file.
 ## Auto correctness check
 On start rewrite helper checks correctness of job parameters if correctness check fails job will not be added. 
 
-## [See example config file](https://github.com/koszalix/rewrite-helper/blob/main/templates/example_config.yml)
-## [Empty config file](https://github.com/koszalix/rewrite-helper/blob/main/templates/config_clear.yml)
+## [See example config file](https://github.com/koszalix/rewrite-helper/blob/main/docs/templates/example_config.yml)
+
 
 
 
