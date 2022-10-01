@@ -31,8 +31,12 @@ class Common:
             if host_status is True:
                 answer = self.api_connector.get_answer_of_domain(domain=self.domain)
                 if answer is False:
-                    self.api_connector.add_entry(answer=host_answer, domain=self.domain)
+                    if self.api_connector.add_entry(answer=host_answer, domain=self.domain):
+                        break
                 else:
                     if answer != host_answer:
-                        self.api_connector.change_entry_answer(new_answer=host_answer, old_answer=answer,
-                                                               domain=self.domain)
+                        if self.api_connector.change_entry_answer(new_answer=host_answer, old_answer=answer,
+                                                                  domain=self.domain):
+                            break
+                    else:
+                        break
