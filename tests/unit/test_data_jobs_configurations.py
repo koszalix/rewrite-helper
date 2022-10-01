@@ -1,7 +1,7 @@
 import unittest
 
 from app.data.jobs_configurations import JobsConfs
-
+from app.data.jobs_configurations import JobHttp, JobPing, JobStaticEntry
 
 class TestJobsConfsHttp(unittest.TestCase):
     def setUp(self) -> None:
@@ -39,6 +39,10 @@ class TestJobsConfsHttp(unittest.TestCase):
         self.assertEqual(self.confs.JobsHttp[0].port(), 33)
         self.assertEqual(self.confs.JobsHttp[1].port(), 133)
 
+    def test_iter(self):
+        self.assertEqual(len(self.confs.JobsHttp), 2)
+        for job in self.confs.JobsHttp:
+            self.assertIsInstance(job, JobHttp)
 
 class TestJobsConfsPing(unittest.TestCase):
     def setUp(self) -> None:
@@ -72,6 +76,11 @@ class TestJobsConfsPing(unittest.TestCase):
         self.assertEqual(self.confs.JobsPing[0].answers(), ['1', '2'])
         self.assertEqual(self.confs.JobsPing[1].answers(), ['11', '21'])
 
+    def test_iter(self):
+        self.assertEqual(len(self.confs.JobsPing), 2)
+        for job in self.confs.JobsPing:
+            self.assertIsInstance(job, JobPing)
+
 
 class TestJobsStaticEntry(unittest.TestCase):
     def setUp(self) -> None:
@@ -90,6 +99,11 @@ class TestJobsStaticEntry(unittest.TestCase):
     def test_answers(self):
         self.assertEqual(self.confs.JobsStaticEntry[0].answers(), ['1'])
         self.assertEqual(self.confs.JobsStaticEntry[1].answers(), ['21'])
+
+    def test_iter(self):
+        self.assertEqual(len(self.confs.JobsStaticEntry), 2)
+        for job in self.confs.JobsStaticEntry:
+            self.assertIsInstance(job, JobStaticEntry)
 
 
 if __name__ == "__main__":

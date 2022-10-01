@@ -74,6 +74,9 @@ class JobsHttp:
     def __getitem__(self, item) -> JobHttp:
         return self._http_objs[item]
 
+    def __len__(self):
+        return self._count
+
     def __iter__(self):
         self.__index = 0
         return self
@@ -140,6 +143,9 @@ class JobsPing:
     def __getitem__(self, item) -> JobPing:
         return self._ping_objs[item]
 
+    def __len__(self):
+        return self._count
+
     def __iter__(self):
         self._index = 0
         return self
@@ -184,12 +190,17 @@ class JobsStaticEntry:
 
         self._se_objs.append(JobStaticEntry(interval=interval, domain=domain, answer=answer))
 
+        self._count += 1
+
     def __getitem__(self, item) -> JobStaticEntry:
         return self._se_objs[item]
 
     def __iter__(self):
         self.__index = 0
         return self
+
+    def __len__(self):
+        return self._count
 
     def __next__(self) -> JobStaticEntry:
         if self.__index >= self._count:
