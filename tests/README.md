@@ -27,10 +27,15 @@ python3 ./main.py tests/manual/config.yml
 6. Wait a minute.
 7. Check if answers of domain, for dummy.ping and dummy.http are 192.168.56.107 and answers for domains single.ping and 
    single.http is 192.168.56.107.
-8. Check if answer for domain static.lan is 192.168.56.1.
-9. Delete entry static.lan and wait at least one minute.
-10. Check if entry mentioned in point 9 was added again.
-
+8. Run `DummyHost_1` again and wait at least 2 minutes
+9. Check answers for domains dummy.ping, dummy.http, single.http, single.ping all domains should answer with 192.168.56.105.
+10. Check if answer for domain static.lan is 192.168.56.1.
+11. Delete entry static.lan and wait at least 2 minutes.
+12. Check if entry mentioned in point 9 was added again.
+13. Relaunch rewrite-helper and check if there aren't duplicated domains.
+14. Shutdown rewrite-helper.
+15. Delete all dns rewrites.
+16. Save all machines.
 
 # Test environment
 To perform some test, extra steeps, such as setting file permissions or creating vm  must be taken. 
