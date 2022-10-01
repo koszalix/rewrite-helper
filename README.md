@@ -60,13 +60,14 @@ api:
   startup:
 ```
 `host` - ip or domain of adguardhome  
-`proto` - communication protocol http or https  
+`proto` - communication protocol http or https (default http)
 `username` - admin username  
 `passwd` - admin password  
-`port` - connection port  
-`timeout` - maximum time to response, if api request exceeded this time request wil be treated as fail   
+`port` - connection port (default 80)
+`timeout` - maximum time to response, if api request exceeded this time request wil be treated as fail (default 10)
 `startup` - if set to `True` program don't start until connection can be established (connection will be tested every 10
-            seconds)
+            seconds) (default True)
+
 ## Configure miscellaneous software options
 Add following section to config file
 ```yaml
@@ -77,14 +78,15 @@ config:
   entry_exist:
 ```
 `wait` - time in seconds to wait before programs start, setting this value may be helpful on system startup when 
-         rewrite-helper starts faster than AdGuardHome  
-`log_level` - set log level, available levels DEBUG, INFO, WARNING, ERROR, CRITICAL  
+         rewrite-helper starts faster than AdGuardHome (default 0)
+`log_level` - set log level, available levels DEBUG, INFO, WARNING, ERROR, CRITICAL (INFO)  (default INFO)
 `log_file` - set log output file (full path)  
 `entry_exist` - set what to do when domain is registered in AdGuardHome but answer don't match to any of answers 
-                  from config file. Available options: 
+                  from config file. Available options default (KEEP): 
                         KEEP - keep actual domain and add new, 
                         DROP - treat job as if it didn't exist
                         DELETE - delete existing domain, if for some reason domain wasn't deleted job will not be started
+                
 If log_level or log_file is no specified or value is incorrect program will read those parameters from cli.  
 ## Configuring jobs
 Job is set of hosts IP addresses within one domain. When host to which IP address domain is pointing is down, then dns
@@ -105,10 +107,10 @@ ping_jobs:
         - <ip address>
 ```
 `domain` - dns rewrite domain, for ex.: server.lan  
-`interval` - seconds between tests.  
-`count` - numer of packages send to host on each test.    
-`timeout` - test timeout, if host is not responding after that time it will be treated as inaccessible.   
-`priviledeg` - run ping request as superuser
+`interval` - seconds between tests (default 60)
+`count` - numer of packages send to host on each test (default 2)  
+`timeout` - test timeout, if host is not responding after that time it will be treated as inaccessible (default 2)
+`priviledeg` - run ping request as superuser (default False)
 `answers` - list of ip address with will be used as dns answers, first item from this list is prioritized see [Answers priority]
 
 ### Configuring http job
@@ -128,11 +130,12 @@ http_jobs:
           - <ip address>
 ```
 `domain` - dns rewrite domain, for ex.: server.lan  
-`interval` - seconds between tests.  
-`status` - http response status code; if code received from host is the same as code provided in this settings host will be treated as live.  
-`proto` - communication protocol (http or https)  
-`port` - connection port  
-`timeout` - test timeout, if host is not responding after that time it will be treated as inaccessible.  
+`interval` - seconds between tests (default 60).
+`status` - http response status code; if code received from host is the same as code provided in this settings host 
+           will be treated as inactive (default 200).  
+`proto` - communication protocol (http or https)  (default http)
+`port` - connection port  (default 80)
+`timeout` - test timeout, if host is not responding after that time it will be treated as inaccessible. (default 10)
 `answers` - list of ip address with will be used as dns answers, first item from this list is prioritized see [Answers priority]
 
 
@@ -149,7 +152,7 @@ static_entry:
 ```
 `domain` - dns rewrite domain  
 `answer` - ip address assigned to domain  
-`interval` - seconds between checks  
+`interval` - seconds between checks  (default 60)
 
 ## Other information about configurations
 
@@ -162,19 +165,6 @@ to second hosts and so on.
 When there is no port configured but protocol is set to http default port will be 80, 
 if protocol is set to https default will be 443
 
-## Default values  
-To make configuration easier some config option have assigned default values. To use default values of specific option
-do not put this option to config file.
-
-| Section     | Option       | Value | Section   | Option   | Value  |
-|-------------|--------------|-------|-----------|----------|--------|
-| api         | proto        | http  | http_jobs | interval | 60     |
-| api         | port         | 80    | http_jobs | status   | 200    |
-| api/startup | test         | True  | http_jobs | proto    | http   |
-| api/startup | timeout      | 10    | http_jobs | port     | 80/443 |
-| api/startup | exit_on_fail | False | ping_jobs | interval | 60     |
-| api/startup | retry_after  | 10    | ping_jobs | timeout  | 2      |
-| http_jobs   | timeout      | 10    | ping_jobs | count    | 2      |
  
 ## Auto correctness check
 On start rewrite helper checks correctness of job parameters if correctness check fails job will not be added. 

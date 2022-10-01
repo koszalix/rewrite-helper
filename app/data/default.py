@@ -12,7 +12,7 @@ class Api:
 
 class Config:
     wait = 0
-    log_level = False
+    log_level = False  # default False allow to set log level from coman line arguments
     log_file = "N/A"
     entry_exist = 'KEEP'
 
