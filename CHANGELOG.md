@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Removed
 - `Startup` configuration for api
+- Separate configuration parameters for primary and failover answers
 
 ## [0.5.0] - 2022-09-05
 ### Added
